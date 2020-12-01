@@ -1,0 +1,437 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Talkbot",
+		"_postman_id": "72d67e8f-438b-1f98-5d1e-84d6df2ccc59",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "login",
+			"request": {
+				"url": {
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"sandbox",
+						"talkbot",
+						"src",
+						"api.php"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "login",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Pass1234!",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "registry",
+			"request": {
+				"url": {
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=registry",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"sandbox",
+						"talkbot",
+						"src",
+						"api.php"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "registry",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "email_retype",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Pass1234!",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "resend",
+			"request": {
+				"url": {
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=resend",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"sandbox",
+						"talkbot",
+						"src",
+						"api.php"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "resend",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "email_retype",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Pass1234!",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "activate",
+			"request": {
+				"url": {
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=activate&token=JDJ5JDEyJElpTGN5N29qeUtmY1VCa2huSE1TdmV0RGNYRVQ2TTZXZTJ6NExrUGdjUG1zclAyMlVFTG82",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"sandbox",
+						"talkbot",
+						"src",
+						"api.php"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "activate",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "token",
+							"value": "JDJ5JDEyJElpTGN5N29qeUtmY1VCa2huSE1TdmV0RGNYRVQ2TTZXZTJ6NExrUGdjUG1zclAyMlVFTG82",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "email_retype",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Pass1234!",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"url": {
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"sandbox",
+						"talkbot",
+						"src",
+						"api.php"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "logout",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "email_retype",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Pass1234!",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "password-reset-request",
+			"request": {
+				"url": {
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=password-reset-request",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"sandbox",
+						"talkbot",
+						"src",
+						"api.php"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "password-reset-request",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "password-reset",
+			"request": {
+				"url": {
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=password-reset&token=JDJ5JDEyJGlwc3FFRGdVUjlCSjdpUDZWOHh2a3VlQkMzUmZXaU13a3N2TGY2WlBieW85WkhIbzFhUjhh",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"sandbox",
+						"talkbot",
+						"src",
+						"api.php"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "password-reset",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "token",
+							"value": "JDJ5JDEyJGlwc3FFRGdVUjlCSjdpUDZWOHh2a3VlQkMzUmZXaU13a3N2TGY2WlBieW85WkhIbzFhUjhh",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "email_retype",
+							"value": "tester@testing.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Pass1234!",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "password-change",
+			"request": {
+				"url": {
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=password-change",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"sandbox",
+						"talkbot",
+						"src",
+						"api.php"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "password-change",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "token",
+							"value": "JDJ5JDEyJGlwc3FFRGdVUjlCSjdpUDZWOHh2a3VlQkMzUmZXaU13a3N2TGY2WlBieW85WkhIbzFhUjhh",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Pass1234!2",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password_retype",
+							"value": "Pass1234!2",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,50 @@
+#filelist * {
+    font-family: monospace;
+}
+
+#filelist > li > ul > li > b {
+    min-width: 3em;
+    display: block;
+    float: left;
+}
+
+#filelist > li {
+    cursor: pointer;
+    margin-top: 0.5em;
+}
+    
+#filelist > li > ul {
+    display: none;
+}
+#filelist > li.open > ul {
+    display: block;
+}
+
+#filelist > li > b {
+    min-width: 6em;
+    display: block;
+    float: left;
+    text-align: right;
+    margin-right: 1em;
+}
+
+#filelist pre {
+    margin: 0;
+}
+
+#filelist li.info0 {
+    background-color: black;
+    color:white;
+}
+#filelist li.info1 {
+    background-color: green;
+    color:white;
+}
+#filelist li.info-1 {
+    background-color: red;
+    color:white;
+}
+#filelist li.info-2 {
+    background-color: black;
+    color:gray;
+}

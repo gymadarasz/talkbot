@@ -1,0 +1,16 @@
+<?php $this->restrict(); ?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Code Coverage Info</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        <script>var files = <?=json_encode($files)?>;</script>
+    </head>
+    <body>
+        <span>Total coverage:</span><b><i><?=number_format($percentage, 2, '.', '')?> %</i></b>
+        <ul id="filelist"></ul>
+        <script src="coverage.js"></script>
+    </body>
+</html>

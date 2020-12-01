@@ -1,1 +1,4 @@
 /vendor/
+/nbproject/private/
+routes.cache.php
+.php_cs.cache
