@@ -16,7 +16,7 @@ namespace Madsoft\Library;
 use RuntimeException;
 
 /**
- * Crud
+ * Database
  *
  * @category  PHP
  * @package   Madsoft\Library
@@ -25,7 +25,7 @@ use RuntimeException;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class Crud
+class Database
 {
     const LOGICS = ['AND', 'OR'];
     const NO_CONDITION_FILTERS = [
@@ -68,7 +68,7 @@ class Crud
         string $tableUnsafe,
         array $fieldsUnsafe,
         array $filterUnsafe = [],
-        string $filterLogic = 'OR'
+        string $filterLogic = 'AND'
     ): array {
         return $this->get(
             $tableUnsafe,
@@ -96,7 +96,7 @@ class Crud
         string $tableUnsafe,
         array $fieldsUnsafe,
         array $filterUnsafe = [],
-        string $filterLogic = 'OR',
+        string $filterLogic = 'AND',
         int $uid = 0
     ): array {
         return $this->get(
@@ -126,7 +126,7 @@ class Crud
         string $tableUnsafe,
         array $fieldsUnsafe,
         array $filterUnsafe = [],
-        string $filterLogic = 'OR',
+        string $filterLogic = 'AND',
         int $limit = 0,
         int $offset = 0
     ): array {
@@ -158,7 +158,7 @@ class Crud
         string $tableUnsafe,
         array $fieldsUnsafe,
         array $filterUnsafe = [],
-        string $filterLogic = 'OR',
+        string $filterLogic = 'AND',
         int $limit = 0,
         int $offset = 0,
         int $uid = 0
@@ -191,7 +191,7 @@ class Crud
         string $tableUnsafe,
         array $fieldsUnsafe,
         array $filterUnsafe = [],
-        string $filterLogic = 'OR',
+        string $filterLogic = 'AND',
         int $limit = 1,
         int $offset = 0,
         int $uid = 0
@@ -549,29 +549,44 @@ class Crud
         int $limit,
         int $uid
     ): void {
-        if ($uid > -1) {
-            if ($limit === 1
-                && !$this->getOwnedRow(
+        try {
+            if ($uid > -1) {
+                if ($limit === 1) {
+                    $this->getOwnedRow(
+                        $tableUnsafe,
+                        ['id'],
+                        $filterUnsafe,
+                        $filterLogic,
+                        $uid
+                    );
+                    return;
+                }
+                $this->getOwnedRows(
                     $tableUnsafe,
                     ['id'],
                     $filterUnsafe,
                     $filterLogic,
+                    $limit,
                     $uid
-                )
-            ) {
-                throw new RuntimeException('Invalid owner: ' . $uid);
+                );
             }
-            if (!$this->getOwnedRows(
-                $tableUnsafe,
-                ['id'],
-                $filterUnsafe,
-                $filterLogic,
-                $limit,
-                $uid
-            )
-            ) {
-                throw new RuntimeException('Invalid owner: ' . $uid);
+        } catch (RuntimeException $exception) {
+            if ($exception->getCode() === Mysql::MYSQL_ERROR) {
+                throw new RuntimeException(
+                    'Invalid owner: ' . $uid
+                        . ', Reason: ' . $exception->getMessage()
+                        . ' (' . $exception->getCode() . ')',
+                    (int)$exception->getCode(),
+                    $exception
+                );
             }
+            throw new RuntimeException(
+                'Database error: ' . $exception->getMessage()
+                    . $exception->getMessage()
+                    . ' (' . $exception->getCode() . ')',
+                (int)$exception->getCode(),
+                $exception
+            );
         }
     }
     

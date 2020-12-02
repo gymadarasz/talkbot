@@ -13,13 +13,15 @@
 
 namespace Madsoft\Library\Account;
 
-use Madsoft\Library\Crud;
+use Madsoft\Library\Database;
 use Madsoft\Library\Mailer;
 use Madsoft\Library\Messages;
+use Madsoft\Library\Mysql;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Template;
 use Madsoft\Library\Token;
+use RuntimeException;
 
 /**
  * PasswordReset
@@ -40,7 +42,7 @@ class PasswordReset extends ArrayResponder
     
     protected Template $template;
     protected Token $token;
-    protected Crud $crud;
+    protected Database $database;
     protected AccountValidator $validator;
     protected Mailer $mailer;
 
@@ -50,7 +52,7 @@ class PasswordReset extends ArrayResponder
      * @param Messages         $messages  messages
      * @param Template         $template  template
      * @param Token            $token     token
-     * @param Crud             $crud      crud
+     * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Mailer           $mailer    mailer
      */
@@ -58,14 +60,14 @@ class PasswordReset extends ArrayResponder
         Messages $messages,
         Template $template,
         Token $token,
-        Crud $crud,
+        Database $database,
         AccountValidator $validator,
         Mailer $mailer
     ) {
         parent::__construct($messages);
         $this->template = $template;
         $this->token = $token;
-        $this->crud = $crud;
+        $this->database = $database;
         $this->validator = $validator;
         $this->mailer = $mailer;
     }
@@ -85,12 +87,27 @@ class PasswordReset extends ArrayResponder
         if (!$token) {
             $this->getErrorResponse('Missing token');
         }
-        $user = $this->crud->getRow('user', ['id'], ['token' => $token]);
-        if (!($user['id'] ?? '')) {
-            return $this->getErrorResponse(
-                'Invalid token'
+        try {
+            $this->database->getRow(
+                'user',
+                ['id'],
+                ['token' => $token, 'active' => '1']
+            );
+        } catch (RuntimeException $exception) {
+            if ($exception->getCode() === Mysql::MYSQL_ERROR) {
+                return $this->getErrorResponse(
+                    'Invalid token'
+                );
+            }
+            throw new RuntimeException(
+                'Database error: ' . $exception->getMessage()
+                    . $exception->getMessage()
+                    . ' (' . $exception->getCode() . ')',
+                (int)$exception->getCode(),
+                $exception
             );
         }
+        
         // TODO recreate token before sanding back for usage
         return $this->getSuccessResponse(
             'Token matches',
@@ -118,15 +135,35 @@ class PasswordReset extends ArrayResponder
         }
         
         $email = (string)$params->get('email');
-        $user = $this->crud->getRow('user', ['email'], ['email' => $email]);
-        if (($user['email'] ?? '') !== $email) {
+        
+        try {
+            $this->database->getRow(
+                'user',
+                ['email'],
+                ['email' => $email, 'active' => '1']
+            );
+        } catch (RuntimeException $exception) {
+            if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
+                throw new RuntimeException(
+                    'An error happened: '
+                        . $exception->getMessage()
+                        . ' (' . $exception->getCode() . ')',
+                    (int)$exception->getCode(),
+                    $exception
+                );
+            }
             return $this->getErrorResponse(
                 'Email address not found'
             );
         }
         
         $token = $this->token->generate();
-        if (!$this->crud->setRow('user', ['token' => $token], ['email' => $email])) {
+        if (!$this->database->setRow(
+            'user',
+            ['token' => $token],
+            ['email' => $email, 'active' => '1']
+        )
+        ) {
             return $this->getErrorResponse(
                 'Token is not updated'
             );
@@ -155,10 +192,7 @@ class PasswordReset extends ArrayResponder
     {
         $message = $this->template->process(
             'emails/reset.phtml',
-            [
-            //                'base' => $this->config->get('Site')->get('base'),
-                'token' => $token,
-            ],
+            ['token' => $token],
             $this::EMAIL_TPL_PATH
         );
         return $this->mailer->send(

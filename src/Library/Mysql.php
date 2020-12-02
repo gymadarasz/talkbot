@@ -29,6 +29,8 @@ use RuntimeException;
  */
 class Mysql
 {
+    const MYSQL_ERROR = 1325191712;
+    
     protected mysqli $mysqli;
     protected bool $connected = false;
     
@@ -126,9 +128,16 @@ class Mysql
     {
         $this->connect();
         $result = $this->mysqli->query($query);
-        if ($result instanceof mysqli_result) {
+        if (false !== $result && $result instanceof mysqli_result) {
             // return (new Row())->setFields($result->fetch_assoc() ?: []);
-            return $result->fetch_assoc() ?: [];
+            $row = $result->fetch_assoc() ?: [];
+            if (!empty($row)) {
+                return $row;
+            }
+            throw new RuntimeException(
+                "Empty result of query:\n$query\n",
+                self::MYSQL_ERROR
+            );
         }
         throw new RuntimeException(
             "MySQL query error:\n$query\nMessage: {$this->mysqli->error}"
@@ -153,7 +162,13 @@ class Mysql
                 // $rows[] = (new Row())->setFields($row);
                 $rows[] = $row;
             }
-            return $rows;
+            if (!empty($rows)) {
+                return $rows;
+            }
+            throw new RuntimeException(
+                "Empty results of query:\n$query\n",
+                self::MYSQL_ERROR
+            );
         }
         throw new RuntimeException(
             "MySQL query error:\n$query\nMessage: {$this->mysqli->error}"
@@ -186,11 +201,15 @@ class Mysql
      * @param string $query query
      *
      * @return int
+     * @throws RuntimeException
      */
     public function update(string $query): int
     {
-        if (!$this->query($query)) {
-            return 0;
+        if (true !== $this->query($query)) {
+            throw new RuntimeException(
+                "Not affected by query:\n$query\n",
+                self::MYSQL_ERROR
+            );
         }
         return $this->mysqli->affected_rows;
     }
@@ -213,11 +232,15 @@ class Mysql
      * @param string $query query
      *
      * @return int
+     * @throws RuntimeException
      */
     public function insert(string $query): int
     {
-        if (!$this->query($query)) {
-            return 0;
+        if (true !== $this->query($query)) {
+            throw new RuntimeException(
+                "Not inserted by query:\n$query\n",
+                self::MYSQL_ERROR
+            );
         }
         return (int)$this->mysqli->insert_id;
     }

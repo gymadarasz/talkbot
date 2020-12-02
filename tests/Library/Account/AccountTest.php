@@ -16,7 +16,7 @@ namespace Madsoft\Tests\Library\Account;
 use DiDom\Document;
 use DOMElement;
 use Madsoft\Library\Config;
-use Madsoft\Library\Crud;
+use Madsoft\Library\Database;
 use Madsoft\Library\Folders;
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Mailer;
@@ -49,7 +49,7 @@ class AccountTest extends Test
     protected Invoker $invoker;
     protected Session $session;
     protected Folders $folders;
-    protected Crud $crud;
+    protected Database $database;
     protected Config $config;
     protected LibraryTestCleaner $cleaner;
     protected Router $router;
@@ -57,19 +57,19 @@ class AccountTest extends Test
     /**
      * Method __construct
      *
-     * @param Invoker            $invoker invoker
-     * @param Session            $session session
-     * @param Folders            $folders folders
-     * @param Crud               $crud    crud
-     * @param Config             $config  config
-     * @param LibraryTestCleaner $cleaner cleaner
-     * @param Router             $router  router
+     * @param Invoker            $invoker  invoker
+     * @param Session            $session  session
+     * @param Folders            $folders  folders
+     * @param Database           $database database
+     * @param Config             $config   config
+     * @param LibraryTestCleaner $cleaner  cleaner
+     * @param Router             $router   router
      */
     public function __construct(
         Invoker $invoker,
         Session $session,
         Folders $folders,
-        Crud $crud,
+        Database $database,
         Config $config,
         LibraryTestCleaner $cleaner,
         Router $router
@@ -77,7 +77,7 @@ class AccountTest extends Test
         $this->invoker = $invoker;
         $this->session = $session;
         $this->folders = $folders;
-        $this->crud = $crud;
+        $this->database = $database;
         $this->config = $config;
         $this->cleaner = $cleaner;
         $this->router = $router;
@@ -415,7 +415,7 @@ class AccountTest extends Test
         $this->assertStringContains(self::EMAIL, $emailFilename);
         $this->assertStringContains('Activate your account', $emailFilename);
         
-        $user = $this->crud->getRow(
+        $user = $this->database->getRow(
             'user',
             ['token'],
             ['email' => self::EMAIL]
@@ -467,7 +467,7 @@ class AccountTest extends Test
      */
     protected function canSeeActivationWorks(): void
     {
-        $user = $this->crud->getRow(
+        $user = $this->database->getRow(
             'user',
             ['token'],
             ['email' => self::EMAIL]
@@ -487,7 +487,7 @@ class AccountTest extends Test
      */
     protected function canSeeActivationUserAlreadyActiveFail(): void
     {
-        $user = $this->crud->getRow(
+        $user = $this->database->getRow(
             'user',
             ['token'],
             ['email' => self::EMAIL]
@@ -497,7 +497,7 @@ class AccountTest extends Test
             [$this->getRoutes()],
             'q=activate&token=' . ($user['token'] ?? '')
         );
-        $this->assertStringContains('User is active already', $contents);
+        $this->assertStringContains('Invalid token', $contents);
     }
     
     /**
@@ -623,7 +623,7 @@ class AccountTest extends Test
         );
         $this->assertStringContains('Invalid token', $contents);
         
-        $user = $this->crud->getRow(
+        $user = $this->database->getRow(
             'user',
             ['token'],
             ['email' => self::EMAIL]
@@ -707,7 +707,7 @@ class AccountTest extends Test
      */
     protected function canSeeNewPassword(): void
     {
-        $user = $this->crud->getRow(
+        $user = $this->database->getRow(
             'user',
             ['token'],
             ['email' => self::EMAIL]
@@ -728,7 +728,7 @@ class AccountTest extends Test
      */
     protected function canSeeNewPasswordWorks(): void
     {
-        $user = $this->crud->getRow(
+        $user = $this->database->getRow(
             'user',
             ['token'],
             ['email' => self::EMAIL]

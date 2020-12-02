@@ -27,7 +27,7 @@ use RuntimeException;
  *
  * @SuppressWarnings(PHPMD.Superglobals)
  */
-class Params extends Server implements Assoc
+class Params extends Server implements Assoc // TODO: do not extends Server!
 {
     /**
      * Method get

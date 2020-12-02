@@ -14,7 +14,7 @@
 namespace Madsoft\Library\Account;
 
 use Madsoft\Library\Params;
-use Madsoft\Library\Crud;
+use Madsoft\Library\Database;
 use Madsoft\Library\Encrypter;
 use Madsoft\Library\Messages;
 use Madsoft\Library\Responder\ArrayResponder;
@@ -31,7 +31,7 @@ use Madsoft\Library\Responder\ArrayResponder;
  */
 class PasswordChange extends ArrayResponder
 {
-    protected Crud $crud;
+    protected Database $database;
     protected AccountValidator $validator;
     protected Encrypter $encrypter;
     
@@ -39,18 +39,18 @@ class PasswordChange extends ArrayResponder
      * Method __construct
      *
      * @param Messages         $messages  messages
-     * @param Crud             $crud      crud
+     * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Encrypter        $encrypter encrypter
      */
     public function __construct(
         Messages $messages,
-        Crud $crud,
+        Database $database,
         AccountValidator $validator,
         Encrypter $encrypter
     ) {
         parent::__construct($messages);
-        $this->crud = $crud;
+        $this->database = $database;
         $this->validator = $validator;
         $this->encrypter = $encrypter;
     }
@@ -78,7 +78,7 @@ class PasswordChange extends ArrayResponder
             );
         }
         
-        if (!$this->crud->setRow(
+        if (!$this->database->setRow(
             'user',
             [
                 'hash' => $this->encrypter->encrypt($params->get('password')),
@@ -86,6 +86,7 @@ class PasswordChange extends ArrayResponder
             ],
             [
                 'token' => $params->get('token'),
+                'active' => '1',
             ]
         )
         ) {

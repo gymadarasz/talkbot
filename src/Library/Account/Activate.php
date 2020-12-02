@@ -13,11 +13,13 @@
 
 namespace Madsoft\Library\Account;
 
-use Madsoft\Library\Params;
-use Madsoft\Library\Crud;
+use Madsoft\Library\Database;
 use Madsoft\Library\Messages;
+use Madsoft\Library\Mysql;
+use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Session;
+use RuntimeException;
 
 /**
  * Activate
@@ -31,23 +33,23 @@ use Madsoft\Library\Session;
  */
 class Activate extends ArrayResponder
 {
-    protected Crud $crud;
+    protected Database $database;
     protected AccountValidator $validator;
     
     /**
      * Method __construct
      *
      * @param Messages         $messages  messages
-     * @param Crud             $crud      crud
+     * @param Database         $database  database
      * @param AccountValidator $validator validator
      */
     public function __construct(
         Messages $messages,
-        Crud $crud,
+        Database $database,
         AccountValidator $validator
     ) {
         parent::__construct($messages);
-        $this->crud = $crud;
+        $this->database = $database;
         $this->validator = $validator;
     }
     
@@ -73,26 +75,45 @@ class Activate extends ArrayResponder
         
         $token = $params->get('token');
         
-        $user = $this->crud->getRow(
-            'user',
-            ['id', 'active'],
-            ['token' => $token]
-        );
-        if (!($user['id'] ?? '')) {
-            return $this->getErrorResponse(
-                'Invalid token'
+        try {
+            $this->database->getRow(
+                'user',
+                ['id'],
+                ['token' => $token, 'active' => '0']
+            );
+        } catch (RuntimeException $exception) {
+            if ($exception->getCode() === Mysql::MYSQL_ERROR) {
+                return $this->getErrorResponse(
+                    'Invalid token'
+                );
+            }
+            throw new RuntimeException(
+                'Database error: ' . $exception->getMessage()
+                    . $exception->getMessage()
+                    . ' (' . $exception->getCode() . ')',
+                (int)$exception->getCode(),
+                $exception
             );
         }
         
-        if ($user['active'] ?? '') {
-            return $this->getErrorResponse(
-                'User is active already'
+        try {
+            $this->database->setRow(
+                'user',
+                ['active' => '1'],
+                ['token' => $token]
             );
-        }
-        
-        if (!$this->crud->setRow('user', ['active' => '1'], ['token' => $token])) {
-            return $this->getErrorResponse(
-                'User activation failed'
+        } catch (RuntimeException $exception) {
+            if ($exception->getCode() === Mysql::MYSQL_ERROR) {
+                return $this->getErrorResponse(
+                    'User activation failed'
+                );
+            }
+            throw new RuntimeException(
+                'Database error: ' . $exception->getMessage()
+                    . $exception->getMessage()
+                    . ' (' . $exception->getCode() . ')',
+                (int)$exception->getCode(),
+                $exception
             );
         }
         

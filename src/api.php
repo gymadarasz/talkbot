@@ -23,6 +23,7 @@ $invoker = new Invoker();
 $routes = $invoker->getInstance(Router::class)->loadRoutes(
     [
         __DIR__ . '/Library/Account/routes.php',
+        __DIR__ . '/Library/Crud/routes.php',
         __DIR__ . 'routes.api.php',
     ]
 );

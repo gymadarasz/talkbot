@@ -13,10 +13,10 @@
 
 namespace Madsoft\Tests\Library;
 
-use Madsoft\Library\Crud;
+use Madsoft\Library\Database;
 
 /**
- * CrudMock
+ * DatabaseMock
  *
  * @category  PHP
  * @package   Madsoft\Tests\Library
@@ -25,7 +25,7 @@ use Madsoft\Library\Crud;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class CrudMock extends Crud
+class DatabaseMock extends Database
 {
     /**
      * Method getWherePublic

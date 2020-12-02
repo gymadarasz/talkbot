@@ -14,12 +14,14 @@
 namespace Madsoft\Library\Account;
 
 use Madsoft\Library\Account\AccountValidator;
-use Madsoft\Library\Crud;
+use Madsoft\Library\Database;
 use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
+use Madsoft\Library\Mysql;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\User;
+use RuntimeException;
 
 /**
  * Login
@@ -33,7 +35,7 @@ use Madsoft\Library\User;
  */
 class Login extends ArrayResponder
 {
-    protected Crud $crud;
+    protected Database $database;
     protected Logger $logger;
     protected User $user;
     protected AccountValidator $validator;
@@ -42,20 +44,20 @@ class Login extends ArrayResponder
      * Method __construct
      *
      * @param Messages         $messages  messages
-     * @param Crud             $crud      crud
+     * @param Database         $database  database
      * @param Logger           $logger    logger
      * @param User             $user      user
      * @param AccountValidator $validator validator
      */
     public function __construct(
         Messages $messages,
-        Crud $crud,
+        Database $database,
         Logger $logger,
         User $user,
         AccountValidator $validator
     ) {
         parent::__construct($messages);
-        $this->crud = $crud;
+        $this->database = $database;
         $this->logger = $logger;
         $this->user = $user;
         $this->validator = $validator;
@@ -79,11 +81,24 @@ class Login extends ArrayResponder
             return $this->loginError($errors, $email);
         }
         
-        $user = $this->crud->getRow(
-            'user',
-            ['id', 'email', 'group', 'hash'],
-            ['email' => $email]
-        );
+        try {
+            $user = $this->database->getRow(
+                'user',
+                ['id', 'email', 'group', 'hash'],
+                ['email' => $email, 'active' => '1']
+            );
+        } catch (RuntimeException $exception) {
+            if ($exception->getcode() !== Mysql::MYSQL_ERROR) {
+                throw new RuntimeException(
+                    'An error happened: '
+                        . $exception->getMessage()
+                        . ' (' . $exception->getCode() . ')',
+                    (int)$exception->getCode(),
+                    $exception
+                );
+            }
+            $user = [];
+        }
         
         
         $errors = $this->validator->validateUser(

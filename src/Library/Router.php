@@ -72,7 +72,7 @@ class Router
         if (!$this->user->isVisitor()) {
             $area = 'protected';
             if ($this->user->isAdmin()) {
-                $area = 'protected';
+                $area = 'private';
             }
         }
         if (!isset($routes[$area])) {

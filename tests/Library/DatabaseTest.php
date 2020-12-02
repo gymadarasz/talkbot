@@ -14,7 +14,7 @@
 namespace Madsoft\Tests\Library;
 
 use Madsoft\Library\Config;
-use Madsoft\Library\Crud;
+use Madsoft\Library\Database;
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Merger;
 use Madsoft\Library\Mysql;
@@ -26,7 +26,7 @@ use Madsoft\Library\User;
 use RuntimeException;
 
 /**
- * CrudTest
+ * DatabaseTest
  *
  * @category  PHP
  * @package   Madsoft\Tests\Library
@@ -37,7 +37,7 @@ use RuntimeException;
  *
  * @suppress PhanUnreferencedClass
  */
-class CrudTest extends Test
+class DatabaseTest extends Test
 {
     /**
      * Method testCrudInvalidLogicFails
@@ -51,9 +51,9 @@ class CrudTest extends Test
     public function testCrudInvalidLogicFails(Invoker $invoker): void
     {
         $exc = null;
-        $crud = $invoker->getInstance(CrudMock::class);
+        $database = $invoker->getInstance(DatabaseMock::class);
         try {
-            $crud->getWherePublic('atable', [], 'NOT VALID LOGIC');
+            $database->getWherePublic('atable', [], 'NOT VALID LOGIC');
             $this->assertTrue(false);
         } catch (RuntimeException $exc) {
             $this->assertTrue(true);
@@ -70,8 +70,8 @@ class CrudTest extends Test
      */
     public function testGetRow(): void
     {
-        $crud = $this->getCrud();
-        $crud->addRow(
+        $database = $this->getDatabase();
+        $database->addRow(
             'user',
             [
                 'email' => 'testuser@email.com',
@@ -79,7 +79,7 @@ class CrudTest extends Test
                 'token' => 'notoken',
             ]
         );
-        $row = $crud->getRow(
+        $row = $database->getRow(
             'user',
             ['email', 'hash', 'token'],
             ['email' => 'testuser@email.com']
@@ -94,24 +94,28 @@ class CrudTest extends Test
         );
         
         // cleanup
-        $crud->delRows('user', ['email' => 'testuser@email.com']);
-        $row = $crud->getRow(
-            'user',
-            ['email', 'hash', 'token'],
-            ['email' => 'testuser@email.com']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
+        $database->delRows('user', ['email' => 'testuser@email.com']);
+        try {
+            $code = 0;
+            $database->getRow(
+                'user',
+                ['email', 'hash', 'token'],
+                ['email' => 'testuser@email.com']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
     }
     
     /**
      * Method getCrud
      *
-     * @return Crud
+     * @return Database
      */
-    protected function getCrud(): Crud
+    protected function getDatabase(): Database
     {
         $invoker = new Invoker();
         $merger = new Merger();
@@ -121,7 +125,7 @@ class CrudTest extends Test
         $mysql = new Mysql($config, $transaction);
         $session = new Session();
         $user = new User($session);
-        return new Crud($safer, $mysql, $user);
+        return new Database($safer, $mysql, $user);
     }
     
     /**
@@ -133,8 +137,8 @@ class CrudTest extends Test
      */
     public function testGetRows(): void
     {
-        $crud = $this->getCrud();
-        $crud->addRow(
+        $database = $this->getDatabase();
+        $database->addRow(
             'user',
             [
                 'email' => 'testuser1@email.com',
@@ -142,7 +146,7 @@ class CrudTest extends Test
                 'token' => 'notoken1',
             ]
         );
-        $crud->addRow(
+        $database->addRow(
             'user',
             [
                 'email' => 'testuser2@email.com',
@@ -150,7 +154,7 @@ class CrudTest extends Test
                 'token' => 'notoken2',
             ]
         );
-        $crud->addRow(
+        $database->addRow(
             'user',
             [
                 'email' => 'testuser3@email.com',
@@ -158,7 +162,7 @@ class CrudTest extends Test
                 'token' => 'notoken3',
             ]
         );
-        $row = $crud->getRows(
+        $row = $database->getRows(
             'user',
             ['email', 'hash', 'token'],
             ['hash' => 'nohash']
@@ -185,18 +189,22 @@ class CrudTest extends Test
         );
         
         // clean up
-        $crud->delRows('user', ['email' => 'testuser1@email.com']);
-        $crud->delRows('user', ['email' => 'testuser2@email.com']);
-        $crud->delRows('user', ['email' => 'testuser3@email.com']);
-        $row = $crud->getRows(
-            'user',
-            ['email', 'hash', 'token'],
-            ['hash' => 'nohash']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
+        $database->delRows('user', ['email' => 'testuser1@email.com']);
+        $database->delRows('user', ['email' => 'testuser2@email.com']);
+        $database->delRows('user', ['email' => 'testuser3@email.com']);
+        try {
+            $code = 0;
+            $database->getRows(
+                'user',
+                ['email', 'hash', 'token'],
+                ['hash' => 'nohash']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
     }
     
     /**
@@ -208,28 +216,36 @@ class CrudTest extends Test
      */
     public function testSetRow(): void
     {
-        $crud = $this->getCrud();
-        $row = $crud->getRow(
-            'user',
-            ['email', 'hash', 'token'],
-            ['email' => 'testuser@email.com']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
-        $row = $crud->getRow(
-            'user',
-            ['email', 'hash', 'token'],
-            ['email' => 'testusermodified@email.com']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
+        $database = $this->getDatabase();
+        try {
+            $code = 0;
+            $database->getRow(
+                'user',
+                ['email', 'hash', 'token'],
+                ['email' => 'testuser@email.com']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
         
+        try {
+            $code = 0;
+            $database->getRow(
+                'user',
+                ['email', 'hash', 'token'],
+                ['email' => 'testusermodified@email.com']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
         
-        $crud->addRow(
+        $database->addRow(
             'user',
             [
                 'email' => 'testuser@email.com',
@@ -237,14 +253,14 @@ class CrudTest extends Test
                 'token' => 'notoken',
             ]
         );
-        $result = $crud->setRow(
+        $result = $database->setRow(
             'user',
             ['email' => 'testusermodified@email.com'],
             ['email' => 'testuser@email.com'],
         );
         $this->assertEquals(1, $result);
         
-        $row = $crud->getRow(
+        $row = $database->getRow(
             'user',
             ['email', 'hash', 'token'],
             ['email' => 'testusermodified@email.com']
@@ -259,25 +275,34 @@ class CrudTest extends Test
         );
         
         // cleanup
-        $crud->delRows('user', ['email' => 'testusermodified@email.com']);
-        $row = $crud->getRow(
-            'user',
-            ['email', 'hash', 'token'],
-            ['email' => 'testuser@email.com']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
-        $row = $crud->getRow(
-            'user',
-            ['email', 'hash', 'token'],
-            ['email' => 'testusermodified@email.com']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
+        $database->delRows('user', ['email' => 'testusermodified@email.com']);
+        try {
+            $code = 0;
+            $database->getRow(
+                'user',
+                ['email', 'hash', 'token'],
+                ['email' => 'testuser@email.com']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        
+        try {
+            $code = 0;
+            $database->getRow(
+                'user',
+                ['email', 'hash', 'token'],
+                ['email' => 'testusermodified@email.com']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
     }
     
     /**
@@ -292,28 +317,36 @@ class CrudTest extends Test
     public function testSetOwnedRow(Session $session): void
     {
         $session->set('uid', 1);
-        $crud = $this->getCrud();
-        $row = $crud->getOwnedRow(
-            'user',
-            ['email', 'hash', 'token'],
-            ['email' => 'testuser@email.com']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
-        $row = $crud->getOwnedRow(
-            'user',
-            ['email', 'hash', 'token'],
-            ['email' => 'testusermodified@email.com']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
+        $database = $this->getDatabase();
+        try {
+            $code = 0;
+            $database->getOwnedRow(
+                'user',
+                ['email', 'hash', 'token'],
+                ['email' => 'testuser@email.com']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
         
+        try {
+            $code = 0;
+            $database->getOwnedRow(
+                'user',
+                ['email', 'hash', 'token'],
+                ['email' => 'testusermodified@email.com']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
         
-        $crud->addOwnedRow(
+        $database->addOwnedRow(
             'user',
             [
                 'email' => 'testuser@email.com',
@@ -321,14 +354,14 @@ class CrudTest extends Test
                 'token' => 'notoken',
             ]
         );
-        $result = $crud->setOwnedRow(
+        $result = $database->setOwnedRow(
             'user',
             ['email' => 'testusermodified@email.com'],
             ['email' => 'testuser@email.com'],
         );
         $this->assertEquals(1, $result);
         
-        $row = $crud->getOwnedRow(
+        $row = $database->getOwnedRow(
             'user',
             ['email', 'hash', 'token'],
             ['email' => 'testusermodified@email.com']
@@ -343,25 +376,34 @@ class CrudTest extends Test
         );
         
         // cleanup
-        $crud->delOwnedRows('user', ['email' => 'testusermodified@email.com']);
-        $row = $crud->getOwnedRow(
-            'user',
-            ['email', 'hash', 'token'],
-            ['email' => 'testuser@email.com']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
-        $row = $crud->getOwnedRow(
-            'user',
-            ['email', 'hash', 'token'],
-            ['email' => 'testusermodified@email.com']
-        );
-        $this->assertEquals(
-            [],
-            $row
-        );
+        $database->delOwnedRows('user', ['email' => 'testusermodified@email.com']);
+        try {
+            $code = 0;
+            $database->getOwnedRow(
+                'user',
+                ['email', 'hash', 'token'],
+                ['email' => 'testuser@email.com']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        
+        try {
+            $code = 0;
+            $database->getOwnedRow(
+                'user',
+                ['email', 'hash', 'token'],
+                ['email' => 'testusermodified@email.com']
+            );
+            $this->assertTrue(false);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getCode();
+        }
+        $this->assertNotEquals(0, $code);
+        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
         
         $session->unset('uid');
     }
