@@ -33,25 +33,43 @@ class Database
         'OR' => '1=1',
     ];
     
+    protected int $lastAddedOwnershipId = -1;
+    
     protected Safer $safer;
     protected Mysql $mysql;
     protected User $user;
+    protected Throwier $throwier;
 
     /**
      * Method __construct
      *
-     * @param Safer $safer safer
-     * @param Mysql $mysql mysql
-     * @param User  $user  user
+     * @param Safer    $safer    safer
+     * @param Mysql    $mysql    mysql
+     * @param User     $user     user
+     * @param Throwier $throwier throwier
      */
     public function __construct(
         Safer $safer,
         Mysql $mysql,
-        User $user
+        User $user,
+        Throwier $throwier
     ) {
         $this->safer = $safer;
         $this->mysql = $mysql;
         $this->user = $user;
+        $this->throwier = $throwier;
+    }
+    
+    /**
+     * Method getLastOwnershipInsertId
+     *
+     * @return int
+     */
+    public function getLastAddedOwnershipId(): int
+    {
+        $ret = $this->lastAddedOwnershipId;
+        $this->lastAddedOwnershipId = -1;
+        return $ret;
     }
     
     /**
@@ -332,34 +350,30 @@ class Database
         int $uid = 0
     ): int {
         $this->mysql->getTransaction()->start();
-        
-        $ret = $this->addInsert($tableUnsafe, $valuesUnsafe);
-        if (!$ret) {
+        try {
+            $rid = $this->addInsert($tableUnsafe, $valuesUnsafe);
+
+            if ($uid > -1) {
+                if (!$uid) {
+                    $uid = $this->user->getId();
+                }
+                $this->lastAddedOwnershipId = $this->addInsert(
+                    'ownership',
+                    [
+                        'table' => $tableUnsafe,
+                        'row_id' => (string)$rid,
+                        'user_id' => (string)$uid,
+                    ]
+                );
+            }
+        } catch (RuntimeException $exception) {
             $this->mysql->getTransaction()->rollback();
-            return 0;
+            $this->throwier->throwPrevious($exception);
+            return -1; // never! (only for phpstan)
         }
-        
-        if ($uid > -1) {
-            if (!$uid) {
-                $uid = $this->user->getId();
-            }
-            $oid = $this->addInsert(
-                'ownership',
-                [
-                    'table' => $tableUnsafe,
-                    'row_id' => (string)$ret,
-                    'user_id' => (string)$uid,
-                ]
-            );
-            if (!$oid) {
-                $this->mysql->getTransaction()->rollback();
-                return 0;
-            }
-        }
-        
         $this->mysql->getTransaction()->commit();
         
-        return $ret;
+        return $rid;
     }
     
     /**
@@ -572,21 +586,12 @@ class Database
             }
         } catch (RuntimeException $exception) {
             if ($exception->getCode() === Mysql::MYSQL_ERROR) {
-                throw new RuntimeException(
-                    'Invalid owner: ' . $uid
-                        . ', Reason: ' . $exception->getMessage()
-                        . ' (' . $exception->getCode() . ')',
-                    (int)$exception->getCode(),
-                    $exception
+                $this->throwier->throwPrevious(
+                    $exception,
+                    'Invalid owner: ' . $uid . ', Reason: '
                 );
             }
-            throw new RuntimeException(
-                'Database error: ' . $exception->getMessage()
-                    . $exception->getMessage()
-                    . ' (' . $exception->getCode() . ')',
-                (int)$exception->getCode(),
-                $exception
-            );
+            $this->throwier->throwPrevious($exception);
         }
     }
     

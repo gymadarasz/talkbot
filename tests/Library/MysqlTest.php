@@ -15,6 +15,9 @@ namespace Madsoft\Tests\Library;
 
 use Madsoft\Library\Mysql;
 use Madsoft\Library\Tester\Test;
+use Madsoft\Library\Throwier;
+use RuntimeException;
+use function count;
 
 /**
  * MysqlTest
@@ -31,15 +34,22 @@ class MysqlTest extends Test
     /**
      * Method testMysql
      *
-     * @param Mysql $mysql mysql
+     * @param Mysql    $mysql    mysql
+     * @param Throwier $throwier throwier
      *
      * @return void
      *
      * @suppress PhanUnreferencedPublicMethod
      */
-    public function testMysql(Mysql $mysql): void
+    public function testMysql(Mysql $mysql, Throwier $throwier): void
     {
-        $mysql->delete("DELETE FROM user WHERE hash = 'test'");
+        try {
+            $mysql->delete("DELETE FROM user WHERE hash = 'test'");
+        } catch (RuntimeException $exception) {
+            if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
+                $throwier->throwPrevious($exception);
+            }
+        }
         $mysql->insert(
             "INSERT INTO user (email, hash, token) VALUES ('test1', 'test', '1')"
         );

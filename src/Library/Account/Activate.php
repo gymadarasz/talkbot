@@ -19,6 +19,7 @@ use Madsoft\Library\Mysql;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Session;
+use Madsoft\Library\Throwier;
 use RuntimeException;
 
 /**
@@ -35,6 +36,7 @@ class Activate extends ArrayResponder
 {
     protected Database $database;
     protected AccountValidator $validator;
+    protected Throwier $throwier;
     
     /**
      * Method __construct
@@ -42,15 +44,18 @@ class Activate extends ArrayResponder
      * @param Messages         $messages  messages
      * @param Database         $database  database
      * @param AccountValidator $validator validator
+     * @param Throwier         $throwier  throwier
      */
     public function __construct(
         Messages $messages,
         Database $database,
-        AccountValidator $validator
+        AccountValidator $validator,
+        Throwier $throwier
     ) {
         parent::__construct($messages);
         $this->database = $database;
         $this->validator = $validator;
+        $this->throwier = $throwier;
     }
     
     /**
@@ -87,13 +92,7 @@ class Activate extends ArrayResponder
                     'Invalid token'
                 );
             }
-            throw new RuntimeException(
-                'Database error: ' . $exception->getMessage()
-                    . $exception->getMessage()
-                    . ' (' . $exception->getCode() . ')',
-                (int)$exception->getCode(),
-                $exception
-            );
+            $this->throwier->throwPrevious($exception);
         }
         
         try {
@@ -108,13 +107,7 @@ class Activate extends ArrayResponder
                     'User activation failed'
                 );
             }
-            throw new RuntimeException(
-                'Database error: ' . $exception->getMessage()
-                    . $exception->getMessage()
-                    . ' (' . $exception->getCode() . ')',
-                (int)$exception->getCode(),
-                $exception
-            );
+            $this->throwier->throwPrevious($exception);
         }
         
         $session->unset('resend');

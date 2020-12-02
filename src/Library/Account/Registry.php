@@ -22,6 +22,7 @@ use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Session;
 use Madsoft\Library\Template;
+use Madsoft\Library\Throwier;
 use Madsoft\Library\Token;
 use RuntimeException;
 
@@ -45,6 +46,7 @@ class Registry extends ArrayResponder
     protected Database $database;
     protected AccountValidator $validator;
     protected Mailer $mailer;
+    protected Throwier $throwier;
     
     /**
      * Method __construct
@@ -56,6 +58,7 @@ class Registry extends ArrayResponder
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Mailer           $mailer    mailer
+     * @param Throwier         $throwier  throwier
      */
     public function __construct(
         Messages $messages,
@@ -64,7 +67,8 @@ class Registry extends ArrayResponder
         Encrypter $encrypter,
         Database $database,
         AccountValidator $validator,
-        Mailer $mailer
+        Mailer $mailer,
+        Throwier $throwier
     ) {
         parent::__construct($messages);
         $this->template = $template;
@@ -73,6 +77,7 @@ class Registry extends ArrayResponder
         $this->database = $database;
         $this->validator = $validator;
         $this->mailer = $mailer;
+        $this->throwier = $throwier;
     }
 
     /**
@@ -102,13 +107,7 @@ class Registry extends ArrayResponder
             $user = $this->database->getRow('user', ['email'], ['email' => $email]);
         } catch (RuntimeException $exception) {
             if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
-                throw new RuntimeException(
-                    'An error happened: '
-                        . $exception->getMessage()
-                        . ' (' . $exception->getCode() . ')',
-                    (int)$exception->getCode(),
-                    $exception
-                );
+                $this->throwier->throwPrevious($exception);
             }
             $user = [];
         }
@@ -133,13 +132,7 @@ class Registry extends ArrayResponder
                     'User is not saved'
                 );
             }
-            throw new RuntimeException(
-                'Database error: ' . $exception->getMessage()
-                    . $exception->getMessage()
-                    . ' (' . $exception->getCode() . ')',
-                (int)$exception->getCode(),
-                $exception
-            );
+            $this->throwier->throwPrevious($exception);
         }
         
         $session->set('resend', ['email' => $email, 'token' => $token]);

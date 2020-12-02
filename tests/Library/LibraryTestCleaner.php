@@ -18,6 +18,8 @@ use Madsoft\Library\Config;
 use Madsoft\Library\Database;
 use Madsoft\Library\Folders;
 use Madsoft\Library\Mailer;
+use Madsoft\Library\Mysql;
+use Madsoft\Library\Throwier;
 use RuntimeException;
 
 /**
@@ -35,6 +37,7 @@ class LibraryTestCleaner implements Cleaner
     protected Database $database;
     protected Folders $folders;
     protected Config $config;
+    protected Throwier $throwier;
 
     /**
      * Method __construct
@@ -42,12 +45,18 @@ class LibraryTestCleaner implements Cleaner
      * @param Database $database database
      * @param Folders  $folders  folders
      * @param Config   $config   config
+     * @param Throwier $throwier throwier
      */
-    public function __construct(Database $database, Folders $folders, Config $config)
-    {
+    public function __construct(
+        Database $database,
+        Folders $folders,
+        Config $config,
+        Throwier $throwier
+    ) {
         $this->database = $database;
         $this->folders = $folders;
         $this->config = $config;
+        $this->throwier = $throwier;
     }
     /**
      * Method cleanUp
@@ -56,8 +65,22 @@ class LibraryTestCleaner implements Cleaner
      */
     public function cleanUp(): void
     {
-        $this->database->delRows('user', []);
-        $this->database->delRows('ownership', []);
+        try {
+            $this->database->delRows('user', []);
+        } catch (RuntimeException $exception) {
+            if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
+                $this->throwier->throwPrevious($exception);
+            }
+        }
+        
+        try {
+            $this->database->delRows('ownership', []);
+        } catch (RuntimeException $exception) {
+            if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
+                $this->throwier->throwPrevious($exception);
+            }
+        }
+        
         $this->deleteMails();
     }
     

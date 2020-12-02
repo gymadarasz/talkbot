@@ -21,6 +21,7 @@ use Madsoft\Library\Mysql;
 use Madsoft\Library\Safer;
 use Madsoft\Library\Session;
 use Madsoft\Library\Tester\Test;
+use Madsoft\Library\Throwier;
 use Madsoft\Library\Transaction;
 use Madsoft\Library\User;
 use RuntimeException;
@@ -71,6 +72,7 @@ class DatabaseTest extends Test
     public function testGetRow(): void
     {
         $database = $this->getDatabase();
+        $oidBefore = $database->getLastAddedOwnershipId();
         $database->addRow(
             'user',
             [
@@ -79,6 +81,8 @@ class DatabaseTest extends Test
                 'token' => 'notoken',
             ]
         );
+        $oidAfter = $database->getLastAddedOwnershipId();
+        $this->assertEquals($oidAfter, $oidBefore);
         $row = $database->getRow(
             'user',
             ['email', 'hash', 'token'],
@@ -125,7 +129,8 @@ class DatabaseTest extends Test
         $mysql = new Mysql($config, $transaction);
         $session = new Session();
         $user = new User($session);
-        return new Database($safer, $mysql, $user);
+        $throwier = new Throwier();
+        return new Database($safer, $mysql, $user, $throwier);
     }
     
     /**
@@ -346,6 +351,7 @@ class DatabaseTest extends Test
         $this->assertNotEquals(0, $code);
         $this->assertEquals(Mysql::MYSQL_ERROR, $code);
         
+        $oidBefore = $database->getLastAddedOwnershipId();
         $database->addOwnedRow(
             'user',
             [
@@ -354,6 +360,9 @@ class DatabaseTest extends Test
                 'token' => 'notoken',
             ]
         );
+        $oidAfter = $database->getLastAddedOwnershipId();
+        $this->assertNotEquals($oidAfter, $oidBefore);
+        $this->assertEquals(-1, $database->getLastAddedOwnershipId());
         $result = $database->setOwnedRow(
             'user',
             ['email' => 'testusermodified@email.com'],

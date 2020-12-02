@@ -205,13 +205,13 @@ class Mysql
      */
     public function update(string $query): int
     {
-        if (true !== $this->query($query)) {
-            throw new RuntimeException(
-                "Not affected by query:\n$query\n",
-                self::MYSQL_ERROR
-            );
+        if (false !== $this->query($query) && $this->mysqli->affected_rows) {
+            return $this->mysqli->affected_rows;
         }
-        return $this->mysqli->affected_rows;
+        throw new RuntimeException(
+            "Not affected by query:\n$query\n",
+            self::MYSQL_ERROR
+        );
     }
     
     /**
@@ -236,12 +236,12 @@ class Mysql
      */
     public function insert(string $query): int
     {
-        if (true !== $this->query($query)) {
-            throw new RuntimeException(
-                "Not inserted by query:\n$query\n",
-                self::MYSQL_ERROR
-            );
+        if (false !== $this->query($query) && (int)$this->mysqli->insert_id > 0) {
+            return (int)$this->mysqli->insert_id;
         }
-        return (int)$this->mysqli->insert_id;
+        throw new RuntimeException(
+            "Not inserted by query:\n$query\n",
+            self::MYSQL_ERROR
+        );
     }
 }

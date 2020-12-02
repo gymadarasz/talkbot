@@ -20,6 +20,7 @@ use Madsoft\Library\Mysql;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Template;
+use Madsoft\Library\Throwier;
 use Madsoft\Library\Token;
 use RuntimeException;
 
@@ -45,6 +46,7 @@ class PasswordReset extends ArrayResponder
     protected Database $database;
     protected AccountValidator $validator;
     protected Mailer $mailer;
+    protected Throwier $throwier;
 
     /**
      * Method __construct
@@ -55,6 +57,7 @@ class PasswordReset extends ArrayResponder
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Mailer           $mailer    mailer
+     * @param Throwier         $throwier  throwier
      */
     public function __construct(
         Messages $messages,
@@ -62,7 +65,8 @@ class PasswordReset extends ArrayResponder
         Token $token,
         Database $database,
         AccountValidator $validator,
-        Mailer $mailer
+        Mailer $mailer,
+        Throwier $throwier
     ) {
         parent::__construct($messages);
         $this->template = $template;
@@ -70,6 +74,7 @@ class PasswordReset extends ArrayResponder
         $this->database = $database;
         $this->validator = $validator;
         $this->mailer = $mailer;
+        $this->throwier = $throwier;
     }
     
     /**
@@ -99,13 +104,7 @@ class PasswordReset extends ArrayResponder
                     'Invalid token'
                 );
             }
-            throw new RuntimeException(
-                'Database error: ' . $exception->getMessage()
-                    . $exception->getMessage()
-                    . ' (' . $exception->getCode() . ')',
-                (int)$exception->getCode(),
-                $exception
-            );
+            $this->throwier->throwPrevious($exception);
         }
         
         // TODO recreate token before sanding back for usage
@@ -144,13 +143,7 @@ class PasswordReset extends ArrayResponder
             );
         } catch (RuntimeException $exception) {
             if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
-                throw new RuntimeException(
-                    'An error happened: '
-                        . $exception->getMessage()
-                        . ' (' . $exception->getCode() . ')',
-                    (int)$exception->getCode(),
-                    $exception
-                );
+                $this->throwier->throwPrevious($exception);
             }
             return $this->getErrorResponse(
                 'Email address not found'
