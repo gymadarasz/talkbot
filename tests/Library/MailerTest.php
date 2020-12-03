@@ -31,6 +31,8 @@ use function count;
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
+ *
+ * @suppress PhanUnreferencedClass
  */
 class MailerTest extends Test
 {

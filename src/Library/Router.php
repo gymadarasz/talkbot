@@ -76,37 +76,48 @@ class Router
             }
         }
         if (!isset($routes[$area])) {
+            $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
             throw new RuntimeException(
-                'Requested area has not any routing point: ' . $area
+                'Requested area has not any routing point: ' . $area . ' ?'
+                    . self::ROUTE_QUERY_KEY . '=' . $route .
+                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
             );
         }
         $method = $this->server->getMethod();
         if (!isset($routes[$area][$method])) {
+            $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
             throw new RuntimeException(
                 'Route is not defined for method on area: '
-                    . 'routes[' . $area . '][' . $method . ']'
+                    . 'routes[' . $area . '][' . $method . '] ?'
+                    . self::ROUTE_QUERY_KEY . '=' . $route .
+                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
             );
         }
         $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
         if (!isset($routes[$area][$method][$route])) {
             throw new RuntimeException(
                 'Route is not defined on area for query: '
-                . 'routes[' . $area . '][' . $method . '] ?'
-                . self::ROUTE_QUERY_KEY . '=' . $route
+                    . 'routes[' . $area . '][' . $method . '] ?'
+                    . self::ROUTE_QUERY_KEY . '=' . $route .
+                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
             );
         }
         $target = $routes[$area][$method][$route];
         if (!isset($target['class'])) {
             throw new RuntimeException(
-                'Class is not defined at routing point: ' .
-                "routes[$area][$method][$route][class] => ???"
+                'Class is not defined at routing point: '
+                    . "routes[$area][$method][$route][class] => ??? ?"
+                    . self::ROUTE_QUERY_KEY . '=' . $route .
+                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
             );
         }
         if (!isset($target['method'])) {
             $class = $target['class'];
             throw new RuntimeException(
-                "Method is not defined at routing point for class $class::???() " .
-                "routes[$area][$method][$route][method] => ???"
+                "Method is not defined at routing point for class $class::???() "
+                    . "routes[$area][$method][$route][method] => ??? ?"
+                    . self::ROUTE_QUERY_KEY . '=' . $route .
+                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
             );
         }
         return $this->invoker->invoke($target);

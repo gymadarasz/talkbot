@@ -22,7 +22,7 @@ use Madsoft\Library\Invoker;
 use Madsoft\Library\Mailer;
 use Madsoft\Library\Router;
 use Madsoft\Library\Session;
-use Madsoft\Library\Tester\Test;
+use Madsoft\Library\Tester\ApiTest;
 use Madsoft\Tests\Library\LibraryTestCleaner;
 use RuntimeException;
 use SplFileInfo;
@@ -39,12 +39,24 @@ use SplFileInfo;
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.TooManyMethods)
+ *
+ * @suppress PhanUnreferencedClass
  */
-class AccountTest extends Test
+class AccountTest extends ApiTest
 {
     const EMAIL = 'tester@testing.com';
     const PASSWORD_FIRST = 'First1234!';
     const PASSWORD = 'Pass1234!';
+    
+    /**
+     * Variable $routes
+     *
+     * @var string[]
+     */
+    protected array $routes = [
+        __DIR__ . '/../../../src/Library/Account/routes.php',
+    ];
+        
 
     protected Invoker $invoker;
     protected Session $session;
@@ -84,52 +96,17 @@ class AccountTest extends Test
     }
     
     /**
-     * Method getRoutes
-     *
-     * @return string[][][][]
-     */
-    protected function getRoutes(): array
-    {
-        return $this->router->loadRoutes(
-            [
-                __DIR__ . '/../../../src/Library/Account/routes.php',
-                __DIR__ . '/../../../src/routes.api.php',
-            ]
-        );
-    }
-    
-    /**
-     * Method beforeAll
-     *
-     * @return void
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function beforeAll(): void
-    {
-        $this->cleanup();
-    }
-    
-    /**
-     * Method afterAll
-     *
-     * @return void
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function afterAll(): void
-    {
-        $this->cleanup();
-    }
-    
-    /**
      * Method cleanup
      *
      * @return void
      */
     protected function cleanup(): void
     {
-        $this->invoker->getInstance(LibraryTestCleaner::class)->deleteMails();
+        $this->invoker->getInstance(LibraryTestCleaner::class)
+            ->deleteMails()
+            ->deleteRouteCache();
+        $this->invoker->getInstance(Session::class)
+            ->clear();
     }
 
     /**
@@ -171,8 +148,6 @@ class AccountTest extends Test
     protected function canSeeLoginFails(): void
     {
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=login',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -183,8 +158,6 @@ class AccountTest extends Test
         $this->assertStringContains('Login failed', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=login',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -195,8 +168,6 @@ class AccountTest extends Test
         $this->assertStringContains('Login failed', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=login',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -207,8 +178,6 @@ class AccountTest extends Test
         $this->assertStringContains('Login failed', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=login',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -219,8 +188,6 @@ class AccountTest extends Test
         $this->assertStringContains('Login failed', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=login',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -241,8 +208,6 @@ class AccountTest extends Test
     protected function canSeeRegistryFails(): void
     {
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=registry',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -256,8 +221,6 @@ class AccountTest extends Test
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=registry',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -271,8 +234,6 @@ class AccountTest extends Test
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=registry',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -286,8 +247,6 @@ class AccountTest extends Test
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=registry',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -301,8 +260,6 @@ class AccountTest extends Test
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=registry',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -315,8 +272,6 @@ class AccountTest extends Test
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=registry',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -329,8 +284,6 @@ class AccountTest extends Test
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=registry',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -351,8 +304,6 @@ class AccountTest extends Test
     protected function canSeeRegistryWorks(): void
     {
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=registry',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -374,8 +325,6 @@ class AccountTest extends Test
     {
         $this->cleaner->deleteMails();
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=resend'
         );
         //        $this->assertStringContains('Activate your account', $contents);
@@ -391,8 +340,6 @@ class AccountTest extends Test
     protected function canSeeRegistryUserAlreadyRegisteredFail(): void
     {
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=registry',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -445,16 +392,12 @@ class AccountTest extends Test
     protected function canSeeActivationFails(): void
     {
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=activate'
         );
         $this->assertStringContains('Account activation failed', $contents);
         $this->assertStringContains('Mandatory', $contents);
         
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=activate&token=wrong-token'
         );
         $this->assertStringContains('Invalid token', $contents);
@@ -473,8 +416,6 @@ class AccountTest extends Test
             ['email' => self::EMAIL]
         );
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=activate&token=' . ($user['token'] ?? '')
         );
         $this->assertStringContains('Account is now activated', $contents);
@@ -493,8 +434,6 @@ class AccountTest extends Test
             ['email' => self::EMAIL]
         );
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=activate&token=' . ($user['token'] ?? '')
         );
         $this->assertStringContains('Invalid token', $contents);
@@ -510,8 +449,6 @@ class AccountTest extends Test
     protected function canSeeLoginWorks(?string $password = null): void
     {
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=login',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -530,8 +467,6 @@ class AccountTest extends Test
     protected function canSeeLogoutWorks(): void
     {
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=logout'
         );
         $this->assertStringContains('Logout success', $contents);
@@ -545,15 +480,11 @@ class AccountTest extends Test
     protected function canSeeResetPasswordTokenFails(): void
     {
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-reset'
         );
         $this->assertStringContains('Missing token', $contents);
         
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-reset&token=wrong'
         );
         $this->assertStringContains('Invalid token', $contents);
@@ -568,8 +499,6 @@ class AccountTest extends Test
     protected function canSeeResetPasswordRequestFails(): void
     {
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-reset-request',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -579,8 +508,6 @@ class AccountTest extends Test
         $this->assertStringContains('Reset password request failed', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-reset-request',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -598,8 +525,6 @@ class AccountTest extends Test
     protected function canSeeResetPasswordWorks(): void
     {
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-reset-request',
             [
                 'csrf' => $this->session->get('csrf'),
@@ -617,8 +542,6 @@ class AccountTest extends Test
     protected function canSeeNewPasswordFails(): void
     {
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-reset&token=wron-token'
         );
         $this->assertStringContains('Invalid token', $contents);
@@ -630,8 +553,6 @@ class AccountTest extends Test
         );
         $token = $user['token'] ?? '';
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-change&token=' . $token,
             [
                 'csrf' => $this->session->get('csrf'),
@@ -644,8 +565,6 @@ class AccountTest extends Test
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-change&token=' . $token,
             [
                 'csrf' => $this->session->get('csrf'),
@@ -658,8 +577,6 @@ class AccountTest extends Test
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-change&token=' . $token,
             [
                 'csrf' => $this->session->get('csrf'),
@@ -672,8 +589,6 @@ class AccountTest extends Test
         $this->assertStringContains("Doesn't match", $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-change&token=' . $token,
             [
                 'csrf' => $this->session->get('csrf'),
@@ -686,8 +601,6 @@ class AccountTest extends Test
         $this->assertStringContains("Doesn't match", $contents);
         
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-change&token=' . $token,
             [
                 'csrf' => $this->session->get('csrf'),
@@ -713,8 +626,6 @@ class AccountTest extends Test
             ['email' => self::EMAIL]
         );
         $contents = $this->get(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-reset&token=' . ($user['token'] ?? '')
         );
         $this->assertStringContains('Token matches', $contents);
@@ -734,8 +645,6 @@ class AccountTest extends Test
             ['email' => self::EMAIL]
         );
         $contents = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=password-change&token=' . ($user['token'] ?? ''),
             [
                 'csrf' => $this->session->get('csrf'),

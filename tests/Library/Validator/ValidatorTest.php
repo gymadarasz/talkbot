@@ -26,6 +26,8 @@ use Madsoft\Library\Validator\Validator;
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
+ *
+ * @suppress PhanUnreferencedClass
  */
 class ValidatorTest extends Test
 {

@@ -13,6 +13,7 @@
 
 namespace Madsoft\Library\Coverage;
 
+use Madsoft\Library\Logger;
 use Madsoft\Library\Template;
 use RuntimeException;
 
@@ -35,16 +36,26 @@ class Coverage
      */
     protected array $blacklist;
     
+    /**
+     * Variable $nonExistsBlackfiles
+     *
+     * @var string[]
+     */
+    protected array $nonExistsBlackfiles = [];
+
     protected Template $template;
+    protected Logger $logger;
 
     /**
      * Method __construct
      *
      * @param Template $template template
+     * @param Logger   $logger   logger
      */
-    public function __construct(Template $template)
+    public function __construct(Template $template, Logger $logger)
     {
         $this->template = $template;
+        $this->logger = $logger;
     }
     
     /**
@@ -98,9 +109,14 @@ class Coverage
                 $pattern = $realpath;
                 continue;
             }
-            throw new RuntimeException(
-                'Blacklist contains a non-existing element: "' . $pattern . '"'
-            );
+            $this->nonExistsBlackfiles[] = $pattern;
+        }
+        if (!empty($this->nonExistsBlackfiles)) {
+            foreach ($this->nonExistsBlackfiles as $blakfile) {
+                $this->logger->warning(
+                    'Blacklist contains a non-existing element: "' . $blakfile . '"'
+                );
+            }
         }
         return $blacklist;
     }
@@ -204,7 +220,8 @@ class Coverage
             $countLines = 0; //count($lines);
             //            $all += $countLines;
             if (!file_exists($file)) {
-                throw new RuntimeException('File not found: ' . $file);
+                $this->logger->warning('File not found for coverage info: ' . $file);
+                continue;
             }
             $contents = file_get_contents($file);
             if (false === $contents) {

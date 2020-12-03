@@ -29,29 +29,28 @@ use Throwable;
 class Throwier
 {
     /**
-     * Method throwPrevious
+     * Method forward
      *
-     * @param Throwable $previous previous
-     * @param string    $prefix   prefix
-     * @param int|null  $code     code
+     * @param Throwable $exception exception
+     * @param string    $prefix    prefix
+     * @param int|null  $code      code
      *
-     * @return void
-     * @throws RuntimeException
+     * @return RuntimeException
      */
-    public function throwPrevious(
-        Throwable $previous,
+    public function forward(
+        Throwable $exception,
         string $prefix = 'An error occured: ',
         ?int $code = null
-    ): void {
+    ): RuntimeException {
         if (null === $code) {
-            $code = (int)$previous->getCode();
+            $code = (int)$exception->getCode();
         }
-        throw new RuntimeException(
+        return new RuntimeException(
             $prefix
-                . $previous->getMessage()
-                . ' ( ' . $previous->getCode() . ')',
+                . $exception->getMessage()
+                . ' ( ' . $exception->getCode() . ')',
             $code,
-            $previous
+            $exception
         );
     }
 }

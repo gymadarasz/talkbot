@@ -14,13 +14,13 @@
 namespace Madsoft\Library\Account;
 
 use Madsoft\Library\Database;
+use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
-use Madsoft\Library\Mysql;
+use Madsoft\Library\MysqlNoAffectException;
+use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Session;
-use Madsoft\Library\Throwier;
-use RuntimeException;
 
 /**
  * Activate
@@ -36,26 +36,27 @@ class Activate extends ArrayResponder
 {
     protected Database $database;
     protected AccountValidator $validator;
-    protected Throwier $throwier;
-    
+    protected Logger $logger;
+
+
     /**
      * Method __construct
      *
      * @param Messages         $messages  messages
      * @param Database         $database  database
      * @param AccountValidator $validator validator
-     * @param Throwier         $throwier  throwier
+     * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
         Database $database,
         AccountValidator $validator,
-        Throwier $throwier
+        Logger $logger
     ) {
         parent::__construct($messages);
         $this->database = $database;
         $this->validator = $validator;
-        $this->throwier = $throwier;
+        $this->logger = $logger;
     }
     
     /**
@@ -86,13 +87,11 @@ class Activate extends ArrayResponder
                 ['id'],
                 ['token' => $token, 'active' => '0']
             );
-        } catch (RuntimeException $exception) {
-            if ($exception->getCode() === Mysql::MYSQL_ERROR) {
-                return $this->getErrorResponse(
-                    'Invalid token'
-                );
-            }
-            $this->throwier->throwPrevious($exception);
+        } catch (MysqlNotFoundException $exception) {
+            $this->logger->exception($exception);
+            return $this->getErrorResponse(
+                'Invalid token'
+            );
         }
         
         try {
@@ -101,13 +100,11 @@ class Activate extends ArrayResponder
                 ['active' => '1'],
                 ['token' => $token]
             );
-        } catch (RuntimeException $exception) {
-            if ($exception->getCode() === Mysql::MYSQL_ERROR) {
-                return $this->getErrorResponse(
-                    'User activation failed'
-                );
-            }
-            $this->throwier->throwPrevious($exception);
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
+            return $this->getErrorResponse(
+                'User activation failed'
+            );
         }
         
         $session->unset('resend');

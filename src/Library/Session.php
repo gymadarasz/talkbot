@@ -62,14 +62,24 @@ class Session implements Assoc
      */
     public function destroy(): bool
     {
-        foreach (array_keys($_SESSION) as $key) {
-            unset($_SESSION[$key]);
-        }
+        $this->clear();
         if (php_sapi_name() === 'cli') {
             unset($_SESSION);
             return true;
         }
         return session_destroy();
+    }
+    
+    /**
+     * Method clear
+     *
+     * @return void
+     */
+    public function clear(): void
+    {
+        foreach (array_keys($_SESSION) as $key) {
+            unset($_SESSION[$key]);
+        }
     }
     
     /**

@@ -17,9 +17,10 @@ use Madsoft\Library\Cleaner;
 use Madsoft\Library\Config;
 use Madsoft\Library\Database;
 use Madsoft\Library\Folders;
+use Madsoft\Library\Logger;
 use Madsoft\Library\Mailer;
-use Madsoft\Library\Mysql;
-use Madsoft\Library\Throwier;
+use Madsoft\Library\MysqlNoAffectException;
+use Madsoft\Library\Router;
 use RuntimeException;
 
 /**
@@ -34,10 +35,11 @@ use RuntimeException;
  */
 class LibraryTestCleaner implements Cleaner
 {
+    // TODO test cleaner goes into lib from tests
     protected Database $database;
     protected Folders $folders;
     protected Config $config;
-    protected Throwier $throwier;
+    protected Logger $logger;
 
     /**
      * Method __construct
@@ -45,18 +47,18 @@ class LibraryTestCleaner implements Cleaner
      * @param Database $database database
      * @param Folders  $folders  folders
      * @param Config   $config   config
-     * @param Throwier $throwier throwier
+     * @param Logger   $logger   logger
      */
     public function __construct(
         Database $database,
         Folders $folders,
         Config $config,
-        Throwier $throwier
+        Logger $logger
     ) {
         $this->database = $database;
         $this->folders = $folders;
         $this->config = $config;
-        $this->throwier = $throwier;
+        $this->logger = $logger;
     }
     /**
      * Method cleanUp
@@ -67,30 +69,28 @@ class LibraryTestCleaner implements Cleaner
     {
         try {
             $this->database->delRows('user', []);
-        } catch (RuntimeException $exception) {
-            if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
-                $this->throwier->throwPrevious($exception);
-            }
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
         }
         
         try {
             $this->database->delRows('ownership', []);
-        } catch (RuntimeException $exception) {
-            if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
-                $this->throwier->throwPrevious($exception);
-            }
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
         }
         
         $this->deleteMails();
+        
+        $this->deleteRouteCache();
     }
     
     /**
      * Method deleteMails
      *
-     * @return void
+     * @return self
      * @throws RuntimeException
      */
-    public function deleteMails(): void
+    public function deleteMails(): self
     {
         $mails = $this->folders->getFilesRecursive(
             $this->config->get(Mailer::CONFIG_SECION)->get('save_mail_path')
@@ -104,5 +104,26 @@ class LibraryTestCleaner implements Cleaner
                 }
             }
         }
+        clearstatcache(true);
+        return $this;
+    }
+    
+    /**
+     * Method deleteRouteCache
+     *
+     * @return self
+     * @throws RuntimeException
+     */
+    public function deleteRouteCache(): self
+    {
+        if (file_exists(Router::ROUTE_CACHE_FILE)
+            && false === unlink(Router::ROUTE_CACHE_FILE)
+        ) {
+            throw new RuntimeException(
+                'Unable to delete file: "' . Router::ROUTE_CACHE_FILE . '" '
+            );
+        }
+        clearstatcache(true);
+        return $this;
     }
 }

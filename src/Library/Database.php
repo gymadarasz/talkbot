@@ -368,8 +368,7 @@ class Database
             }
         } catch (RuntimeException $exception) {
             $this->mysql->getTransaction()->rollback();
-            $this->throwier->throwPrevious($exception);
-            return -1; // never! (only for phpstan)
+            throw $this->throwier->forward($exception);
         }
         $this->mysql->getTransaction()->commit();
         
@@ -563,35 +562,26 @@ class Database
         int $limit,
         int $uid
     ): void {
-        try {
-            if ($uid > -1) {
-                if ($limit === 1) {
-                    $this->getOwnedRow(
-                        $tableUnsafe,
-                        ['id'],
-                        $filterUnsafe,
-                        $filterLogic,
-                        $uid
-                    );
-                    return;
-                }
-                $this->getOwnedRows(
+        if ($uid > -1) {
+            if ($limit === 1) {
+                $this->getOwnedRow(
                     $tableUnsafe,
                     ['id'],
                     $filterUnsafe,
                     $filterLogic,
-                    $limit,
                     $uid
                 );
+                return;
             }
-        } catch (RuntimeException $exception) {
-            if ($exception->getCode() === Mysql::MYSQL_ERROR) {
-                $this->throwier->throwPrevious(
-                    $exception,
-                    'Invalid owner: ' . $uid . ', Reason: '
-                );
-            }
-            $this->throwier->throwPrevious($exception);
+            $this->getOwnedRows(
+                $tableUnsafe,
+                ['id'],
+                $filterUnsafe,
+                $filterLogic,
+                $limit,
+                $uid
+            );
+            return;
         }
     }
     

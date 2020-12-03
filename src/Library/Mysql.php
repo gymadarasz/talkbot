@@ -29,8 +29,6 @@ use RuntimeException;
  */
 class Mysql
 {
-    const MYSQL_ERROR = 1325191712;
-    
     protected mysqli $mysqli;
     protected bool $connected = false;
     
@@ -134,9 +132,8 @@ class Mysql
             if (!empty($row)) {
                 return $row;
             }
-            throw new RuntimeException(
-                "Empty result of query:\n$query\n",
-                self::MYSQL_ERROR
+            throw new MysqlNotFoundException(
+                "Not found results of query:\n$query\n"
             );
         }
         throw new RuntimeException(
@@ -165,9 +162,8 @@ class Mysql
             if (!empty($rows)) {
                 return $rows;
             }
-            throw new RuntimeException(
-                "Empty results of query:\n$query\n",
-                self::MYSQL_ERROR
+            throw new MysqlEmptyException(
+                "Empty results of query:\n$query\n"
             );
         }
         throw new RuntimeException(
@@ -208,9 +204,8 @@ class Mysql
         if (false !== $this->query($query) && $this->mysqli->affected_rows) {
             return $this->mysqli->affected_rows;
         }
-        throw new RuntimeException(
-            "Not affected by query:\n$query\n",
-            self::MYSQL_ERROR
+        throw new MysqlNoAffectException(
+            "Not affected by query:\n$query\n"
         );
     }
     
@@ -239,9 +234,8 @@ class Mysql
         if (false !== $this->query($query) && (int)$this->mysqli->insert_id > 0) {
             return (int)$this->mysqli->insert_id;
         }
-        throw new RuntimeException(
-            "Not inserted by query:\n$query\n",
-            self::MYSQL_ERROR
+        throw new MysqlNoInsertException(
+            "Not inserted by query:\n$query\n"
         );
     }
 }

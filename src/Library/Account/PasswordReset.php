@@ -14,15 +14,14 @@
 namespace Madsoft\Library\Account;
 
 use Madsoft\Library\Database;
+use Madsoft\Library\Logger;
 use Madsoft\Library\Mailer;
 use Madsoft\Library\Messages;
-use Madsoft\Library\Mysql;
+use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Template;
-use Madsoft\Library\Throwier;
 use Madsoft\Library\Token;
-use RuntimeException;
 
 /**
  * PasswordReset
@@ -46,7 +45,7 @@ class PasswordReset extends ArrayResponder
     protected Database $database;
     protected AccountValidator $validator;
     protected Mailer $mailer;
-    protected Throwier $throwier;
+    protected Logger $logger;
 
     /**
      * Method __construct
@@ -57,7 +56,7 @@ class PasswordReset extends ArrayResponder
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Mailer           $mailer    mailer
-     * @param Throwier         $throwier  throwier
+     * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
@@ -66,7 +65,7 @@ class PasswordReset extends ArrayResponder
         Database $database,
         AccountValidator $validator,
         Mailer $mailer,
-        Throwier $throwier
+        Logger $logger
     ) {
         parent::__construct($messages);
         $this->template = $template;
@@ -74,7 +73,7 @@ class PasswordReset extends ArrayResponder
         $this->database = $database;
         $this->validator = $validator;
         $this->mailer = $mailer;
-        $this->throwier = $throwier;
+        $this->logger = $logger;
     }
     
     /**
@@ -98,13 +97,11 @@ class PasswordReset extends ArrayResponder
                 ['id'],
                 ['token' => $token, 'active' => '1']
             );
-        } catch (RuntimeException $exception) {
-            if ($exception->getCode() === Mysql::MYSQL_ERROR) {
-                return $this->getErrorResponse(
-                    'Invalid token'
-                );
-            }
-            $this->throwier->throwPrevious($exception);
+        } catch (MysqlNotFoundException $exception) {
+            $this->logger->exception($exception);
+            return $this->getErrorResponse(
+                'Invalid token'
+            );
         }
         
         // TODO recreate token before sanding back for usage
@@ -141,10 +138,8 @@ class PasswordReset extends ArrayResponder
                 ['email'],
                 ['email' => $email, 'active' => '1']
             );
-        } catch (RuntimeException $exception) {
-            if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
-                $this->throwier->throwPrevious($exception);
-            }
+        } catch (MysqlNotFoundException $exception) {
+            $this->logger->exception($exception);
             return $this->getErrorResponse(
                 'Email address not found'
             );

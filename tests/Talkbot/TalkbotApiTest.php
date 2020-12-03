@@ -14,8 +14,8 @@
 namespace Madsoft\Tests\Talkbot;
 
 use Madsoft\Library\Json;
-use Madsoft\Library\Router;
-use Madsoft\Library\Tester\Test;
+use Madsoft\Library\Tester\ApiTest;
+use Madsoft\Tests\Library\LibraryTestCleaner;
 
 /**
  * TalkbotApiTest
@@ -27,18 +27,16 @@ use Madsoft\Library\Tester\Test;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class TalkbotApiTest extends Test
+class TalkbotApiTest extends ApiTest
 {
-    protected Router $router;
-    
     /**
-     * Method __construct
+     * Method cleanup
      *
-     * @param Router $router router
+     * @return void
      */
-    public function __construct(Router $router)
+    protected function cleanup(): void
     {
-        $this->router = $router;
+        $this->invoker->getInstance(LibraryTestCleaner::class)->deleteMails();
     }
     
     /**
@@ -68,8 +66,6 @@ class TalkbotApiTest extends Test
     public function testLogin(Json $json): void
     {
         $response = $this->post(
-            [$this, 'callApi'],
-            [$this->getRoutes()],
             'q=login',
             [
                 'email' => 'wrongemail@example.com',

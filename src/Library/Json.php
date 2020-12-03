@@ -27,18 +27,21 @@ use RuntimeException;
  */
 class Json
 {
+    const DECODE_OPTIONS = ['array', 'object'];
     
     /**
      * Method encode
      *
-     * @param mixed $data data
+     * @param mixed $data    data
+     * @param int   $options options
+     * @param int   $depth   depth
      *
      * @return string
      * @throws RuntimeException
      */
-    public function encode($data): string
+    public function encode($data, int $options = 0, int $depth = 512): string
     {
-        $str = json_encode($data);
+        $str = json_encode($data, $options, $depth);
         if (false === $str) {
             throw new RuntimeException($this->getError($str));
         }
@@ -48,14 +51,32 @@ class Json
     /**
      * Method decode
      *
-     * @param string $json json
+     * @param string $json    json
+     * @param string $option  option
+     * @param int    $depth   depth
+     * @param int    $options options
      *
      * @return mixed
      * @throws RuntimeException
      */
-    public function decode(string $json)
-    {
-        $data = json_decode($json, true);
+    public function decode(
+        string $json,
+        string $option = 'array',
+        int $depth = 512,
+        int $options = 0
+    ) {
+        if (!in_array($option, self::DECODE_OPTIONS, true)) {
+            throw new RuntimeException(
+                'Invalid devode option "$assoc" given. Possible options: '
+                    . implode(', ', self::DECODE_OPTIONS)
+            );
+        }
+        $data = json_decode(
+            $json,
+            $option === 'array' ? true : false,
+            $depth,
+            $options
+        );
         if (false === $data) {
             throw new RuntimeException($this->getError($data));
         }

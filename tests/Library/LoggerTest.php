@@ -17,6 +17,7 @@ use Exception;
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Logger;
 use Madsoft\Library\Tester\Test;
+use Madsoft\Tests\Library\LoggerMock;
 use RuntimeException;
 use function count;
 
@@ -29,6 +30,8 @@ use function count;
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
+ *
+ * @suppress PhanUnreferencedClass
  */
 class LoggerTest extends Test
 {

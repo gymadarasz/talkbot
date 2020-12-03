@@ -14,9 +14,8 @@
 namespace Madsoft\Tests\Library;
 
 use Madsoft\Library\Mysql;
+use Madsoft\Library\MysqlNoAffectException;
 use Madsoft\Library\Tester\Test;
-use Madsoft\Library\Throwier;
-use RuntimeException;
 use function count;
 
 /**
@@ -28,27 +27,28 @@ use function count;
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
+ *
+ * @suppress PhanUnreferencedClass
  */
 class MysqlTest extends Test
 {
     /**
      * Method testMysql
      *
-     * @param Mysql    $mysql    mysql
-     * @param Throwier $throwier throwier
+     * @param Mysql $mysql mysql
      *
      * @return void
      *
      * @suppress PhanUnreferencedPublicMethod
+     * @suppress PhanUnusedVariableCaughtException
+     *
+     * @SuppressWarnings(PHPMD.EmptyCatchBlock)
      */
-    public function testMysql(Mysql $mysql, Throwier $throwier): void
+    public function testMysql(Mysql $mysql): void
     {
         try {
             $mysql->delete("DELETE FROM user WHERE hash = 'test'");
-        } catch (RuntimeException $exception) {
-            if ($exception->getCode() !== Mysql::MYSQL_ERROR) {
-                $throwier->throwPrevious($exception);
-            }
+        } catch (MysqlNoAffectException $exception) {
         }
         $mysql->insert(
             "INSERT INTO user (email, hash, token) VALUES ('test1', 'test', '1')"

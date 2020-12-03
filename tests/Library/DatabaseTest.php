@@ -18,6 +18,8 @@ use Madsoft\Library\Database;
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Merger;
 use Madsoft\Library\Mysql;
+use Madsoft\Library\MysqlEmptyException;
+use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Safer;
 use Madsoft\Library\Session;
 use Madsoft\Library\Tester\Test;
@@ -37,6 +39,8 @@ use RuntimeException;
  * @link      this
  *
  * @suppress PhanUnreferencedClass
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class DatabaseTest extends Test
 {
@@ -48,6 +52,8 @@ class DatabaseTest extends Test
      * @return void
      *
      * @suppress PhanUnreferencedPublicMethod
+     *
+     * @SuppressWarnings(PHPMD.EmptyCatchBlock)
      */
     public function testCrudInvalidLogicFails(Invoker $invoker): void
     {
@@ -57,7 +63,6 @@ class DatabaseTest extends Test
             $database->getWherePublic('atable', [], 'NOT VALID LOGIC');
             $this->assertTrue(false);
         } catch (RuntimeException $exc) {
-            $this->assertTrue(true);
         }
         $this->assertNotEquals(null, $exc);
     }
@@ -68,6 +73,8 @@ class DatabaseTest extends Test
      * @return void
      *
      * @suppress PhanUnreferencedPublicMethod
+     *
+     * @SuppressWarnings(PHPMD.EmptyCatchBlock)
      */
     public function testGetRow(): void
     {
@@ -99,19 +106,17 @@ class DatabaseTest extends Test
         
         // cleanup
         $database->delRows('user', ['email' => 'testuser@email.com']);
+        $exception = null;
         try {
-            $code = 0;
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
+        } catch (MysqlNotFoundException $exception) {
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
     }
     
     /**
@@ -139,6 +144,8 @@ class DatabaseTest extends Test
      * @return void
      *
      * @suppress PhanUnreferencedPublicMethod
+     *
+     * @SuppressWarnings(PHPMD.EmptyCatchBlock)
      */
     public function testGetRows(): void
     {
@@ -197,19 +204,17 @@ class DatabaseTest extends Test
         $database->delRows('user', ['email' => 'testuser1@email.com']);
         $database->delRows('user', ['email' => 'testuser2@email.com']);
         $database->delRows('user', ['email' => 'testuser3@email.com']);
+        $exception = null;
         try {
-            $code = 0;
             $database->getRows(
                 'user',
                 ['email', 'hash', 'token'],
                 ['hash' => 'nohash']
             );
             $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
+        } catch (MysqlEmptyException $exception) {
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
     }
     
     /**
@@ -218,37 +223,35 @@ class DatabaseTest extends Test
      * @return void
      *
      * @suppress PhanUnreferencedPublicMethod
+     *
+     * @SuppressWarnings(PHPMD.EmptyCatchBlock)
      */
     public function testSetRow(): void
     {
         $database = $this->getDatabase();
+        $exception = null;
         try {
-            $code = 0;
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
+        } catch (MysqlNotFoundException $exception) {
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
         
+        $exception = null;
         try {
-            $code = 0;
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
                 ['email' => 'testusermodified@email.com']
             );
             $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
+        } catch (MysqlNotFoundException $exception) {
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
         
         $database->addRow(
             'user',
@@ -281,33 +284,29 @@ class DatabaseTest extends Test
         
         // cleanup
         $database->delRows('user', ['email' => 'testusermodified@email.com']);
+        $exception = null;
         try {
-            $code = 0;
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
+        } catch (MysqlNotFoundException $exception) {
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
         
+        $exception = null;
         try {
-            $code = 0;
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
                 ['email' => 'testusermodified@email.com']
             );
             $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
+        } catch (MysqlNotFoundException $exception) {
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
     }
     
     /**
@@ -318,13 +317,15 @@ class DatabaseTest extends Test
      * @return void
      *
      * @suppress PhanUnreferencedPublicMethod
+     *
+     * @SuppressWarnings(PHPMD.EmptyCatchBlock)
      */
     public function testSetOwnedRow(Session $session): void
     {
         $session->set('uid', 1);
         $database = $this->getDatabase();
+        $exception = null;
         try {
-            $code = 0;
             $database->getOwnedRow(
                 'user',
                 ['email', 'hash', 'token'],
@@ -332,13 +333,11 @@ class DatabaseTest extends Test
             );
             $this->assertTrue(false);
         } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
         
+        $exception = null;
         try {
-            $code = 0;
             $database->getOwnedRow(
                 'user',
                 ['email', 'hash', 'token'],
@@ -346,10 +345,8 @@ class DatabaseTest extends Test
             );
             $this->assertTrue(false);
         } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
         
         $oidBefore = $database->getLastAddedOwnershipId();
         $database->addOwnedRow(
@@ -386,8 +383,8 @@ class DatabaseTest extends Test
         
         // cleanup
         $database->delOwnedRows('user', ['email' => 'testusermodified@email.com']);
+        $exception = null;
         try {
-            $code = 0;
             $database->getOwnedRow(
                 'user',
                 ['email', 'hash', 'token'],
@@ -395,13 +392,11 @@ class DatabaseTest extends Test
             );
             $this->assertTrue(false);
         } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
         
+        $exception = null;
         try {
-            $code = 0;
             $database->getOwnedRow(
                 'user',
                 ['email', 'hash', 'token'],
@@ -409,10 +404,8 @@ class DatabaseTest extends Test
             );
             $this->assertTrue(false);
         } catch (RuntimeException $exception) {
-            $code = $exception->getCode();
         }
-        $this->assertNotEquals(0, $code);
-        $this->assertEquals(Mysql::MYSQL_ERROR, $code);
+        $this->assertTrue(null !== $exception);
         
         $session->unset('uid');
     }

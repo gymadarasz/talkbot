@@ -50,6 +50,7 @@ class TestApp extends CliApp
                 __DIR__ . "/../../src/Library/Tester/Test.php",
                 __DIR__ . "/../../src/Library/Tester/Tester.php",
                 __DIR__ . "/../../tests/",
+                __DIR__ . "/../../routes.cache.php",
             ]
         );
 

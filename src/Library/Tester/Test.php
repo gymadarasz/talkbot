@@ -14,12 +14,9 @@
 namespace Madsoft\Library\Tester;
 
 use Exception;
-use Madsoft\Library\App\ApiApp;
-use Madsoft\Library\Invoker;
 use Mockery;
 use Mockery\LegacyMockInterface;
 use Mockery\MockInterface;
-use RuntimeException;
 
 /**
  * Test
@@ -45,176 +42,6 @@ abstract class Test
     protected int $asserts = 0;
     protected int $success = 0;
     protected int $fails = 0;
-    
-    /**
-     * Variable $globalsStack
-     *
-     * @var mixed[]
-     */
-    protected static array $globalsStack = [];
-    
-    /**
-     * Method before
-     *
-     * @return void
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function before(): void
-    {
-        $this->pushGlobals();
-    }
-    
-    /**
-     * Method after
-     *
-     * @return void
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function after(): void
-    {
-        $this->popGlobals();
-    }
-    
-    /**
-     * Method get
-     *
-     * @param callable $include include
-     * @param mixed[]  $args    args
-     * @param string   $params  params
-     *
-     * @return string
-     * @throws RuntimeException
-     *
-     * @suppressWarnings(PHPMD.Superglobals)
-     */
-    protected function get(
-        callable $include,
-        array $args = [],
-        string $params = ''
-    ): string {
-        $this->pushGlobals();
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        parse_str($params, $_GET);
-        $_REQUEST = $_GET;
-        unset($_POST);
-        $contents = $this->getContents($include, $args);
-        $this->popGlobals();
-        return $contents;
-    }
-    
-    /**
-     * Method post
-     *
-     * @param callable $include include
-     * @param mixed[]  $args    args
-     * @param string   $params  params
-     * @param mixed[]  $data    data
-     *
-     * @return string
-     * @throws RuntimeException
-     *
-     * @suppressWarnings(PHPMD.Superglobals)
-     *
-     * @suppress PhanUnreferencedProtectedMethod
-     */
-    protected function post(
-        callable $include,
-        array $args = [],
-        string $params = '',
-        array $data = []
-    ): string {
-        $this->pushGlobals();
-        $_SERVER['REQUEST_METHOD'] = 'POST';
-        parse_str($params, $_GET);
-        $_REQUEST = $_GET;
-        $_POST = $data;
-        $_REQUEST = array_merge($_REQUEST, $_POST);
-        $contents = $this->getContents($include, $args);
-        $this->popGlobals();
-        return $contents;
-    }
-    
-    /**
-     * Method getContents
-     *
-     * @param callable $include include
-     * @param mixed[]  $args    args
-     *
-     * @return string
-     * @throws RuntimeException
-     */
-    protected function getContents(callable $include, array $args = []): string
-    {
-        ob_start();
-        $include(...$args);
-        $contents = ob_get_contents();
-        ob_end_clean();
-        if (false === $contents) {
-            throw new RuntimeException("Output buffering isn't active");
-        }
-        return $contents;
-    }
-    
-    /**
-     * Method callApi
-     *
-     * @param string[][][][] $routes routes
-     *
-     * @return void
-     */
-    public function callApi(array $routes): void
-    {
-        echo (new ApiApp(new Invoker()))->setRoutes($routes)->getOutputJson();
-    }
-    
-    /**
-     * Method pushGlobals
-     *
-     * @return void
-     *
-     * @suppressWarnings(PHPMD.Superglobals)
-     */
-    protected function pushGlobals(): void
-    {
-        array_push(
-            self::$globalsStack,
-            [
-            '_GET' => $_GET ?? null,
-            '_POST' => $_POST ?? null,
-            '_REQUEST' => $_REQUEST ?? null,
-            '_SERVER' => $_SERVER ?? null,
-            ]
-        );
-    }
-    
-    /**
-     * Method popGlobals
-     *
-     * @return void
-     *
-     * @suppressWarnings(PHPMD.Superglobals)
-     */
-    protected function popGlobals(): void
-    {
-        $storedGlobals = array_pop(self::$globalsStack);
-        if (null === $storedGlobals) {
-            throw new RuntimeException('Empty globals stack');
-        }
-        if (null !== $storedGlobals['_GET']) {
-            $_GET = $storedGlobals['_GET'];
-        }
-        if (null !== $storedGlobals['_POST']) {
-            $_POST = $storedGlobals['_POST'];
-        }
-        if (null !== $storedGlobals['_REQUEST']) {
-            $_REQUEST = $storedGlobals['_REQUEST'];
-        }
-        if (null !== $storedGlobals['_SERVER']) {
-            $_SERVER = $storedGlobals['_SERVER'];
-        }
-    }
     
     /**
      * Method getMock
@@ -284,10 +111,10 @@ abstract class Test
             $trace = $exception->getTraceAsString();
         }
         $this->failInfos[] = "Test failed: $message"
-                . "\nExpected: " . $this->varDump($expected)
-                . "\nResult: " . $this->varDump($result)
-                . "\nTrace:\n"
-                . $trace;
+            . "\nExpected: " . $this->varDump($expected)
+            . "\nResult: " . $this->varDump($result)
+            . "\nTrace:\n"
+            . $trace;
     }
     
     /**

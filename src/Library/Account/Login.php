@@ -17,12 +17,10 @@ use Madsoft\Library\Account\AccountValidator;
 use Madsoft\Library\Database;
 use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
-use Madsoft\Library\Mysql;
+use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
-use Madsoft\Library\Throwier;
 use Madsoft\Library\User;
-use RuntimeException;
 
 /**
  * Login
@@ -40,7 +38,6 @@ class Login extends ArrayResponder
     protected Logger $logger;
     protected User $user;
     protected AccountValidator $validator;
-    protected Throwier $throwier;
     
     /**
      * Method __construct
@@ -50,22 +47,19 @@ class Login extends ArrayResponder
      * @param Logger           $logger    logger
      * @param User             $user      user
      * @param AccountValidator $validator validator
-     * @param Throwier         $throwier  throwier
      */
     public function __construct(
         Messages $messages,
         Database $database,
         Logger $logger,
         User $user,
-        AccountValidator $validator,
-        Throwier $throwier
+        AccountValidator $validator
     ) {
         parent::__construct($messages);
         $this->database = $database;
         $this->logger = $logger;
         $this->user = $user;
         $this->validator = $validator;
-        $this->throwier = $throwier;
     }
 
     /**
@@ -92,11 +86,9 @@ class Login extends ArrayResponder
                 ['id', 'email', 'group', 'hash'],
                 ['email' => $email, 'active' => '1']
             );
-        } catch (RuntimeException $exception) {
-            if ($exception->getcode() !== Mysql::MYSQL_ERROR) {
-                $this->throwier->throwPrevious($exception);
-            }
-            $user = [];
+        } catch (MysqlNotFoundException $exception) {
+            $this->logger->exception($exception);
+            return $this->loginError([]);
         }
         
         
@@ -108,7 +100,8 @@ class Login extends ArrayResponder
             return $this->loginError($errors, $email);
         }
         
-        $this->user->login((int)($user['id'] ?? ''), $user['group'] ?? '');
+        $this->user->login((int)$user['id'], $user['group']);
+        // TODO: remove all "??" operators
         
         return $this->getSuccessResponse(
             'Login success'
@@ -131,10 +124,8 @@ class Login extends ArrayResponder
                     . implode("', '", $errors) . "'";
         }
         $this->logger->error(
-            "Login error, reason:$reasonstr" . ($email ? ", email: '$email'" : '')
+            "Login error, reason:$reasonstr" . ($email ? " (email: '$email')" : '')
         );
-        return $this->getErrorResponse(
-            'Login failed'
-        );
+        return $this->getErrorResponse('Login failed');
     }
 }

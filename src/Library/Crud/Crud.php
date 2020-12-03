@@ -14,7 +14,10 @@
 namespace Madsoft\Library\Crud;
 
 use Madsoft\Library\Database;
+use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
+use Madsoft\Library\MysqlEmptyException;
+use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Validator\Rule\Mandatory;
@@ -40,6 +43,7 @@ class Crud extends ArrayResponder // TODO: test for this class + oned crud also
     protected Database $database;
     protected Params $params;
     protected Validator $validator;
+    protected Logger $logger;
     
     /**
      * Method __construct
@@ -48,17 +52,20 @@ class Crud extends ArrayResponder // TODO: test for this class + oned crud also
      * @param Database  $database  database
      * @param Params    $params    params
      * @param Validator $validator validator
+     * @param Logger    $logger    logger
      */
     public function __construct(
         Messages $messages,
         Database $database,
         Params $params,
-        Validator $validator
+        Validator $validator,
+        Logger $logger
     ) {
         parent::__construct($messages);
         $this->database = $database;
         $this->params = $params;
         $this->validator = $validator;
+        $this->logger = $logger;
     }
     
     /**
@@ -70,26 +77,35 @@ class Crud extends ArrayResponder // TODO: test for this class + oned crud also
      */
     public function getListResponse(): array
     {
-        $errors = $this->validateListViewParams();
-        if ($errors) {
-            return $this->getErrorResponse('Invalid list parameter(s)', $errors);
-        }
-        // TODO order field (ASC/DESC)
-        return $this->getResponse(
-            [
-                'rows' => $this->database->getRows(
-                    $this->params->get('table', ''),
-                    explode(
-                        ',',
-                        $this->params->get('fields', self::DEFAULT_FIELDS)
+        try {
+            $errors = $this->validateListViewParams();
+            if ($errors) {
+                return $this->getErrorResponse('Invalid list parameter(s)', $errors);
+            }
+        
+            // TODO order field (ASC/DESC)
+            return $this->getResponse(
+                [
+                    'rows' => $this->database->getRows(
+                        $this->params->get('table', ''),
+                        explode(
+                            ',',
+                            $this->params->get('fields', self::DEFAULT_FIELDS)
+                        ),
+                        $this->params->get('filter', []),
+                        $this->params->get(
+                            'filterLogic',
+                            self::DEFAULT_FILTER_LOGIC
+                        ),
+                        (int)$this->params->get('limit', self::DEFAULT_LIMIT),
+                        (int)$this->params->get('offset', self::DEFAULT_OFFSET)
                     ),
-                    $this->params->get('filter', []),
-                    $this->params->get('filterLogic', self::DEFAULT_FILTER_LOGIC),
-                    (int)$this->params->get('limit', self::DEFAULT_LIMIT),
-                    (int)$this->params->get('offset', self::DEFAULT_OFFSET)
-                ),
-            ]
-        );
+                ]
+            );
+        } catch (MysqlEmptyException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Empty list');
     }
     
     /**
@@ -101,14 +117,14 @@ class Crud extends ArrayResponder // TODO: test for this class + oned crud also
      */
     public function getViewResponse(): array
     {
-        $errors = $this->validateListViewParams();
-        if ($errors) {
-            return $this->getErrorResponse('Invalid view parameter(s)', $errors);
-        }
+        try {
+            $errors = $this->validateListViewParams();
+            if ($errors) {
+                return $this->getErrorResponse('Invalid view parameter(s)', $errors);
+            }
         
-        return $this->getResponse(
-            [
-                'row' => $this->database->getRow(
+            return $this->getResponse(
+                $this->database->getRow(
                     $this->params->get('table', ''),
                     explode(
                         ',',
@@ -119,9 +135,12 @@ class Crud extends ArrayResponder // TODO: test for this class + oned crud also
                         'filterLogic',
                         self::DEFAULT_FILTER_LOGIC
                     )
-                ),
-            ]
-        );
+                )
+            );
+        } catch (MysqlNotFoundException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Not found');
     }
     
     /**
