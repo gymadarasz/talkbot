@@ -17,6 +17,7 @@ use Madsoft\Library\Database;
 use Madsoft\Library\Logger;
 use Madsoft\Library\Mailer;
 use Madsoft\Library\Messages;
+use Madsoft\Library\MysqlNoAffectException;
 use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
@@ -38,7 +39,7 @@ class PasswordReset extends ArrayResponder
     const EMAIL_TPL_PATH = __DIR__ . '/';
     
     // TODO email should not contains api links
-    // TODO add index.php instead (see in configs)
+    // TODO add index.php instead (see in configs) - dependency (needs front-end)
     
     protected Template $template;
     protected Token $token;
@@ -75,41 +76,6 @@ class PasswordReset extends ArrayResponder
         $this->mailer = $mailer;
         $this->logger = $logger;
     }
-    
-    /**
-     * Method getPasswordResetResponse
-     *
-     * @param Params $params params
-     *
-     * @return mixed[]
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function getPasswordResetResponse(Params $params): array
-    {
-        $token = $params->get('token', '');
-        if (!$token) {
-            $this->getErrorResponse('Missing token');
-        }
-        try {
-            $this->database->getRow(
-                'user',
-                ['id'],
-                ['token' => $token, 'active' => '1']
-            );
-        } catch (MysqlNotFoundException $exception) {
-            $this->logger->exception($exception);
-            return $this->getErrorResponse(
-                'Invalid token'
-            );
-        }
-        
-        // TODO recreate token before sanding back for usage
-        return $this->getSuccessResponse(
-            'Token matches',
-            ['token' => $token]
-        );
-    }
 
     /**
      * Method getPasswordResetRequestResponse
@@ -123,6 +89,7 @@ class PasswordReset extends ArrayResponder
     public function getPasswordResetRequestResponse(Params $params): array
     {
         $errors = $this->validator->validatePasswordReset($params);
+        // TODO exception handling for validations
         if ($errors) {
             return $this->getErrorResponse(
                 'Reset password request failed',
@@ -130,13 +97,13 @@ class PasswordReset extends ArrayResponder
             );
         }
         
-        $email = (string)$params->get('email');
+        $email = $params->get('email');
         
         try {
             $this->database->getRow(
                 'user',
                 ['email'],
-                ['email' => $email, 'active' => '1']
+                ['email' => $email, 'active' => 1]
             );
         } catch (MysqlNotFoundException $exception) {
             $this->logger->exception($exception);
@@ -146,18 +113,21 @@ class PasswordReset extends ArrayResponder
         }
         
         $token = $this->token->generate();
-        if (!$this->database->setRow(
-            'user',
-            ['token' => $token],
-            ['email' => $email, 'active' => '1']
-        )
-        ) {
+        try {
+            $this->database->setRow(
+                'user',
+                ['token' => $token],
+                ['email' => $email, 'active' => 1]
+            );
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
             return $this->getErrorResponse(
                 'Token is not updated'
             );
         }
         
         if (!$this->sendResetEmail($email, $token)) {
+            // TODO exception handling for emails
             return $this->getErrorResponse(
                 'Email sending failed'
             );

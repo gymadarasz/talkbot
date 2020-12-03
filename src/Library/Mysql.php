@@ -104,14 +104,41 @@ class Mysql
     /**
      * Method escape
      *
-     * @param string $value value
+     * @param mixed $value value
+     *
+     * @return mixed
+     */
+    public function escape($value = null)
+    {
+        if (null === $value || is_int($value) || is_float($value)) {
+            return $value;
+        }
+        if (is_bool($value)) {
+            return $value ? 1 : 0;
+        }
+        if (is_string($value)
+            || (is_object($value) && method_exists($value, '__toString'))
+        ) {
+            $this->connect();
+            return $this->mysqli->escape_string((string)$value);
+        }
+        throw new RuntimeException(
+            'Given value can not be converted to string.'
+        );
+    }
+    
+    /**
+     * Method value
+     *
+     * @param mixed $value value
      *
      * @return string
      */
-    public function escape(string $value): string
+    public function value($value = null): string
     {
-        $this->connect();
-        return $this->mysqli->escape_string($value);
+        return is_string($value) ?
+            "'$value'" :
+            (null === $value ? 'NULL' : (string)$value);
     }
 
     /**

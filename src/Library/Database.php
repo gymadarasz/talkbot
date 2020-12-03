@@ -77,7 +77,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
+     * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
      *
      * @return string[]
@@ -104,7 +104,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
+     * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
      * @param int      $uid          uid
      *
@@ -133,7 +133,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
+     * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
      * @param int      $limit        limit
      * @param int      $offset       offset
@@ -164,7 +164,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
+     * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
      * @param int      $limit        limit
      * @param int      $offset       offset
@@ -197,7 +197,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
+     * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
      * @param int      $limit        limit
      * @param int      $offset       offset
@@ -263,9 +263,9 @@ class Database
     /**
      * Method getWhere
      *
-     * @param string   $table        table
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $logic        logic
+     * @param string  $table        table
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $logic        logic
      *
      * @return string
      * @throws RuntimeException
@@ -289,9 +289,9 @@ class Database
     /**
      * Method getConditions
      *
-     * @param string   $table  table
-     * @param string[] $filter filter
-     * @param string   $logic  logic
+     * @param string  $table  table
+     * @param mixed[] $filter filter
+     * @param string  $logic  logic
      *
      * @return string
      */
@@ -302,7 +302,7 @@ class Database
     ): string {
         $conds = [];
         foreach ($filter as $key => $value) {
-            $conds[] = "`$table`.`$key` = '$value'";
+            $conds[] = "`$table`.`$key` = " . $this->mysql->value($value);
         }
         return $conds ?
             implode(" $logic ", $conds) :
@@ -312,8 +312,8 @@ class Database
     /**
      * Method addRow
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $valuesUnsafe valuesUnsafe
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $valuesUnsafe valuesUnsafe
      *
      * @return int
      */
@@ -325,8 +325,8 @@ class Database
     /**
      * Method addOwnedRow
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $valuesUnsafe valuesUnsafe
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $valuesUnsafe valuesUnsafe
      *
      * @return int
      */
@@ -338,9 +338,9 @@ class Database
     /**
      * Method add
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $valuesUnsafe valuesUnsafe
-     * @param int      $uid          uid
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $valuesUnsafe valuesUnsafe
+     * @param int     $uid          uid
      *
      * @return int
      */
@@ -378,8 +378,8 @@ class Database
     /**
      * Method addInsert
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $valuesUnsafe valuesUnsafe
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $valuesUnsafe valuesUnsafe
      *
      * @return int
      */
@@ -388,19 +388,22 @@ class Database
         $table = $this->mysql->escape($tableUnsafe);
         $fields = $this->safer->freez([$this->mysql, 'escape'], $valuesUnsafe);
         $keys = implode('`, `', array_keys($fields));
-        $values = implode("', '", $fields);
-        $query = "INSERT INTO `$table` (`$keys`) VALUES ('$values')";
+        foreach ($fields as &$field) {
+            $field = $this->mysql->value($field);
+        }
+        $values = implode(", ", $fields);
+        $query = "INSERT INTO `$table` (`$keys`) VALUES ($values)";
         return $this->mysql->insert($query);
     }
     
     /**
      * Method delRow
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $filterLogic  filterLogic
-     * @param int      $limit        limit
-     * @param int      $offset       offset
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     * @param int     $limit        limit
+     * @param int     $offset       offset
      *
      * @return int
      */
@@ -424,11 +427,11 @@ class Database
     /**
      * Method delRows
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $filterLogic  filterLogic
-     * @param int      $limit        limit
-     * @param int      $offset       offset
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     * @param int     $limit        limit
+     * @param int     $offset       offset
      *
      * @return int
      */
@@ -451,11 +454,11 @@ class Database
     /**
      * Method delOwnedRow
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $filterLogic  filterLogic
-     * @param int      $limit        limit
-     * @param int      $offset       offset
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     * @param int     $limit        limit
+     * @param int     $offset       offset
      *
      * @return int
      */
@@ -479,11 +482,11 @@ class Database
     /**
      * Method delOwnedRows
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $filterLogic  filterLogic
-     * @param int      $limit        limit
-     * @param int      $offset       offset
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     * @param int     $limit        limit
+     * @param int     $offset       offset
      *
      * @return int
      */
@@ -506,12 +509,12 @@ class Database
     /**
      * Method del
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $filterLogic  filterLogic
-     * @param int      $limit        limit
-     * @param int      $offset       offset
-     * @param int      $uid          uid
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     * @param int     $limit        limit
+     * @param int     $offset       offset
+     * @param int     $uid          uid
      *
      * @return int
      * @throws RuntimeException
@@ -546,11 +549,11 @@ class Database
     /**
      * Method validateOwner
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $filterLogic  filterLogic
-     * @param int      $limit        limit
-     * @param int      $uid          uid
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     * @param int     $limit        limit
+     * @param int     $uid          uid
      *
      * @return void
      * @throws RuntimeException
@@ -588,11 +591,11 @@ class Database
     /**
      * Method setRow
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $valuesUnsafe valuesUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $filterLogic  filterLogic
-     * @param int      $limit        limit
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $valuesUnsafe valuesUnsafe
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     * @param int     $limit        limit
      *
      * @return int
      */
@@ -616,12 +619,12 @@ class Database
     /**
      * Method set
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $valuesUnsafe valuesUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $filterLogic  filterLogic
-     * @param int      $limit        limit
-     * @param int      $uid          uid
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $valuesUnsafe valuesUnsafe
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     * @param int     $limit        limit
+     * @param int     $uid          uid
      *
      * @return int
      */
@@ -646,12 +649,12 @@ class Database
     /**
      * Method set
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param string[] $valuesUnsafe valuesUnsafe
-     * @param string[] $filterUnsafe filterUnsafe
-     * @param string   $filterLogic  filterLogic
-     * @param int      $limit        limit
-     * @param int      $uid          uid
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $valuesUnsafe valuesUnsafe
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     * @param int     $limit        limit
+     * @param int     $uid          uid
      *
      * @return int
      */
@@ -674,7 +677,7 @@ class Database
         $fields = $this->safer->freez([$this->mysql, 'escape'], $valuesUnsafe);
         $sets = [];
         foreach ($fields as $key => $value) {
-            $sets[] = "`$table`.`$key` = '$value'";
+            $sets[] = "`$table`.`$key` = " . $this->mysql->value($value);
         }
         $setstr = implode(', ', $sets);
         $where = $this->getWhere($table, $filterUnsafe, $filterLogic);

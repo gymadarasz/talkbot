@@ -122,7 +122,7 @@ class Registry extends ArrayResponder
                     'email' => $email,
                     'hash' => $this->encrypter->encrypt($params->get('password')),
                     'token' => $token,
-                    'active' => '0',
+                    'active' => 0,
                 ]
             );
         } catch (MysqlNoInsertException $exception) {
@@ -158,9 +158,9 @@ class Registry extends ArrayResponder
      */
     public function getResendResponse(Session $session): array
     {
-        $resend = $session->get('resend');
-        $email = $resend['email'] ?? '';
-        $token = $resend['token'] ?? '';
+        $resend = $session->get('resend', ['email' => '', 'token' => null]);
+        $email = $resend['email'];
+        $token = $resend['token'];
         if (!$this->sendActivationEmail($email, $token)) {
             return $this->getErrorResponse(
                 'Activation email is not sent'

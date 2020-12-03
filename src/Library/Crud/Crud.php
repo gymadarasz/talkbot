@@ -33,7 +33,7 @@ use Madsoft\Library\Validator\Validator;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class Crud extends ArrayResponder // TODO: test for this class + oned crud also
+class Crud extends ArrayResponder // TODO: test for this class + owned crud also
 {
     const DEFAULT_FIELDS = 'id';
     const DEFAULT_FILTER_LOGIC = 'AND';

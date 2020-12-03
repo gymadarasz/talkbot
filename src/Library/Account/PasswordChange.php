@@ -13,10 +13,13 @@
 
 namespace Madsoft\Library\Account;
 
-use Madsoft\Library\Params;
 use Madsoft\Library\Database;
 use Madsoft\Library\Encrypter;
+use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
+use Madsoft\Library\MysqlNoAffectException;
+use Madsoft\Library\MysqlNotFoundException;
+use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 
 /**
@@ -34,7 +37,9 @@ class PasswordChange extends ArrayResponder
     protected Database $database;
     protected AccountValidator $validator;
     protected Encrypter $encrypter;
-    
+    protected Logger $logger;
+
+
     /**
      * Method __construct
      *
@@ -42,17 +47,20 @@ class PasswordChange extends ArrayResponder
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Encrypter        $encrypter encrypter
+     * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
         Database $database,
         AccountValidator $validator,
-        Encrypter $encrypter
+        Encrypter $encrypter,
+        Logger $logger
     ) {
         parent::__construct($messages);
         $this->database = $database;
         $this->validator = $validator;
         $this->encrypter = $encrypter;
+        $this->logger = $logger;
     }
     
     /**
@@ -66,37 +74,51 @@ class PasswordChange extends ArrayResponder
      */
     public function getPasswordChangeResponse(Params $params): array
     {
-        // TODO do not let the user to use the same password again
+        $token = $params->get('token');
+        
         $errors = $this->validator->validatePasswordChange($params);
         if ($errors) {
             return $this->getErrorResponse(
                 'Password change failed',
                 $errors,
                 [
-                    'token' => $params->get('token')
+                    'token' => $token
                 ]
             );
         }
+        // TODO add test for sql injection escaping
         
-        if (!$this->database->setRow(
-            'user',
-            [
-                'hash' => $this->encrypter->encrypt($params->get('password')),
-                'token' => '',
-            ],
-            [
-                'token' => $params->get('token'),
-                'active' => '1',
-            ]
-        )
-        ) {
-            return $this->getErrorResponse(
-                'Password is not saved',
-                [],
+        try {
+            // TODO add test when token matches but user is inactive
+            $user = $this->database->getRow(
+                'user',
+                ['hash'],
+                ['token' => $token, 'active' => 1]
+            );
+            $hash = $this->encrypter->encrypt($params->get('password'));
+            if ($user['hash'] === $hash) {
+                // TODO add test when password is not changed
+                return $this->getErrorResponse(
+                    'Same password already taken and not changed.'
+                );
+            }
+            $this->database->setRow(
+                'user',
                 [
-                    'token' => $params->get('token')
+                    'hash' => $hash,
+                    'token' => null,
+                ],
+                [
+                    'token' => $params->get('token'),
+                    'active' => 1,
                 ]
             );
+        } catch (MysqlNotFoundException $exception) {
+            $this->logger->exception($exception);
+            return $this->getErrorResponse('User not found at the given token');
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
+            return $this->getErrorResponse('Password is not saved');
         }
         
         return $this->getSuccessResponse(

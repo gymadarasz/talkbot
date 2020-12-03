@@ -49,7 +49,7 @@ class Safer
             }
             return $ret;
         }
-        $ret = $callback((string)$value);
+        $ret = $callback($value);
         return $ret;
     }
 }

@@ -105,7 +105,12 @@ class Template
         ?string $path = null
     ): string {
         $this->vars = [];
-        foreach ($this->safer->freez('htmlentities', $data) as $key => $value) {
+        foreach ($this->safer->freez(
+            static function ($value) {
+                return htmlentities((string)$value);
+            },
+            $data
+        ) as $key => $value) {
             if (is_numeric($key)) {
                 throw new RuntimeException(
                     "Variable name can not be number: '$key'"

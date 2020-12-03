@@ -27,8 +27,20 @@ use RuntimeException;
  *
  * @SuppressWarnings(PHPMD.Superglobals)
  */
-class Params extends Server implements Assoc // TODO: do not extends Server!
+class Params implements Assoc
 {
+    protected Server $server;
+    
+    /**
+     * Method __construct
+     *
+     * @param \Madsoft\Library\Server $server server
+     */
+    public function __construct(Server $server)
+    {
+        $this->server = $server;
+    }
+    
     /**
      * Method get
      *
@@ -40,7 +52,7 @@ class Params extends Server implements Assoc // TODO: do not extends Server!
      */
     public function get(string $key, $default = null)
     {
-        $method = parent::get('REQUEST_METHOD');
+        $method = $this->server->get('REQUEST_METHOD');
         switch ($method) {
         case 'GET':
             if (isset($_GET[$key])) {
@@ -75,7 +87,7 @@ class Params extends Server implements Assoc // TODO: do not extends Server!
      */
     public function has(string $key): bool
     {
-        $method = parent::get('REQUEST_METHOD');
+        $method = $this->server->get('REQUEST_METHOD');
         switch ($method) {
         case 'GET':
             if (isset($_GET[$key])) {

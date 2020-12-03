@@ -84,7 +84,7 @@ class Login extends ArrayResponder
             $user = $this->database->getRow(
                 'user',
                 ['id', 'email', 'group', 'hash'],
-                ['email' => $email, 'active' => '1']
+                ['email' => $email, 'active' => 1]
             );
         } catch (MysqlNotFoundException $exception) {
             $this->logger->exception($exception);
@@ -101,7 +101,6 @@ class Login extends ArrayResponder
         }
         
         $this->user->login((int)$user['id'], $user['group']);
-        // TODO: remove all "??" operators
         
         return $this->getSuccessResponse(
             'Login success'

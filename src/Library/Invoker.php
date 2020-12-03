@@ -209,21 +209,13 @@ class Invoker
         $params = $method->getParameters();
         $args = [];
         foreach ($params as $param) {
-            //$paramClass = null;
-            //$exception = null;
-            //            try {
             $paramClass = $param->getClass();
-            //            } catch (ReflectionException $exc) {
-            //                $exception = $exc;
-            //            }
-            if (/*!isset($paramClass) || */!$paramClass/* || $exception*/) {
+            if (!$paramClass) {
                 throw new RuntimeException(
                     $messageOnError . " Parameter: " .
                         (null !== $param->getDeclaringClass() ?
                             ($param->getDeclaringClass()->name ?? '???') : '???')
-                        . ' => ' . $param->getName(),
-                    0 //,
-                    //$exception ?? null
+                        . ' => ' . $param->getName()
                 );
             }
             $args[] = $this->instance($paramClass->name)[0];

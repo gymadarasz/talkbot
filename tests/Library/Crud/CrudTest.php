@@ -85,7 +85,7 @@ class CrudTest extends ApiTest
                 'email' => $email,
                 'group' => $group,
                 'hash' => '',
-                'token' => ''
+                'token' => null
             ]
         );
     }

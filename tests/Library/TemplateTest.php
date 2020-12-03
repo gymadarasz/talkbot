@@ -19,6 +19,7 @@ use Madsoft\Library\Invoker;
 use Madsoft\Library\Merger;
 use Madsoft\Library\Params;
 use Madsoft\Library\Safer;
+use Madsoft\Library\Server;
 use Madsoft\Library\Session;
 use Madsoft\Library\Template;
 use Madsoft\Library\Tester\Test;
@@ -89,7 +90,7 @@ class TemplateTest extends Test
         $template = new Template(
             new Config(new Invoker(), new Merger()),
             new Safer(),
-            new Csrf(new Session(), new Params())
+            new Csrf(new Session(), new Params(new Server()))
         );
         $results = $template->process(
             __DIR__ . '/test.phtml',

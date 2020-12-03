@@ -85,7 +85,7 @@ class Activate extends ArrayResponder
             $this->database->getRow(
                 'user',
                 ['id'],
-                ['token' => $token, 'active' => '0']
+                ['token' => $token, 'active' => 0]
             );
         } catch (MysqlNotFoundException $exception) {
             $this->logger->exception($exception);
@@ -97,7 +97,7 @@ class Activate extends ArrayResponder
         try {
             $this->database->setRow(
                 'user',
-                ['active' => '1'],
+                ['active' => 1],
                 ['token' => $token]
             );
         } catch (MysqlNoAffectException $exception) {

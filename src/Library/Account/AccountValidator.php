@@ -108,7 +108,7 @@ class AccountValidator extends Validator
             [
                 'id' =>
                 [
-                    'value' => $user['id'] ?? '',
+                    'value' => $user['id'],
                     'rules' =>
                     [
                         Mandatory::class => null,
@@ -117,7 +117,7 @@ class AccountValidator extends Validator
                 ],
                 'email' =>
                 [
-                    'value' => $user['email'] ?? '',
+                    'value' => $user['email'],
                     'rules' =>
                     [
                         Mandatory::class => null,
@@ -126,7 +126,7 @@ class AccountValidator extends Validator
                 ],
                 'hash' =>
                 [
-                    'value' => $user['hash'] ?? '',
+                    'value' => $user['hash'],
                     'rules' =>
                     [
                         Mandatory::class => null,

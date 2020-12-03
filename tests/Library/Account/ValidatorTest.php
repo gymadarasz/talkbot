@@ -15,6 +15,7 @@ namespace Madsoft\Tests\Library\Account;
 
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Params;
+use Madsoft\Library\Server;
 use Madsoft\Library\Tester\Test;
 
 /**
@@ -43,7 +44,7 @@ class ValidatorTest extends Test
     public function testValidator(Invoker $invoker): void
     {
         $validator = new ValidatorMock($invoker);
-        $result = $validator->validateLogin(new Params());
+        $result = $validator->validateLogin(new Params(new Server()));
         $this->assertEquals([['an error']], $result);
     }
 }

@@ -31,10 +31,6 @@ return $routes = [
                 'class' => Activate::class,
                 'method' => 'getActivateResponse',
             ],
-            'password-reset' => [
-                'class' => PasswordReset::class,
-                'method' => 'getPasswordResetResponse',
-            ],
         ],
         'POST' => [
             'login' => [
