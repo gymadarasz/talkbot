@@ -15,7 +15,7 @@ namespace Madsoft\Tests\Talkbot;
 
 use Madsoft\Library\Json;
 use Madsoft\Library\Tester\ApiTest;
-use Madsoft\Tests\Library\LibraryTestCleaner;
+use Madsoft\Library\Tester\TestCleaner;
 
 /**
  * TalkbotApiTest
@@ -36,7 +36,7 @@ class TalkbotApiTest extends ApiTest
      */
     protected function cleanup(): void
     {
-        $this->invoker->getInstance(LibraryTestCleaner::class)->deleteMails();
+        $this->invoker->getInstance(TestCleaner::class)->deleteMails();
     }
     
     /**

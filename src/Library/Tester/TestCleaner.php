@@ -4,16 +4,15 @@
  * PHP version 7.4
  *
  * @category  PHP
- * @package   Madsoft\Tests\Library
+ * @package   Madsoft\Library\Tester
  * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
 
-namespace Madsoft\Tests\Library;
+namespace Madsoft\Library\Tester;
 
-use Madsoft\Library\Cleaner;
 use Madsoft\Library\Config;
 use Madsoft\Library\Database;
 use Madsoft\Library\Folders;
@@ -24,18 +23,17 @@ use Madsoft\Library\Router;
 use RuntimeException;
 
 /**
- * LibraryTestCleaner
+ * TestCleaner
  *
  * @category  PHP
- * @package   Madsoft\Tests\Library
+ * @package   Madsoft\Library\Tester
  * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class LibraryTestCleaner implements Cleaner
+class TestCleaner
 {
-    // TODO test cleaner goes into lib from tests
     protected Database $database;
     protected Folders $folders;
     protected Config $config;

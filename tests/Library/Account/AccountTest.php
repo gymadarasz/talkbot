@@ -23,7 +23,7 @@ use Madsoft\Library\Mailer;
 use Madsoft\Library\Router;
 use Madsoft\Library\Session;
 use Madsoft\Library\Tester\ApiTest;
-use Madsoft\Tests\Library\LibraryTestCleaner;
+use Madsoft\Library\Tester\TestCleaner;
 use RuntimeException;
 use SplFileInfo;
 
@@ -63,7 +63,6 @@ class AccountTest extends ApiTest
     protected Folders $folders;
     protected Database $database;
     protected Config $config;
-    protected LibraryTestCleaner $cleaner;
     protected Router $router;
 
     /**
@@ -74,7 +73,6 @@ class AccountTest extends ApiTest
      * @param Folders            $folders  folders
      * @param Database           $database database
      * @param Config             $config   config
-     * @param LibraryTestCleaner $cleaner  cleaner
      * @param Router             $router   router
      */
     public function __construct(
@@ -83,7 +81,6 @@ class AccountTest extends ApiTest
         Folders $folders,
         Database $database,
         Config $config,
-        LibraryTestCleaner $cleaner,
         Router $router
     ) {
         $this->invoker = $invoker;
@@ -91,22 +88,7 @@ class AccountTest extends ApiTest
         $this->folders = $folders;
         $this->database = $database;
         $this->config = $config;
-        $this->cleaner = $cleaner;
         $this->router = $router;
-    }
-    
-    /**
-     * Method cleanup
-     *
-     * @return void
-     */
-    protected function cleanup(): void
-    {
-        $this->invoker->getInstance(LibraryTestCleaner::class)
-            ->deleteMails()
-            ->deleteRouteCache();
-        $this->invoker->getInstance(Session::class)
-            ->clear();
     }
 
     /**
@@ -323,7 +305,7 @@ class AccountTest extends ApiTest
      */
     protected function canSeeResendWorks(): void
     {
-        $this->cleaner->deleteMails();
+        $this->invoker->getInstance(TestCleaner::class)->deleteMails();
         $contents = $this->get(
             'q=resend'
         );

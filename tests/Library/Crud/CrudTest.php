@@ -15,11 +15,9 @@ namespace Madsoft\Tests\Library\Crud;
 
 use Madsoft\Library\Database;
 use Madsoft\Library\Json;
-use Madsoft\Library\Session;
 use Madsoft\Library\Tester\ApiTest;
 use Madsoft\Library\Transaction;
 use Madsoft\Library\User;
-use Madsoft\Tests\Library\LibraryTestCleaner;
 use function count;
 
 /**
@@ -56,8 +54,6 @@ class CrudTest extends ApiTest
     {
         parent::beforeAll();
         
-        $this->invoker->getInstance(LibraryTestCleaner::class)->cleanUp();
-        
         $this->database = $this->invoker->getInstance(Database::class);
         $this->invoker->getInstance(Transaction::class)->start();
         
@@ -92,20 +88,6 @@ class CrudTest extends ApiTest
                 'token' => ''
             ]
         );
-    }
-    
-    /**
-     * Method cleanup
-     *
-     * @return void
-     */
-    protected function cleanup(): void
-    {
-        $this->invoker->getInstance(LibraryTestCleaner::class)
-            ->deleteMails()
-            ->deleteRouteCache();
-        $this->invoker->getInstance(Session::class)
-            ->clear();
     }
     
     /**

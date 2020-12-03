@@ -15,6 +15,7 @@ namespace Madsoft\Library\Tester;
 
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Router;
+use Madsoft\Library\Session;
 use RuntimeException;
 
 /**
@@ -175,5 +176,9 @@ abstract class CleanTest extends Test
      *
      * @return void
      */
-    abstract protected function cleanup(): void;
+    protected function cleanup(): void
+    {
+        $this->invoker->getInstance(TestCleaner::class)->cleanUp();
+        $this->invoker->getInstance(Session::class)->clear();
+    }
 }
