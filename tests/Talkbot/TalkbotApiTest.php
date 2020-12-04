@@ -66,7 +66,8 @@ class TalkbotApiTest extends ApiTest
     public function testLogin(Json $json): void
     {
         $response = $this->post(
-            'q=login',
+            'q=login'
+                . '&csrf=' . $this->getCsrf(),
             [
                 'email' => 'wrongemail@example.com',
                 'password' => 'BadPassword'

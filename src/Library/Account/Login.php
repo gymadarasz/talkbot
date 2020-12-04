@@ -14,6 +14,7 @@
 namespace Madsoft\Library\Account;
 
 use Madsoft\Library\Account\AccountValidator;
+use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
 use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
@@ -43,6 +44,7 @@ class Login extends ArrayResponder
      * Method __construct
      *
      * @param Messages         $messages  messages
+     * @param Csrf             $csrf      csrf
      * @param Database         $database  database
      * @param Logger           $logger    logger
      * @param User             $user      user
@@ -50,12 +52,13 @@ class Login extends ArrayResponder
      */
     public function __construct(
         Messages $messages,
+        Csrf $csrf,
         Database $database,
         Logger $logger,
         User $user,
         AccountValidator $validator
     ) {
-        parent::__construct($messages);
+        parent::__construct($messages, $csrf);
         $this->database = $database;
         $this->logger = $logger;
         $this->user = $user;

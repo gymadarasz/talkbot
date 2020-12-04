@@ -13,6 +13,7 @@
 
 namespace Madsoft\Library\Responder;
 
+use Madsoft\Library\Csrf;
 use Madsoft\Library\Messages;
 
 /**
@@ -32,15 +33,18 @@ abstract class ArrayResponder
     const LBL_WARNING = 'Operation success but some errors occurred';
     
     protected Messages $messages;
+    protected Csrf $csrf;
 
     /**
      * Method __construct
      *
      * @param Messages $messages messages
+     * @param Csrf     $csrf     csrf
      */
-    public function __construct(Messages $messages)
+    public function __construct(Messages $messages, Csrf $csrf)
     {
         $this->messages = $messages;
+        $this->csrf = $csrf;
     }
     /**
      * Method getErrorResponse
@@ -102,6 +106,7 @@ abstract class ArrayResponder
      */
     public function getResponse(array $data = [], array $errors = []): array
     {
+        $data['csrf'] = $this->csrf->get();
         $messages = $this->messages->get();
         if ($messages) {
             $data['messages'] = $messages;

@@ -13,15 +13,14 @@
 
 namespace Madsoft\Library\Account;
 
+use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
 use Madsoft\Library\Logger;
-use Madsoft\Library\Mailer;
 use Madsoft\Library\Messages;
 use Madsoft\Library\MysqlNoAffectException;
 use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
-use Madsoft\Library\Template;
 use Madsoft\Library\Token;
 
 /**
@@ -36,40 +35,36 @@ use Madsoft\Library\Token;
  */
 class PasswordReset extends ArrayResponder
 {
-    const EMAIL_TPL_PATH = __DIR__ . '/';
-    
     // TODO email should not contains api links
     // TODO add index.php instead (see in configs) - dependency (needs front-end)
     
-    protected Template $template;
     protected Token $token;
     protected Database $database;
     protected AccountValidator $validator;
-    protected Mailer $mailer;
+    protected AccountMailer $mailer;
     protected Logger $logger;
 
     /**
      * Method __construct
      *
      * @param Messages         $messages  messages
-     * @param Template         $template  template
+     * @param Csrf             $csrf      csrf
      * @param Token            $token     token
      * @param Database         $database  database
      * @param AccountValidator $validator validator
-     * @param Mailer           $mailer    mailer
+     * @param AccountMailer    $mailer    mailer
      * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
-        Template $template,
+        Csrf $csrf,
         Token $token,
         Database $database,
         AccountValidator $validator,
-        Mailer $mailer,
+        AccountMailer $mailer,
         Logger $logger
     ) {
-        parent::__construct($messages);
-        $this->template = $template;
+        parent::__construct($messages, $csrf);
         $this->token = $token;
         $this->database = $database;
         $this->validator = $validator;
@@ -126,7 +121,7 @@ class PasswordReset extends ArrayResponder
             );
         }
         
-        if (!$this->sendResetEmail($email, $token)) {
+        if (!$this->mailer->sendResetEmail($email, $token)) {
             // TODO exception handling for emails
             return $this->getErrorResponse(
                 'Email sending failed'
@@ -135,28 +130,6 @@ class PasswordReset extends ArrayResponder
         
         return $this->getSuccessResponse(
             'Password reset request email sent'
-        );
-    }
-    
-    /**
-     * Method sendResetEmail
-     *
-     * @param string $email email
-     * @param string $token token
-     *
-     * @return bool
-     */
-    protected function sendResetEmail(string $email, string $token): bool
-    {
-        $message = $this->template->process(
-            'emails/reset.phtml',
-            ['token' => $token],
-            $this::EMAIL_TPL_PATH
-        );
-        return $this->mailer->send(
-            $email,
-            'Pasword reset requested',
-            $message
         );
     }
 }

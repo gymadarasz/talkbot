@@ -13,17 +13,16 @@
 
 namespace Madsoft\Library\Account;
 
+use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
 use Madsoft\Library\Encrypter;
 use Madsoft\Library\Logger;
-use Madsoft\Library\Mailer;
 use Madsoft\Library\Messages;
 use Madsoft\Library\MysqlNoInsertException;
 use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Session;
-use Madsoft\Library\Template;
 use Madsoft\Library\Token;
 
 /**
@@ -38,40 +37,36 @@ use Madsoft\Library\Token;
  */
 class Registry extends ArrayResponder
 {
-    const EMAIL_TPL_PATH = __DIR__ . '/';
-    
-    protected Template $template;
     protected Token $token;
     protected Encrypter $encrypter;
     protected Database $database;
     protected AccountValidator $validator;
-    protected Mailer $mailer;
+    protected AccountMailer $mailer;
     protected Logger $logger;
 
     /**
      * Method __construct
      *
      * @param Messages         $messages  messages
-     * @param Template         $template  template
+     * @param Csrf             $csrf      csrf
      * @param Token            $token     token
      * @param Encrypter        $encrypter encrypter
      * @param Database         $database  database
      * @param AccountValidator $validator validator
-     * @param Mailer           $mailer    mailer
+     * @param AccountMailer    $mailer    mailer
      * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
-        Template $template,
+        Csrf $csrf,
         Token $token,
         Encrypter $encrypter,
         Database $database,
         AccountValidator $validator,
-        Mailer $mailer,
+        AccountMailer $mailer,
         Logger $logger
     ) {
-        parent::__construct($messages);
-        $this->template = $template;
+        parent::__construct($messages, $csrf);
         $this->token = $token;
         $this->encrypter = $encrypter;
         $this->database = $database;
@@ -134,7 +129,7 @@ class Registry extends ArrayResponder
         
         $session->set('resend', ['email' => $email, 'token' => $token]);
         
-        if (!$this->sendActivationEmail($email, $token)) {
+        if (!$this->mailer->sendActivationEmail($email, $token)) {
             return $this->getWarningResponse(
                 'Activation email is not sent',
                 $user
@@ -144,57 +139,6 @@ class Registry extends ArrayResponder
         return $this->getSuccessResponse(
             'We sent an activation email to your email account, '
                 . 'please follow the instructions.'
-        );
-    }
-
-    /**
-     * Method getResendResponse
-     *
-     * @param Session $session session
-     *
-     * @return mixed[]
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function getResendResponse(Session $session): array
-    {
-        $resend = $session->get('resend', ['email' => '', 'token' => null]);
-        $email = $resend['email'];
-        $token = $resend['token'];
-        if (!$this->sendActivationEmail($email, $token)) {
-            return $this->getErrorResponse(
-                'Activation email is not sent'
-            );
-        }
-        
-        return $this->getSuccessResponse(
-            'We re-sent an activation email to your email account, '
-                . 'please follow the instructions.'
-        );
-    }
-
-    /**
-     * Method sendActivationEmail
-     *
-     * @param string $email email
-     * @param string $token token
-     *
-     * @return bool
-     */
-    protected function sendActivationEmail(string $email, string $token): bool
-    {
-        $message = $this->template->process(
-            'emails/activation.phtml',
-            [
-            //                'base' => $this->config->get('Site')->get('base'),
-                'token' => $token,
-            ],
-            $this::EMAIL_TPL_PATH
-        );
-        return $this->mailer->send(
-            $email,
-            'Activate your account',
-            $message
         );
     }
 }

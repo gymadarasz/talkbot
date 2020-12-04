@@ -25,6 +25,7 @@ $routes = $invoker->getInstance(Router::class)->loadRoutes(
         __DIR__ . '/Library/Account/routes.php',
         __DIR__ . '/Library/Crud/routes.php',
         __DIR__ . 'routes.api.php',
+        __DIR__ . '/Library/routes.php',
     ]
 );
 $api = new ApiApp($invoker);

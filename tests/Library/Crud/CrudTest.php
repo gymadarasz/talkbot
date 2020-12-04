@@ -43,6 +43,7 @@ class CrudTest extends ApiTest
      */
     protected array $routes = [
         __DIR__ . '/../../../src/Library/Crud/routes.php',
+        __DIR__ . '/../../../src/routes.api.php',
     ];
     
     /**
@@ -106,18 +107,16 @@ class CrudTest extends ApiTest
                 'q=list&'
                     . 'table=user&'
                     . 'fields=email,group&'
-                    . 'filter[group]=admin'
+                    . 'filter[group]=admin&'
+                    . 'csrf=' . $this->getCsrf()
             )
         );
         $this->assertEquals(1, count($results['rows']));
         $this->assertEquals(
             [
-                'rows' =>
-                [
-                    ['email' => 'admin1@testing.com', 'group' => 'admin'],
-                ]
+                ['email' => 'admin1@testing.com', 'group' => 'admin'],
             ],
-            $results
+            $results['rows']
         );
     }
     
@@ -137,11 +136,12 @@ class CrudTest extends ApiTest
                 'q=list&'
                     . 'table=user&'
                     . 'fields=email,group&'
-                    . 'filter[group]=user'
+                    . 'filter[group]=user&'
+                    . 'csrf=' . $this->getCsrf()
             )
         );
         $this->assertEquals(10, count($results['rows']));
-        $this->assertEquals(['rows'], array_keys($results));
+        $this->assertTrue(in_array('rows', array_keys($results), true));
         $counter = 1;
         foreach ($results['rows'] as $row) {
             $this->assertEquals(
@@ -172,13 +172,14 @@ class CrudTest extends ApiTest
                     . 'table=user&'
                     . 'fields=email,group&'
                     . 'filter[email]=admin1@testing.com&'
-                    . 'filter[group]=user'
+                    . 'filter[group]=user&'
+                    . 'csrf=' . $this->getCsrf()
             )
         );
         
         $this->assertEquals(
-            $this->getEmptyListErrorResponse(),
-            $results
+            $this->getEmptyListErrorResponse()['messages'],
+            $results['messages']
         );
     }
     
@@ -200,12 +201,13 @@ class CrudTest extends ApiTest
                     . 'fields=email,group&'
                     . 'filter[email]=admin1@testing.com&'
                     . 'filter[group]=user&'
-                    . 'filterLogic=OR'
+                    . 'filterLogic=OR&'
+                    . 'csrf=' . $this->getCsrf()
             )
         );
         
         $this->assertEquals(11, count($results['rows']));
-        $this->assertEquals(['rows'], array_keys($results));
+        $this->assertTrue(in_array('rows', array_keys($results), true));
         $counter = 0;
         foreach ($results['rows'] as $row) {
             if ($counter === 0) {
@@ -247,11 +249,12 @@ class CrudTest extends ApiTest
                     . 'table=user&'
                     . 'fields=email,group&'
                     . 'filter[group]=user&'
-                    . 'limit=3&offset=5'
+                    . 'limit=3&offset=5&'
+                    . 'csrf=' . $this->getCsrf()
             )
         );
         $this->assertEquals(3, count($results['rows']));
-        $this->assertEquals(['rows'], array_keys($results));
+        $this->assertTrue(in_array('rows', array_keys($results), true));
         $counter = 6;
         foreach ($results['rows'] as $row) {
             $this->assertEquals(
@@ -281,17 +284,13 @@ class CrudTest extends ApiTest
                 'q=view&'
                     . 'table=user&'
                     . 'fields=email,group&'
-                    . 'filter[email]=user3@testing.com'
+                    . 'filter[email]=user3@testing.com&'
+                    . 'csrf=' . $this->getCsrf()
             )
         );
         
-        $this->assertEquals(
-            [
-                'email' => 'user3@testing.com',
-                'group' => 'user',
-            ],
-            $results
-        );
+        $this->assertEquals('user3@testing.com', $results['email']);
+        $this->assertEquals('user', $results['group']);
     }
     
     /**
@@ -310,13 +309,14 @@ class CrudTest extends ApiTest
                 'q=view&'
                     . 'table=user&'
                     . 'fields=email,group&'
-                    . 'filter[email]=not-exist-email'
+                    . 'filter[email]=not-exist-email&'
+                    . 'csrf=' . $this->getCsrf()
             )
         );
         
         $this->assertEquals(
-            $this->getNotFoundErrorResponse(),
-            $results
+            $this->getNotFoundErrorResponse()['messages'],
+            $results['messages']
         );
     }
     

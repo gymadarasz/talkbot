@@ -15,6 +15,8 @@ namespace Madsoft\Library\Tester;
 
 use Madsoft\Library\App\ApiApp;
 use Madsoft\Library\Invoker;
+use Madsoft\Library\Json;
+use Madsoft\Library\Router;
 use RuntimeException;
 
 /**
@@ -29,6 +31,34 @@ use RuntimeException;
  */
 abstract class ApiTest extends CleanTest
 {
+    protected Json $json;
+
+    /**
+     * Method __construct
+     *
+     * @param Router  $router  router
+     * @param Invoker $invoker invoker
+     * @param Json    $json    json
+     */
+    public function __construct(
+        Router $router,
+        Invoker $invoker,
+        Json $json
+    ) {
+        parent::__construct($router, $invoker);
+        $this->json = $json;
+    }
+    
+    /**
+     * Method getCsrf
+     *
+     * @return int
+     */
+    public function getCsrf(): int
+    {
+        return $this->json->decode($this->get('q=csrf'))['csrf'];
+    }
+    
     /**
      * Method get
      *

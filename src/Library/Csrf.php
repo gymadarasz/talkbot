@@ -27,7 +27,7 @@ use RuntimeException;
  */
 class Csrf
 {
-    protected ?string $csrf = null;
+    protected ?int $csrf = null;
     
     protected Session $session;
     protected Params $params;
@@ -47,24 +47,44 @@ class Csrf
     /**
      * Method get
      *
-     * @return string
+     * @return int
      */
-    public function get(): string
+    public function get(): int
     {
         if (!$this->csrf) {
-            $this->csrf = (string)rand(100000000, 999999999);
+            $this->csrf = rand(100000000, 999999999);
             $this->session->set('csrf', $this->csrf);
         }
-        return '<input type="hidden" name="csrf" value="' . $this->csrf . '">';
+        return $this->csrf;
+    }
+    
+    /**
+     * Method getAsFormField
+     *
+     * @return string
+     */
+    public function getAsFormField(): string
+    {
+        return '<input type="hidden" name="csrf" value="' . $this->get() . '">';
+    }
+    
+    /**
+     * Method getAsArray
+     *
+     * @return int[]
+     */
+    public function getAsArray(): array
+    {
+        return ['csrf' => $this->get()];
     }
     
     /**
      * Method check
      *
-     * @return bool
+     * @return self
      * @throws RuntimeException
      */
-    public function check(): bool
+    public function check(): self
     {
         $csrf = $this->session->get('csrf');
         if (!$csrf) {
@@ -74,6 +94,9 @@ class Csrf
         if (!$sent) {
             throw new RuntimeException('CSRF token is not recieved by request.');
         }
-        return $csrf == $sent;
+        if ($csrf !== (int)$sent) {
+            throw new RuntimeException('CSRF token mismatch');
+        }
+        return $this;
     }
 }

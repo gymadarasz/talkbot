@@ -19,9 +19,9 @@ use Madsoft\Library\Config;
 use Madsoft\Library\Database;
 use Madsoft\Library\Folders;
 use Madsoft\Library\Invoker;
+use Madsoft\Library\Json;
 use Madsoft\Library\Mailer;
 use Madsoft\Library\Router;
-use Madsoft\Library\Session;
 use Madsoft\Library\Tester\ApiTest;
 use Madsoft\Library\Tester\TestCleaner;
 use RuntimeException;
@@ -55,40 +55,35 @@ class AccountTest extends ApiTest
      */
     protected array $routes = [
         __DIR__ . '/../../../src/Library/Account/routes.php',
+        __DIR__ . '/../../../src/routes.api.php',
     ];
         
-
-    protected Invoker $invoker;
-    protected Session $session;
     protected Folders $folders;
     protected Database $database;
     protected Config $config;
-    protected Router $router;
 
     /**
      * Method __construct
      *
+     * @param Router   $router   router
      * @param Invoker  $invoker  invoker
-     * @param Session  $session  session
+     * @param Json     $json     json
      * @param Folders  $folders  folders
      * @param Database $database database
      * @param Config   $config   config
-     * @param Router   $router   router
      */
     public function __construct(
+        Router $router,
         Invoker $invoker,
-        Session $session,
+        Json $json,
         Folders $folders,
         Database $database,
-        Config $config,
-        Router $router
+        Config $config
     ) {
-        $this->invoker = $invoker;
-        $this->session = $session;
+        parent::__construct($router, $invoker, $json);
         $this->folders = $folders;
         $this->database = $database;
         $this->config = $config;
-        $this->router = $router;
     }
 
     /**
@@ -132,7 +127,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=login',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
             //                'email' => self::EMAIL,
             //                'password' => self::PASSWORD,
             ]
@@ -142,7 +137,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=login',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => self::EMAIL,
             //                'password' => self::PASSWORD,
             ]
@@ -152,7 +147,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=login',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
             //                'email' => self::EMAIL,
                 'password' => self::PASSWORD_FIRST,
             ]
@@ -162,7 +157,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=login',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => '',
                 'password' => '',
             ]
@@ -172,7 +167,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=login',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => self::EMAIL,
                 'password' => self::PASSWORD_FIRST,
             ]
@@ -192,7 +187,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=registry',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
             //                'email' => '',
             //                'email_retype' => '',
             //                'password' => '',
@@ -205,7 +200,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=registry',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => '',
                 'email_retype' => '',
                 'password' => '',
@@ -218,7 +213,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=registry',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => 'itisnotvalid',
                 'email_retype' => '',
                 'password' => '',
@@ -231,7 +226,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=registry',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => 'valid@email.com',
                 'email_retype' => 'wrong@retype.com',
                 'password' => '',
@@ -244,7 +239,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=registry',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => 'valid@email.com',
                 'email_retype' => 'valid@email.com',
                 'password' => 'short',
@@ -256,7 +251,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=registry',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => 'valid@email.com',
                 'email_retype' => 'valid@email.com',
                 'password' => 'longbutdoesnothavenumber',
@@ -268,7 +263,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=registry',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => 'valid@email.com',
                 'email_retype' => 'valid@email.com',
                 'password' => 'nospecchar123',
@@ -288,7 +283,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=registry',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => self::EMAIL,
                 'email_retype' => self::EMAIL,
                 'password' => self::PASSWORD_FIRST,
@@ -307,7 +302,7 @@ class AccountTest extends ApiTest
     {
         $this->invoker->getInstance(TestCleaner::class)->deleteMails();
         $contents = $this->get(
-            'q=resend'
+            'q=resend&csrf=' . $this->getCsrf()
         );
         //        $this->assertStringContains('Activate your account', $contents);
         $this->assertStringContains('We re-sent an activation email', $contents);
@@ -324,7 +319,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=registry',
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => self::EMAIL,
                 'email_retype' => self::EMAIL,
                 'password' => self::PASSWORD_FIRST,
@@ -374,13 +369,14 @@ class AccountTest extends ApiTest
     protected function canSeeActivationFails(): void
     {
         $contents = $this->get(
-            'q=activate'
+            'q=activate&csrf=' . $this->getCsrf()
         );
         $this->assertStringContains('Account activation failed', $contents);
         $this->assertStringContains('Mandatory', $contents);
         
         $contents = $this->get(
             'q=activate&token=wrong-token'
+                . '&csrf=' . $this->getCsrf()
         );
         $this->assertStringContains('Invalid token', $contents);
     }
@@ -399,6 +395,7 @@ class AccountTest extends ApiTest
         );
         $contents = $this->get(
             'q=activate&token=' . ($user['token'] ?? '')
+                . '&csrf=' . $this->getCsrf()
         );
         $this->assertStringContains('Account is now activated', $contents);
     }
@@ -417,6 +414,7 @@ class AccountTest extends ApiTest
         );
         $contents = $this->get(
             'q=activate&token=' . ($user['token'] ?? '')
+                . '&csrf=' . $this->getCsrf()
         );
         $this->assertStringContains('Invalid token', $contents);
     }
@@ -431,9 +429,10 @@ class AccountTest extends ApiTest
     protected function canSeeLoginWorks(?string $password = null): void
     {
         $contents = $this->post(
-            'q=login',
+            'q=login'
+                . '&csrf=' . $this->getCsrf(),
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => $this::EMAIL,
                 'password' => null === $password ? $this::PASSWORD : $password,
             ]
@@ -450,6 +449,7 @@ class AccountTest extends ApiTest
     {
         $contents = $this->get(
             'q=logout'
+                . '&csrf=' . $this->getCsrf()
         );
         $this->assertStringContains('Logout success', $contents);
     }
@@ -481,18 +481,20 @@ class AccountTest extends ApiTest
     protected function canSeeResetPasswordRequestFails(): void
     {
         $contents = $this->post(
-            'q=password-reset-request',
+            'q=password-reset-request'
+                . '&csrf=' . $this->getCsrf(),
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
             //                'email' => 'nonexist@useremail.com',
             ]
         );
         $this->assertStringContains('Reset password request failed', $contents);
         
         $contents = $this->post(
-            'q=password-reset-request',
+            'q=password-reset-request'
+                . '&csrf=' . $this->getCsrf(),
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => 'nonexist@useremail.com',
             ]
         );
@@ -507,9 +509,10 @@ class AccountTest extends ApiTest
     protected function canSeeResetPasswordWorks(): void
     {
         $contents = $this->post(
-            'q=password-reset-request',
+            'q=password-reset-request'
+                . '&csrf=' . $this->getCsrf(),
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'email' => self::EMAIL,
             ]
         );
@@ -525,6 +528,7 @@ class AccountTest extends ApiTest
     {
         $contents = $this->post(
             'q=password-change&token=wron-token'
+                . '&csrf=' . $this->getCsrf()
         );
         $this->assertStringContains('Password change failed', $contents);
         $this->assertStringContains('Mandatory', $contents);
@@ -539,7 +543,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=password-change&token=' . $token,
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
             //                'password' => '',
             //                'password_retype' => '',
             ]
@@ -551,7 +555,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=password-change&token=' . $token,
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'password' => '',
             //                'password_retype' => '',
             ]
@@ -563,7 +567,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=password-change&token=' . $token,
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'password' => 'short',
                 'password_retype' => '',
             ]
@@ -575,7 +579,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=password-change&token=' . $token,
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'password' => 'longwithoutnumbers',
                 'password_retype' => '',
             ]
@@ -587,7 +591,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=password-change&token=' . $token,
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'password' => 'withoutspecchar1234',
                 'password_retype' => '',
             ]
@@ -612,6 +616,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=password-change',
             [
+                'csrf' => $this->getCsrf(),
                 'token' => $user['token'].'wrong!!',
                 'password' => 'Asd123!@#',
                 'password_retype' => 'Asd123!@#'
@@ -635,7 +640,7 @@ class AccountTest extends ApiTest
         $contents = $this->post(
             'q=password-change&token=' . ($user['token'] ?? ''),
             [
-                'csrf' => $this->session->get('csrf'),
+                'csrf' => $this->getCsrf(),
                 'password' => self::PASSWORD,
                 'password_retype' => self::PASSWORD,
             ]

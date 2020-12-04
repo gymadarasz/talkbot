@@ -13,6 +13,7 @@
 
 namespace Madsoft\Library\Account;
 
+use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
 use Madsoft\Library\Encrypter;
 use Madsoft\Library\Logger;
@@ -39,11 +40,11 @@ class PasswordChange extends ArrayResponder
     protected Encrypter $encrypter;
     protected Logger $logger;
 
-
     /**
      * Method __construct
      *
      * @param Messages         $messages  messages
+     * @param Csrf             $csrf      csrf
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Encrypter        $encrypter encrypter
@@ -51,12 +52,13 @@ class PasswordChange extends ArrayResponder
      */
     public function __construct(
         Messages $messages,
+        Csrf $csrf,
         Database $database,
         AccountValidator $validator,
         Encrypter $encrypter,
         Logger $logger
     ) {
-        parent::__construct($messages);
+        parent::__construct($messages, $csrf);
         $this->database = $database;
         $this->validator = $validator;
         $this->encrypter = $encrypter;

@@ -13,6 +13,7 @@
 
 namespace Madsoft\Library\Account;
 
+use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
 use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
@@ -43,17 +44,19 @@ class Activate extends ArrayResponder
      * Method __construct
      *
      * @param Messages         $messages  messages
+     * @param Csrf             $csrf      csrf
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
+        Csrf $csrf,
         Database $database,
         AccountValidator $validator,
         Logger $logger
     ) {
-        parent::__construct($messages);
+        parent::__construct($messages, $csrf);
         $this->database = $database;
         $this->validator = $validator;
         $this->logger = $logger;

@@ -68,8 +68,7 @@ class ApiApp extends App
     public function getOutputJson(): string
     {
         return $this->invoker->getInstance(Json::class)->encode(
-            ($this->invoker->getInstance(Router::class))
-                ->routing($this->routes)
+            ($this->invoker->getInstance(Router::class))->routing($this->routes)
         );
     }
 }

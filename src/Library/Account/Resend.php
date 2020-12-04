@@ -16,10 +16,10 @@ namespace Madsoft\Library\Account;
 use Madsoft\Library\Csrf;
 use Madsoft\Library\Messages;
 use Madsoft\Library\Responder\ArrayResponder;
-use Madsoft\Library\User;
+use Madsoft\Library\Session;
 
 /**
- * Logout
+ * Resend
  *
  * @category  PHP
  * @package   Madsoft\Library\Account
@@ -28,39 +28,48 @@ use Madsoft\Library\User;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class Logout extends ArrayResponder
+class Resend extends ArrayResponder
 {
-    protected User $user;
+    protected AccountMailer $mailer;
     
     /**
      * Method __construct
      *
-     * @param Messages $messages messages
-     * @param Csrf     $csrf     csrf
-     * @param User     $user     user
+     * @param Messages      $messages messages
+     * @param Csrf          $csrf     csrf
+     * @param AccountMailer $mailer   mailer
      */
     public function __construct(
         Messages $messages,
         Csrf $csrf,
-        User $user
+        AccountMailer $mailer
     ) {
         parent::__construct($messages, $csrf);
-        $this->user = $user;
+        $this->mailer = $mailer;
     }
-
     /**
-     * Method getLogoutResponse
+     * Method getResendResponse
+     *
+     * @param Session $session session
      *
      * @return mixed[]
      *
      * @suppress PhanUnreferencedPublicMethod
      */
-    public function getLogoutResponse(): array
+    public function getResendResponse(Session $session): array
     {
-        $this->user->logout();
+        $resend = $session->get('resend', ['email' => '', 'token' => null]);
+        $email = $resend['email'];
+        $token = $resend['token'];
+        if (!$this->mailer->sendActivationEmail($email, $token)) {
+            return $this->getErrorResponse(
+                'Activation email is not sent'
+            );
+        }
         
         return $this->getSuccessResponse(
-            'Logout success'
+            'We re-sent an activation email to your email account, '
+                . 'please follow the instructions.'
         );
     }
 }

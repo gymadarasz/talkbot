@@ -45,11 +45,11 @@ show_next "phpstan"
 vendor/bin/phpstan analyse --level 8 src
 vendor/bin/phpstan analyse --level 8 tests
 
-show_next "phpmd"
-vendor/bin/phpmd src,tests text cleancode,codesize,controversial,design,naming,unusedcode
-
 show_next "phan"
 vendor/bin/phan
+
+show_next "phpmd"
+vendor/bin/phpmd src,tests text cleancode,codesize,controversial,design,naming,unusedcode
 
 show_next "test.php"
 php src/Library/test.php

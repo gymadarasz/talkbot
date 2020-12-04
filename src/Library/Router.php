@@ -68,6 +68,13 @@ class Router
      */
     public function routing(array $routes): array
     {
+        $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
+        
+        if ($route === 'csrf') {
+            return $this->invoker->getInstance(Csrf::class)->getAsArray();
+        }
+        $this->invoker->getInstance(Csrf::class)->check();
+        
         $area = 'public';
         if (!$this->user->isVisitor()) {
             $area = 'protected';
@@ -76,7 +83,6 @@ class Router
             }
         }
         if (!isset($routes[$area])) {
-            $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
             throw new RuntimeException(
                 'Requested area has not any routing point: ' . $area . ' ?'
                     . self::ROUTE_QUERY_KEY . '=' . $route .
@@ -85,7 +91,6 @@ class Router
         }
         $method = $this->server->getMethod();
         if (!isset($routes[$area][$method])) {
-            $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
             throw new RuntimeException(
                 'Route is not defined for method on area: '
                     . 'routes[' . $area . '][' . $method . '] ?'
@@ -93,7 +98,6 @@ class Router
                     ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
             );
         }
-        $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
         if (!isset($routes[$area][$method][$route])) {
             throw new RuntimeException(
                 'Route is not defined on area for query: '

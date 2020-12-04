@@ -24,7 +24,7 @@ return $routes = [
     'public' => [ // for unautorized visitors
         'GET' => [
             'resend' => [
-                'class' => Registry::class,
+                'class' => Resend::class,
                 'method' => 'getResendResponse',
             ],
             'activate' => [

@@ -13,6 +13,7 @@
 
 namespace Madsoft\Library\Crud;
 
+use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
 use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
@@ -49,6 +50,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      * Method __construct
      *
      * @param Messages  $messages  messages
+     * @param Csrf      $csrf      csrf
      * @param Database  $database  database
      * @param Params    $params    params
      * @param Validator $validator validator
@@ -56,12 +58,13 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      */
     public function __construct(
         Messages $messages,
+        Csrf $csrf,
         Database $database,
         Params $params,
         Validator $validator,
         Logger $logger
     ) {
-        parent::__construct($messages);
+        parent::__construct($messages, $csrf);
         $this->database = $database;
         $this->params = $params;
         $this->validator = $validator;
