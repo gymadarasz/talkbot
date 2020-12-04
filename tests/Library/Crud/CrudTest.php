@@ -343,6 +343,82 @@ class CrudTest extends ApiTest
     }
     
     /**
+     * Method testCreateDelete
+     *
+     * @param Json $json json
+     *
+     * @return void
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function testCreateDelete(Json $json): void
+    {
+        $this->checkEmailNotExists($json, 'createduser1@testing.com');
+        
+        $result = $json->decode(
+            $this->post(
+                'q=create&table=user'
+                    . '&csrf=' . $this->getCsrf(),
+                [
+                    'values' =>
+                    [
+                        'email' => 'createduser1@testing.com',
+                        'hash' => ''
+                    ]
+                ]
+            )
+        );
+        $this->assertTrue(
+            in_array('Operation success', $result['messages']['success'], true)
+        );
+        $uid = (int)$result['insertId'];
+        
+        $user = $json->decode(
+            $this->get(
+                'q=view&table=user&fields=id,email&filter[id]=' . $uid
+                    . '&csrf=' . $this->getCsrf()
+            )
+        );
+        $this->assertEquals($uid, (int)$user['id']);
+        $this->assertEquals('createduser1@testing.com', $user['email']);
+        
+        $result = $json->decode(
+            $this->get(
+                'q=delete&table=user&filter[id]=' . $uid
+                    . '&csrf=' . $this->getCsrf()
+            )
+        );
+        $this->assertTrue(
+            in_array('Operation success', $result['messages']['success'], true)
+        );
+        $this->assertEquals(1, (int)$result['affected']);
+        
+        $this->checkEmailNotExists($json, 'createduser1@testing.com');
+    }
+
+    /**
+     * Method checkEmailNotExists
+     *
+     * @param Json   $json  json
+     * @param string $email email
+     *
+     * @return void
+     */
+    protected function checkEmailNotExists(Json $json, string $email): void
+    {
+        $tmpUsers = $json->decode(
+            $this->get(
+                'q=list&table=user&fields=id,email'
+                    . '&csrf=' . $this->getCsrf()
+            )
+        )['rows'];
+        
+        foreach ($tmpUsers as $user) {
+            $this->assertNotEquals($email, $user['email']);
+        }
+    }
+    
+    /**
      * Method checkSetUserEmail
      *
      * @param Json   $json  json

@@ -94,6 +94,21 @@ abstract class ArrayResponder
     ): array {
         return $this->getSuccessResponse($message, ['affected' => $affectedRows]);
     }
+
+    /**
+     * Method getInsertResponse
+     *
+     * @param int    $insertId insertId
+     * @param string $message  message
+     *
+     * @return mixed[]
+     */
+    public function getInsertResponse(
+        int $insertId,
+        string $message = self::LBL_SUCCESS
+    ): array {
+        return $this->getSuccessResponse($message, ['insertId' => $insertId]);
+    }
     
     /**
      * Method getSuccessResponse

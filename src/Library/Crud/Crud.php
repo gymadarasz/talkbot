@@ -19,6 +19,7 @@ use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
 use Madsoft\Library\MysqlEmptyException;
 use Madsoft\Library\MysqlNoAffectException;
+use Madsoft\Library\MysqlNoInsertException;
 use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
@@ -171,7 +172,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
                         'filterLogic',
                         self::DEFAULT_FILTER_LOGIC
                     ),
-                    (int)$this->params->get('limit', 1)
+                    (int)$this->params->get('limit', self::DEFAULT_LIMIT)
                 )
             );
         } catch (MysqlNoAffectException $exception) {
@@ -189,7 +190,22 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      */
     public function getCreateResponse(): array
     {
-        return ['unimp'];// TODO
+        try {
+            $errors = $this->validateParams();
+            if ($errors) {
+                return $this->getErrorResponse('Invalid parameter(s)', $errors);
+            }
+            
+            return $this->getInsertResponse(
+                $this->database->addRow(
+                    $this->params->get('table', ''),
+                    $this->params->get('values', [])
+                )
+            );
+        } catch (MysqlNoInsertException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Not inserted');
     }
     
     /**
@@ -201,7 +217,27 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      */
     public function getDeleteResponse(): array
     {
-        return ['unimp'];// TODO
+        try {
+            $errors = $this->validateParams();
+            if ($errors) {
+                return $this->getErrorResponse('Invalid parameter(s)', $errors);
+            }
+            
+            return $this->getAffectResponse(
+                $this->database->delRow(
+                    $this->params->get('table', ''),
+                    $this->params->get('filter', []),
+                    $this->params->get(
+                        'filterLogic',
+                        self::DEFAULT_FILTER_LOGIC
+                    ),
+                    (int)$this->params->get('limit', self::DEFAULT_LIMIT)
+                )
+            );
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Not affected');
     }
     
     /**

@@ -403,7 +403,6 @@ class Database
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
-     * @param int     $offset       offset
      *
      * @return int
      */
@@ -411,15 +410,13 @@ class Database
         string $tableUnsafe,
         array $filterUnsafe,
         string $filterLogic = 'AND',
-        int $limit = 1,
-        int $offset = 0
+        int $limit = 1
     ): int {
         return $this->del(
             $tableUnsafe,
             $filterUnsafe,
             $filterLogic,
             $limit,
-            $offset,
             -1
         );
     }
@@ -431,7 +428,6 @@ class Database
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
-     * @param int     $offset       offset
      *
      * @return int
      */
@@ -439,15 +435,13 @@ class Database
         string $tableUnsafe,
         array $filterUnsafe,
         string $filterLogic = 'AND',
-        int $limit = 0,
-        int $offset = 0
+        int $limit = 0
     ): int {
         return $this->delRow(
             $tableUnsafe,
             $filterUnsafe,
             $filterLogic,
-            $limit,
-            $offset
+            $limit
         );
     }
     
@@ -458,7 +452,6 @@ class Database
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
-     * @param int     $offset       offset
      *
      * @return int
      */
@@ -466,15 +459,13 @@ class Database
         string $tableUnsafe,
         array $filterUnsafe,
         string $filterLogic = 'AND',
-        int $limit = 1,
-        int $offset = 0
+        int $limit = 1
     ): int {
         return $this->del(
             $tableUnsafe,
             $filterUnsafe,
             $filterLogic,
             $limit,
-            $offset,
             0
         );
     }
@@ -486,7 +477,6 @@ class Database
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
-     * @param int     $offset       offset
      *
      * @return int
      */
@@ -494,15 +484,13 @@ class Database
         string $tableUnsafe,
         array $filterUnsafe,
         string $filterLogic = 'AND',
-        int $limit = 0,
-        int $offset = 0
+        int $limit = 0
     ): int {
         return $this->delOwnedRow(
             $tableUnsafe,
             $filterUnsafe,
             $filterLogic,
-            $limit,
-            $offset
+            $limit
         );
     }
     
@@ -513,7 +501,6 @@ class Database
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
-     * @param int     $offset       offset
      * @param int     $uid          uid
      *
      * @return int
@@ -524,7 +511,6 @@ class Database
         array $filterUnsafe,
         string $filterLogic = 'AND',
         int $limit = 1,
-        int $offset = 0,
         int $uid = 0
     ): int {
         if ($limit < 0) {
@@ -541,7 +527,7 @@ class Database
         $query = "DELETE FROM `$table`";
         $query .= $this->getWhere($table, $filterUnsafe, $filterLogic);
         if ($limit >= 1) {
-            $query .= " LIMIT $offset, $limit";
+            $query .= " LIMIT $limit";
         }
         return $this->mysql->delete($query);
     }
