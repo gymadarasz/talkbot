@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 01, 2020 at 08:01 PM
+-- Generation Time: Dec 04, 2020 at 11:32 PM
 -- Server version: 8.0.22-0ubuntu0.20.04.2
 -- PHP Version: 7.4.3
 
@@ -56,9 +56,18 @@ CREATE TABLE `user` (
   `email` varchar(128) NOT NULL,
   `group` enum('user','admin') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'user',
   `hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `token` varchar(255) NOT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id`, `email`, `group`, `hash`, `token`, `active`) VALUES
+(9094, 'test1', 'user', 'test', '1', 0),
+(9095, 'test2', 'user', 'test', '2', 0),
+(9096, 'test3', 'user', 'test', '3', 0);
 
 --
 -- Indexes for dumped tables
@@ -84,7 +93,7 @@ ALTER TABLE `script`
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `token` (`token`),
+  ADD UNIQUE KEY `token` (`token`) USING BTREE,
   ADD KEY `active` (`active`);
 
 --
@@ -95,7 +104,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `ownership`
 --
 ALTER TABLE `ownership`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=907;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1185;
 
 --
 -- AUTO_INCREMENT for table `script`
@@ -107,7 +116,7 @@ ALTER TABLE `script`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2679;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9097;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

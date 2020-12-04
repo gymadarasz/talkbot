@@ -64,7 +64,7 @@ abstract class CleanTest extends Test
     /**
      * Method getRoutes
      *
-     * @return string[][][][]
+     * @return mixed[]
      */
     protected function getRoutes(): array
     {

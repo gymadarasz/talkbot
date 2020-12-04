@@ -134,7 +134,7 @@ abstract class ApiTest extends CleanTest
     /**
      * Method callApi
      *
-     * @param string[][][][] $routes routes
+     * @param mixed[] $routes routes
      *
      * @return void
      */

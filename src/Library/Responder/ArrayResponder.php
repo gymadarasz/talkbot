@@ -26,7 +26,7 @@ use Madsoft\Library\Messages;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-abstract class ArrayResponder
+class ArrayResponder
 {
     const LBL_SUCCESS = 'Operation success';
     const LBL_ERROR = 'Operation failed';

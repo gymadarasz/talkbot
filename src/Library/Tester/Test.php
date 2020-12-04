@@ -39,6 +39,8 @@ abstract class Test
      */
     protected array $failInfos = [];
     
+    protected static int $lnlen = 0;
+    
     protected int $asserts = 0;
     protected int $success = 0;
     protected int $fails = 0;
@@ -69,6 +71,11 @@ abstract class Test
     protected function showTick(): void
     {
         echo '.';
+        $this::$lnlen++;
+        if ($this::$lnlen > 50) {
+            echo "\n";
+            $this::$lnlen = 0;
+        }
     }
     
     /**

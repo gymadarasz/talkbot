@@ -31,14 +31,14 @@ class ApiApp extends App
     /**
      * Variable $routes
      *
-     * @var string[][][][]
+     * @var mixed[]
      */
     protected array $routes;
     
     /**
      * Method setRoutes
      *
-     * @param string[][][][] $routes routes
+     * @param mixed[] $routes routes
      *
      * @return self
      */

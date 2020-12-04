@@ -30,6 +30,8 @@ use function count;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ *
  * @suppress PhanUnreferencedClass
  */
 class CrudTest extends ApiTest
@@ -394,6 +396,42 @@ class CrudTest extends ApiTest
         $this->assertEquals(1, (int)$result['affected']);
         
         $this->checkEmailNotExists($json, 'createduser1@testing.com');
+    }
+    
+    /**
+     * Method testValidatons
+     *
+     * @param Json $json json
+     *
+     * @return void
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function testValidatons(Json $json): void
+    {
+        $results = $json->decode($this->get('q=list&csrf=' . $this->getCsrf()));
+        $this->assertTrue(
+            in_array('Invalid parameter(s)', $results['messages']['error'], true)
+        );
+        $this->assertEquals(['table' =>['Mandatory']], $results['errors']);
+        
+        $results = $json->decode($this->post('q=create&csrf=' . $this->getCsrf()));
+        $this->assertTrue(
+            in_array('Invalid parameter(s)', $results['messages']['error'], true)
+        );
+        $this->assertEquals(['table' =>['Mandatory']], $results['errors']);
+        
+        $results = $json->decode($this->post('q=edit&csrf=' . $this->getCsrf()));
+        $this->assertTrue(
+            in_array('Invalid parameter(s)', $results['messages']['error'], true)
+        );
+        $this->assertEquals(['table' =>['Mandatory']], $results['errors']);
+        
+        $results = $json->decode($this->get('q=delete&csrf=' . $this->getCsrf()));
+        $this->assertTrue(
+            in_array('Invalid parameter(s)', $results['messages']['error'], true)
+        );
+        $this->assertEquals(['table' =>['Mandatory']], $results['errors']);
     }
 
     /**

@@ -8,112 +8,796 @@
 	},
 	"item": [
 		{
-			"name": "login",
-			"request": {
-				"url": {
-					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"sandbox",
-						"talkbot",
-						"src",
-						"api.php"
-					],
-					"query": [
-						{
-							"key": "q",
-							"value": "login",
-							"equals": true,
-							"description": ""
-						}
-					],
-					"variable": []
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "email",
-							"value": "tester@testing.com",
-							"description": "",
-							"type": "text"
+			"name": "Account",
+			"description": "",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=login&csrf=813314731",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "login",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "csrf",
+									"value": "813314731",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
 						},
-						{
-							"key": "password",
-							"value": "Pass1234!",
-							"description": "",
-							"type": "text"
-						}
-					]
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pass1234!",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
 				},
-				"description": ""
-			},
-			"response": []
+				{
+					"name": "registry",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=registry&csrf=305498391",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "registry",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "csrf",
+									"value": "305498391",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "email_retype",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pass1234!",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "resend",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=resend",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "resend",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "email_retype",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pass1234!",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "activate",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=activate&token=JDJ5JDEyJE1mTENMRTcubVYvNmdZUjU4QUNTWXVPSVgzTHJuMVo3VTRuYlFWcGZscjlqNHpEQUZrWUNP&csrf=346909658",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "activate",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "token",
+									"value": "JDJ5JDEyJE1mTENMRTcubVYvNmdZUjU4QUNTWXVPSVgzTHJuMVo3VTRuYlFWcGZscjlqNHpEQUZrWUNP",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "csrf",
+									"value": "346909658",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "email_retype",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pass1234!",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=logout&csrf=539670480",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "logout",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "csrf",
+									"value": "539670480",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "email_retype",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pass1234!",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "password-reset-request",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=password-reset-request",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "password-reset-request",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "password-change",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=password-change",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "password-change",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "token",
+									"value": "JDJ5JDEyJGlwc3FFRGdVUjlCSjdpUDZWOHh2a3VlQkMzUmZXaU13a3N2TGY2WlBieW85WkhIbzFhUjhh",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pass1234!2",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password_retype",
+									"value": "Pass1234!2",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "registry",
-			"request": {
-				"url": {
-					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=registry",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"sandbox",
-						"talkbot",
-						"src",
-						"api.php"
-					],
-					"query": [
-						{
-							"key": "q",
-							"value": "registry",
-							"equals": true,
-							"description": ""
-						}
-					],
-					"variable": []
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "email",
-							"value": "tester@testing.com",
-							"description": "",
-							"type": "text"
+			"name": "Crud",
+			"description": "",
+			"item": [
+				{
+					"name": "list",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=list&table=user&fields=id,email,group&filter[group]=user&filterLogic=AND&limit=25&offset=0&csrf=586952762",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "list",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "table",
+									"value": "user",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "fields",
+									"value": "id,email,group",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "filter[group]",
+									"value": "user",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "filterLogic",
+									"value": "AND",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "limit",
+									"value": "25",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "csrf",
+									"value": "586952762",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
 						},
-						{
-							"key": "email_retype",
-							"value": "tester@testing.com",
-							"description": "",
-							"type": "text"
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "email_retype",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pass1234!",
+									"description": "",
+									"type": "text"
+								}
+							]
 						},
-						{
-							"key": "password",
-							"value": "Pass1234!",
-							"description": "",
-							"type": "text"
-						}
-					]
+						"description": ""
+					},
+					"response": []
 				},
-				"description": ""
-			},
-			"response": []
+				{
+					"name": "view",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=view&table=user&fields=id,email,group&filter[email]=tester@testing.com&filterLogic=AND&csrf=536672679",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "view",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "table",
+									"value": "user",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "fields",
+									"value": "id,email,group",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "filter[email]",
+									"value": "tester@testing.com",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "filterLogic",
+									"value": "AND",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "csrf",
+									"value": "536672679",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "email_retype",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pass1234!",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=edit&table=user&filter[email]=tester@testing.com&csrf=997394654",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "edit",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "table",
+									"value": "user",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "filter[email]",
+									"value": "tester@testing.com",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "csrf",
+									"value": "997394654",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "values[group]",
+									"value": "admin",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=create&table=user&csrf=271455099",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "create",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "table",
+									"value": "user",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "csrf",
+									"value": "271455099",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "values[email]",
+									"value": "newuser1@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "values[group]",
+									"value": "user",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "values[token]",
+									"value": "",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "values[hash]",
+									"value": "",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"url": {
+							"raw": "http://localhost/sandbox/talkbot/src/api.php?q=delete&table=user&filter[email]=newuser1@testing.com&csrf=242528219",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sandbox",
+								"talkbot",
+								"src",
+								"api.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "delete",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "table",
+									"value": "user",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "filter[email]",
+									"value": "newuser1@testing.com",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "csrf",
+									"value": "242528219",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "email_retype",
+									"value": "tester@testing.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pass1234!",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "resend",
+			"name": "debug start",
 			"request": {
 				"url": {
-					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=resend",
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?XDEBUG_SESSION_START=netbeans-xdebug",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -126,8 +810,8 @@
 					],
 					"query": [
 						{
-							"key": "q",
-							"value": "resend",
+							"key": "XDEBUG_SESSION_START",
+							"value": "netbeans-xdebug",
 							"equals": true,
 							"description": ""
 						}
@@ -164,10 +848,10 @@
 			"response": []
 		},
 		{
-			"name": "activate",
+			"name": "debug end",
 			"request": {
 				"url": {
-					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=activate&token=JDJ5JDEyJElpTGN5N29qeUtmY1VCa2huSE1TdmV0RGNYRVQ2TTZXZTJ6NExrUGdjUG1zclAyMlVFTG82",
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?XDEBUG_SESSION_STOP_NO_EXEC=netbeans-xdebug",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -180,14 +864,8 @@
 					],
 					"query": [
 						{
-							"key": "q",
-							"value": "activate",
-							"equals": true,
-							"description": ""
-						},
-						{
-							"key": "token",
-							"value": "JDJ5JDEyJElpTGN5N29qeUtmY1VCa2huSE1TdmV0RGNYRVQ2TTZXZTJ6NExrUGdjUG1zclAyMlVFTG82",
+							"key": "XDEBUG_SESSION_STOP_NO_EXEC",
+							"value": "netbeans-xdebug",
 							"equals": true,
 							"description": ""
 						}
@@ -224,10 +902,10 @@
 			"response": []
 		},
 		{
-			"name": "logout",
+			"name": "csrf",
 			"request": {
 				"url": {
-					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=logout",
+					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=csrf",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -241,7 +919,7 @@
 					"query": [
 						{
 							"key": "q",
-							"value": "logout",
+							"value": "csrf",
 							"equals": true,
 							"description": ""
 						}
@@ -268,162 +946,6 @@
 						{
 							"key": "password",
 							"value": "Pass1234!",
-							"description": "",
-							"type": "text"
-						}
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "password-reset-request",
-			"request": {
-				"url": {
-					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=password-reset-request",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"sandbox",
-						"talkbot",
-						"src",
-						"api.php"
-					],
-					"query": [
-						{
-							"key": "q",
-							"value": "password-reset-request",
-							"equals": true,
-							"description": ""
-						}
-					],
-					"variable": []
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "email",
-							"value": "tester@testing.com",
-							"description": "",
-							"type": "text"
-						}
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "password-reset",
-			"request": {
-				"url": {
-					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=password-reset&token=JDJ5JDEyJGlwc3FFRGdVUjlCSjdpUDZWOHh2a3VlQkMzUmZXaU13a3N2TGY2WlBieW85WkhIbzFhUjhh",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"sandbox",
-						"talkbot",
-						"src",
-						"api.php"
-					],
-					"query": [
-						{
-							"key": "q",
-							"value": "password-reset",
-							"equals": true,
-							"description": ""
-						},
-						{
-							"key": "token",
-							"value": "JDJ5JDEyJGlwc3FFRGdVUjlCSjdpUDZWOHh2a3VlQkMzUmZXaU13a3N2TGY2WlBieW85WkhIbzFhUjhh",
-							"equals": true,
-							"description": ""
-						}
-					],
-					"variable": []
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "email",
-							"value": "tester@testing.com",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "email_retype",
-							"value": "tester@testing.com",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "Pass1234!",
-							"description": "",
-							"type": "text"
-						}
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "password-change",
-			"request": {
-				"url": {
-					"raw": "http://localhost/sandbox/talkbot/src/api.php?q=password-change",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"sandbox",
-						"talkbot",
-						"src",
-						"api.php"
-					],
-					"query": [
-						{
-							"key": "q",
-							"value": "password-change",
-							"equals": true,
-							"description": ""
-						}
-					],
-					"variable": []
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "token",
-							"value": "JDJ5JDEyJGlwc3FFRGdVUjlCSjdpUDZWOHh2a3VlQkMzUmZXaU13a3N2TGY2WlBieW85WkhIbzFhUjhh",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "Pass1234!2",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "password_retype",
-							"value": "Pass1234!2",
 							"description": "",
 							"type": "text"
 						}

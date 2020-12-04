@@ -29,16 +29,36 @@ use RuntimeException;
  */
 class Params implements Assoc
 {
+    /**
+     * Variable $defaults
+     *
+     * @var mixed[]
+     */
+    protected array $defaults = [];
+    
     protected Server $server;
     
     /**
      * Method __construct
      *
-     * @param \Madsoft\Library\Server $server server
+     * @param Server $server server
      */
     public function __construct(Server $server)
     {
         $this->server = $server;
+    }
+    
+    /**
+     * Method setDefaults
+     *
+     * @param mixed[] $defaults defaults
+     *
+     * @return self
+     */
+    public function setDefaults(array $defaults): self
+    {
+        $this->defaults = $defaults;
+        return $this;
     }
     
     /**
@@ -71,8 +91,12 @@ class Params implements Assoc
         if (isset($_REQUEST[$key])) {
             return $_REQUEST[$key];
         }
+        
         if (null !== $default) {
             return $default;
+        }
+        if (isset($this->defaults[$key]) && null !== $this->defaults[$key]) {
+            return $this->defaults[$key];
         }
         throw new RuntimeException('Parameter not found: "' . $key . '"');
     }
