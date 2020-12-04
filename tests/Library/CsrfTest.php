@@ -62,6 +62,7 @@ class CsrfTest extends Test
         
         $session->set('csrf', 'tadaaah');
         $_SERVER['REQUEST_METHOD'] = 'GET';
+        unset($_REQUEST['csrf']);
         unset($_GET['csrf']);
         try {
             $csrf->check();

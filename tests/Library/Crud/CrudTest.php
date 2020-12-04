@@ -321,6 +321,66 @@ class CrudTest extends ApiTest
     }
     
     /**
+     * Method testEdit
+     *
+     * @param Json $json json
+     *
+     * @return void
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function testEdit(Json $json): void
+    {
+        $tmpUser = $json->decode(
+            $this->get(
+                'q=list&table=user&fields=id,email'
+                    . '&csrf=' . $this->getCsrf()
+            )
+        )['rows'][0];
+        
+        $this->checkSetUserEmail($json, (int)$tmpUser['id'], 'temp@email.com');
+        $this->checkSetUserEmail($json, (int)$tmpUser['id'], $tmpUser['email']);
+    }
+    
+    /**
+     * Method checkSetUserEmail
+     *
+     * @param Json   $json  json
+     * @param int    $uid   uid
+     * @param string $email email
+     *
+     * @return void
+     */
+    protected function checkSetUserEmail(Json $json, int $uid, string $email): void
+    {
+        $result = $json->decode(
+            $this->post(
+                'q=edit&table=user&filter[id]=' . $uid
+                    . '&csrf=' . $this->getCsrf(),
+                [
+                    'values' =>
+                    [
+                        'email' => $email,
+                    ]
+                ]
+            )
+        );
+        $this->assertTrue(
+            in_array('Operation success', $result['messages']['success'], true)
+        );
+        $this->assertEquals(1, $result['affected']);
+        
+        $user = $json->decode(
+            $this->get(
+                'q=view&table=user&fields=id,email&filter[id]=' . $uid
+                    . '&csrf=' . $this->getCsrf()
+            )
+        );
+        $this->assertEquals($uid, (int)$user['id']);
+        $this->assertEquals($email, $user['email']);
+    }
+    
+    /**
      * Method getEmptyListErrorResponse
      *
      * @return string[][][]

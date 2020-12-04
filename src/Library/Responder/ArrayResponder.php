@@ -79,6 +79,21 @@ abstract class ArrayResponder
         $this->messages->add('success', $message);
         return $this->getResponse($data);
     }
+
+    /**
+     * Method getAffectResponse
+     *
+     * @param int    $affectedRows affectedRows
+     * @param string $message      message
+     *
+     * @return mixed[]
+     */
+    public function getAffectResponse(
+        int $affectedRows,
+        string $message = self::LBL_SUCCESS
+    ): array {
+        return $this->getSuccessResponse($message, ['affected' => $affectedRows]);
+    }
     
     /**
      * Method getSuccessResponse
@@ -95,7 +110,7 @@ abstract class ArrayResponder
         $this->messages->add('success', $message);
         return $this->getResponse($data);
     }
-
+    
     /**
      * Method getResponse
      *

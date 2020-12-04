@@ -24,6 +24,8 @@ return $routes = [
                 'class' => Crud::class,
                 'method' => 'getViewResponse',
             ],
+        ],
+        'POST' => [
             'edit' => [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',

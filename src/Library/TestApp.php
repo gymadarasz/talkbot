@@ -32,7 +32,6 @@ use RuntimeException;
  */
 class TestApp extends CliApp
 {
-    
     /**
      * Method run
      *

@@ -18,6 +18,7 @@ use Madsoft\Library\Database;
 use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
 use Madsoft\Library\MysqlEmptyException;
+use Madsoft\Library\MysqlNoAffectException;
 use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
@@ -81,9 +82,9 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     public function getListResponse(): array
     {
         try {
-            $errors = $this->validateListViewParams();
+            $errors = $this->validateParams();
             if ($errors) {
-                return $this->getErrorResponse('Invalid list parameter(s)', $errors);
+                return $this->getErrorResponse('Invalid parameter(s)', $errors);
             }
         
             // TODO order field (ASC/DESC)
@@ -121,9 +122,9 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     public function getViewResponse(): array
     {
         try {
-            $errors = $this->validateListViewParams();
+            $errors = $this->validateParams();
             if ($errors) {
-                return $this->getErrorResponse('Invalid view parameter(s)', $errors);
+                return $this->getErrorResponse('Invalid parameter(s)', $errors);
             }
         
             return $this->getResponse(
@@ -147,28 +148,6 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     }
     
     /**
-     * Method validateListViewParams
-     *
-     * @return string[][]
-     */
-    protected function validateListViewParams(): array
-    {
-        return $this->validator->getErrors(
-            [
-                'table' => [
-                    'value' => $this->params->get(
-                        'table',
-                        ''
-                    ),
-                    'rules' => [
-                        Mandatory::class => null,
-                    ],
-                ],
-            ]
-        );
-    }
-    
-    /**
      * Method getEditResponse
      *
      * @return mixed[]
@@ -177,7 +156,28 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      */
     public function getEditResponse(): array
     {
-        return ['unimp']; // TODO
+        try {
+            $errors = $this->validateParams();
+            if ($errors) {
+                return $this->getErrorResponse('Invalid parameter(s)', $errors);
+            }
+            
+            return $this->getAffectResponse(
+                $this->database->setRow(
+                    $this->params->get('table', ''),
+                    $this->params->get('values', []),
+                    $this->params->get('filter', []),
+                    $this->params->get(
+                        'filterLogic',
+                        self::DEFAULT_FILTER_LOGIC
+                    ),
+                    (int)$this->params->get('limit', 1)
+                )
+            );
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Not affected');
     }
     
     /**
@@ -202,5 +202,27 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     public function getDeleteResponse(): array
     {
         return ['unimp'];// TODO
+    }
+    
+    /**
+     * Method validateListViewParams
+     *
+     * @return string[][]
+     */
+    protected function validateParams(): array
+    {
+        return $this->validator->getErrors(
+            [
+                'table' => [
+                    'value' => $this->params->get(
+                        'table',
+                        ''
+                    ),
+                    'rules' => [
+                        Mandatory::class => null,
+                    ],
+                ],
+            ]
+        );
     }
 }
