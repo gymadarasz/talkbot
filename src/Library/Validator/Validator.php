@@ -44,7 +44,7 @@ class Validator
      * Method addErrors
      *
      * @param string[][] $errors errors
-     * @param string     $fname  fname
+     * @param string|int $fname  fname
      * @param mixed      $value  value
      * @param mixed[]    $rules  rules
      *
@@ -52,13 +52,15 @@ class Validator
      */
     protected function addErrors(
         array &$errors,
-        string $fname,
+        $fname,
         $value,
         array $rules
     ): array {
         $errs = $this->getValueErrors($value, $rules);
         if ($errs) {
-            $errors[$fname] = $errs;
+            $errors[$fname] = isset($errors[$fname]) ?
+                array_merge($errors[$fname], $errs) :
+                $errs;
         }
         return $errors;
     }

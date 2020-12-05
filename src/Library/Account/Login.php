@@ -80,7 +80,7 @@ class Login extends ArrayResponder
         
         $errors = $this->validator->validateLogin($params);
         if ($errors) {
-            return $this->loginError($errors, $email);
+            return $this->loginError($errors, $email, 'Invalid params');
         }
         
         try {
@@ -91,7 +91,7 @@ class Login extends ArrayResponder
             );
         } catch (MysqlNotFoundException $exception) {
             $this->logger->exception($exception);
-            return $this->loginError([]);
+            return $this->loginError([], $email, 'Not found');
         }
         
         
@@ -100,7 +100,7 @@ class Login extends ArrayResponder
             $params->get('password', '')
         );
         if ($errors) {
-            return $this->loginError($errors, $email);
+            return $this->loginError($errors, $email, 'Invalid data');
         }
         
         $this->user->login((int)$user['id'], $user['group']);
@@ -113,20 +113,25 @@ class Login extends ArrayResponder
     /**
      * Method loginError
      *
-     * @param string[][]  $reasons reasons
-     * @param string|null $email   email
+     * @param string[][]  $reasons    reasons
+     * @param string|null $email      email
+     * @param string      $mainreason mainreason
      *
      * @return mixed[]
      */
-    protected function loginError(array $reasons, ?string $email = null): array
-    {
+    protected function loginError(
+        array $reasons,
+        ?string $email = null,
+        string $mainreason = 'Unknown error'
+    ): array {
         $reasonstr = '';
         foreach ($reasons as $field => $errors) {
             $reasonstr .= " field '$field', error(s): '"
                     . implode("', '", $errors) . "'";
         }
         $this->logger->error(
-            "Login error, reason:$reasonstr" . ($email ? " (email: '$email')" : '')
+            "Login error, reason: $mainreason -$reasonstr"
+                . ($email ? " (email: '$email')" : '')
         );
         return $this->getErrorResponse('Login failed');
     }

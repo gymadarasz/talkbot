@@ -31,6 +31,15 @@ use RuntimeException;
  */
 abstract class ApiTest extends CleanTest
 {
+    /**
+     * Variable $routes
+     *
+     * @var string[]
+     *
+     * @suppress PhanReadOnlyProtectedProperty
+     */
+    protected array $routes = [];
+    
     protected Json $json;
 
     /**
@@ -47,6 +56,16 @@ abstract class ApiTest extends CleanTest
     ) {
         parent::__construct($router, $invoker);
         $this->json = $json;
+    }
+    
+    /**
+     * Method getRoutes
+     *
+     * @return mixed[]
+     */
+    protected function getRoutes(): array
+    {
+        return $this->router->loadRoutes($this->routes);
     }
     
     /**
@@ -121,13 +140,7 @@ abstract class ApiTest extends CleanTest
      */
     protected function getContents(callable $include, array $args = []): string
     {
-        ob_start();
-        $include(...$args);
-        $contents = ob_get_contents();
-        ob_end_clean();
-        if (false === $contents) {
-            throw new RuntimeException("Output buffering isn't active");
-        }
+        $contents = $include(...$args);
         return $contents;
     }
     
@@ -136,10 +149,10 @@ abstract class ApiTest extends CleanTest
      *
      * @param mixed[] $routes routes
      *
-     * @return void
+     * @return string
      */
-    public function callApi(array $routes): void
+    public function callApi(array $routes): string
     {
-        echo (new ApiApp(new Invoker()))->setRoutes($routes)->getOutputJson();
+        return (new ApiApp(new Invoker()))->setRoutes($routes)->getOutputJson();
     }
 }

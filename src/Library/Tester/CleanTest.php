@@ -31,15 +31,6 @@ use RuntimeException;
 abstract class CleanTest extends Test
 {
     /**
-     * Variable $routes
-     *
-     * @var string[]
-     *
-     * @suppress PhanReadOnlyProtectedProperty
-     */
-    protected array $routes;
-    
-    /**
      * Variable $globalsStack
      *
      * @var mixed[]
@@ -59,21 +50,6 @@ abstract class CleanTest extends Test
     {
         $this->router = $router;
         $this->invoker = $invoker;
-    }
-    
-    /**
-     * Method getRoutes
-     *
-     * @return mixed[]
-     */
-    protected function getRoutes(): array
-    {
-        return $this->router->loadRoutes(
-            array_merge(
-                $this->routes,
-                [__DIR__ . '/../../routes.api.php']
-            )
-        );
     }
     
     /**

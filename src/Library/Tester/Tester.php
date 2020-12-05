@@ -19,6 +19,7 @@ use Madsoft\Library\Coverage\Coverage;
 use Madsoft\Library\Folders;
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Logger;
+use ReflectionClass;
 use RuntimeException;
 
 /**
@@ -233,7 +234,7 @@ class Tester extends Test
      */
     protected function run(string $class): void
     {
-        $methods = get_class_methods($class);
+        $methods = $this->getClassExactMethods($class);
         $test = $this->getTest($class);
         if (method_exists($test, 'beforeAll')) {
             $this->invoker->invoke(['class' => $class, 'method' => 'beforeAll']);
@@ -275,6 +276,25 @@ class Tester extends Test
             $this->invoker->invoke(['class' => $class, 'method' => 'afterAll']);
         }
         $this->invoker->free($class);
+    }
+    
+    /**
+     * Method getClassExactMethods
+     *
+     * @param mixed $class class
+     *
+     * @return string[]
+     */
+    protected function getClassExactMethods($class): array
+    {
+        $ref = new ReflectionClass($class);
+        $methods = array();
+        foreach ($ref->getMethods() as $method) {
+            if ($method->class == $class) {
+                $methods[] = $method->name;
+            }
+        }
+        return $methods;
     }
     
     /**

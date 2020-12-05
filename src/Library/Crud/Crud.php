@@ -81,18 +81,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
             return $this->getResponse(
                 [
                     'rows' => $this->database->getRows(
-                        $this->params->get('table'),
-                        explode(
-                            ',',
-                            $this->params->get('fields', self::DEFAULT_FIELDS)
-                        ),
-                        $this->params->get('filter', []),
-                        $this->params->get(
-                            'filterLogic',
-                            self::DEFAULT_FILTER_LOGIC
-                        ),
-                        (int)$this->params->get('limit', self::DEFAULT_LIMIT),
-                        (int)$this->params->get('offset', self::DEFAULT_OFFSET)
+                        ...$this->getListParams()
                     ),
                 ]
             );
@@ -100,6 +89,52 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
             $this->logger->exception($exception);
         }
         return $this->getErrorResponse('Empty list');
+    }
+    
+    /**
+     * Method getListOwnedResponse
+     *
+     * @return mixed[]
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function getListOwnedResponse(): array
+    {
+        try {
+            return $this->getResponse(
+                [
+                    'rows' => $this->database->getOwnedRows(
+                        ...$this->getListParams()
+                    ),
+                ]
+            );
+        } catch (MysqlEmptyException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Empty list');
+    }
+    
+    /**
+     * Method getListParams
+     *
+     * @return mixed[]
+     */
+    protected function getListParams(): array
+    {
+        return [
+            $this->params->get('table'),
+            explode(
+                ',',
+                $this->params->get('fields', self::DEFAULT_FIELDS)
+            ),
+            $this->params->get('filter', []),
+            $this->params->get(
+                'filterLogic',
+                self::DEFAULT_FILTER_LOGIC
+            ),
+            (int)$this->params->get('limit', self::DEFAULT_LIMIT),
+            (int)$this->params->get('offset', self::DEFAULT_OFFSET)
+        ];
     }
     
     /**
@@ -113,23 +148,60 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     {
         try {
             return $this->getResponse(
-                $this->database->getRow(
-                    $this->params->get('table'),
-                    explode(
-                        ',',
-                        $this->params->get('fields', self::DEFAULT_FIELDS)
-                    ),
-                    $this->params->get('filter', []),
-                    $this->params->get(
-                        'filterLogic',
-                        self::DEFAULT_FILTER_LOGIC
+                [
+                    'row' => $this->database->getRow(
+                        ...$this->getViewParams()
                     )
-                )
+                ]
             );
         } catch (MysqlNotFoundException $exception) {
             $this->logger->exception($exception);
         }
         return $this->getErrorResponse('Not found');
+    }
+    
+    /**
+     * Method getViewOwnedResponse
+     *
+     * @return mixed[]
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function getViewOwnedResponse(): array
+    {
+        try {
+            return $this->getResponse(
+                [
+                    'row' => $this->database->getOwnedRow(
+                        ...$this->getViewParams()
+                    )
+                ]
+            );
+        } catch (MysqlNotFoundException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Not found');
+    }
+    
+    /**
+     * Method getViewParams
+     *
+     * @return mixed[]
+     */
+    protected function getViewParams(): array
+    {
+        return [
+            $this->params->get('table'),
+            explode(
+                ',',
+                $this->params->get('fields', self::DEFAULT_FIELDS)
+            ),
+            $this->params->get('filter', []),
+            $this->params->get(
+                'filterLogic',
+                self::DEFAULT_FILTER_LOGIC
+            )
+        ];
     }
     
     /**
@@ -144,20 +216,53 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
         try {
             return $this->getAffectResponse(
                 $this->database->setRow(
-                    $this->params->get('table'),
-                    $this->params->get('values', []),
-                    $this->params->get('filter', []),
-                    $this->params->get(
-                        'filterLogic',
-                        self::DEFAULT_FILTER_LOGIC
-                    ),
-                    (int)$this->params->get('limit', self::DEFAULT_LIMIT)
+                    ...$this->getEditParams()
                 )
             );
         } catch (MysqlNoAffectException $exception) {
             $this->logger->exception($exception);
         }
         return $this->getErrorResponse('Not affected');
+    }
+    
+    /**
+     * Method getEditOwnedResponse
+     *
+     * @return mixed[]
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function getEditOwnedResponse(): array
+    {
+        try {
+            return $this->getAffectResponse(
+                $this->database->setOwnedRow(
+                    ...$this->getEditParams()
+                )
+            );
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Not affected');
+    }
+    
+    /**
+     * Method getEditParams
+     *
+     * @return mixed[]
+     */
+    protected function getEditParams(): array
+    {
+        return [
+            $this->params->get('table'),
+            $this->params->get('values', []),
+            $this->params->get('filter', []),
+            $this->params->get(
+                'filterLogic',
+                self::DEFAULT_FILTER_LOGIC
+            ),
+            (int)$this->params->get('limit', self::DEFAULT_LIMIT)
+        ];
     }
     
     /**
@@ -172,14 +277,47 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
         try {
             return $this->getInsertResponse(
                 $this->database->addRow(
-                    $this->params->get('table'),
-                    $this->params->get('values', [])
+                    ...$this->getCreateParams()
                 )
             );
         } catch (MysqlNoInsertException $exception) {
             $this->logger->exception($exception);
         }
         return $this->getErrorResponse('Not inserted');
+    }
+    
+    /**
+     * Method getCreateOwnedResponse
+     *
+     * @return mixed[]
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function getCreateOwnedResponse(): array
+    {
+        try {
+            return $this->getInsertResponse(
+                $this->database->addOwnedRow(
+                    ...$this->getCreateParams()
+                )
+            );
+        } catch (MysqlNoInsertException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Not inserted');
+    }
+    
+    /**
+     * Method getCreateParams
+     *
+     * @return mixed[]
+     */
+    protected function getCreateParams(): array
+    {
+        return [
+            $this->params->get('table'),
+            $this->params->get('values', [])
+        ];
     }
     
     /**
@@ -194,18 +332,51 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
         try {
             return $this->getAffectResponse(
                 $this->database->delRow(
-                    $this->params->get('table'),
-                    $this->params->get('filter', []),
-                    $this->params->get(
-                        'filterLogic',
-                        self::DEFAULT_FILTER_LOGIC
-                    ),
-                    (int)$this->params->get('limit', self::DEFAULT_LIMIT)
+                    ...$this->getDeleteParams()
                 )
             );
         } catch (MysqlNoAffectException $exception) {
             $this->logger->exception($exception);
         }
         return $this->getErrorResponse('Not affected');
+    }
+    
+    /**
+     * Method getDeleteOwnedResponse
+     *
+     * @return mixed[]
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function getDeleteOwnedResponse(): array
+    {
+        try {
+            return $this->getAffectResponse(
+                $this->database->delOwnedRow(
+                    ...$this->getDeleteParams()
+                )
+            );
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
+        }
+        return $this->getErrorResponse('Not affected');
+    }
+    
+    /**
+     * Method getDeleteParams
+     *
+     * @return mixed[]
+     */
+    protected function getDeleteParams(): array
+    {
+        return [
+            $this->params->get('table'),
+            $this->params->get('filter', []),
+            $this->params->get(
+                'filterLogic',
+                self::DEFAULT_FILTER_LOGIC
+            ),
+            (int)$this->params->get('limit', self::DEFAULT_LIMIT)
+        ];
     }
 }

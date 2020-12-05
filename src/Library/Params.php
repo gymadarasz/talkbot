@@ -36,6 +36,13 @@ class Params implements Assoc
      */
     protected array $defaults = [];
     
+    /**
+     * Variable $overrides
+     *
+     * @var mixed[]
+     */
+    protected array $overrides = [];
+    
     protected Server $server;
     
     /**
@@ -46,6 +53,19 @@ class Params implements Assoc
     public function __construct(Server $server)
     {
         $this->server = $server;
+    }
+    
+    /**
+     * Method setOverrides
+     *
+     * @param mixed[] $overrides overrides
+     *
+     * @return self
+     */
+    public function setOverrides(array $overrides): self
+    {
+        $this->overrides = $overrides;
+        return $this;
     }
     
     /**
@@ -72,6 +92,9 @@ class Params implements Assoc
      */
     public function get(string $key, $default = null)
     {
+        if (in_array($key, array_keys($this->overrides), true)) {
+            return $this->overrides[$key];
+        }
         $method = $this->server->get('REQUEST_METHOD');
         switch ($method) {
         case 'GET':
@@ -79,7 +102,7 @@ class Params implements Assoc
                 return $_GET[$key];
             }
             break;
-        
+
         case 'POST':
             if (isset($_POST[$key])) {
                 return $_POST[$key];
@@ -91,7 +114,20 @@ class Params implements Assoc
         if (isset($_REQUEST[$key])) {
             return $_REQUEST[$key];
         }
-        
+        return $this->getDefaultValue($key, $default);
+    }
+    
+    /**
+     * Method getDefaultValue
+     *
+     * @param string $key     key
+     * @param mixed  $default default
+     *
+     * @return mixed
+     * @throws RuntimeException
+     */
+    protected function getDefaultValue(string $key, $default = null)
+    {
         if (null !== $default) {
             return $default;
         }
@@ -111,6 +147,9 @@ class Params implements Assoc
      */
     public function has(string $key): bool
     {
+        if (in_array($key, array_keys($this->overrides), true)) {
+            return true;
+        }
         $method = $this->server->get('REQUEST_METHOD');
         switch ($method) {
         case 'GET':
@@ -118,7 +157,7 @@ class Params implements Assoc
                 return true;
             }
             break;
-        
+
         case 'POST':
             if (isset($_POST[$key])) {
                 return true;
@@ -128,6 +167,21 @@ class Params implements Assoc
             throw new RuntimeException('Incorrect method: "' . $method . '"');
         }
         if (isset($_REQUEST[$key])) {
+            return true;
+        }
+        return $this->hasDefaultValue($key);
+    }
+    
+    /**
+     * Method hasDefaultValue
+     *
+     * @param string $key key
+     *
+     * @return bool
+     */
+    protected function hasDefaultValue(string $key): bool
+    {
+        if (isset($this->defaults[$key]) && null !== $this->defaults[$key]) {
             return true;
         }
         return false;

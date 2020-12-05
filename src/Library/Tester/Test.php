@@ -71,11 +71,7 @@ abstract class Test
     protected function showTick(): void
     {
         echo '.';
-        $this::$lnlen++;
-        if ($this::$lnlen > 50) {
-            echo "\n";
-            $this::$lnlen = 0;
-        }
+        $this->increaseLnlen();
     }
     
     /**
@@ -86,6 +82,21 @@ abstract class Test
     protected function showFail(): void
     {
         echo 'X';
+        $this->increaseLnlen();
+    }
+    
+    /**
+     * Method increaseLnlen
+     *
+     * @return void
+     */
+    protected function increaseLnlen(): void
+    {
+        $this::$lnlen++;
+        if ($this::$lnlen > 50) {
+            echo "\n";
+            $this::$lnlen = 0;
+        }
     }
     
     /**

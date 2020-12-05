@@ -105,7 +105,7 @@ class AccountTest extends ApiTest
         $this->canSeeActivationFails();
         $this->canSeeActivationWorks();
         $this->canSeeActivationUserAlreadyActiveFail();
-        $this->canSeeLoginWorks(self::PASSWORD_FIRST);
+        $this->canSeeLoginWorks(self::EMAIL, self::PASSWORD_FIRST);
         $this->canSeeLogoutWorks();
         //        $this->canSeeResetPasswordTokenFails();
         $this->canSeeResetPasswordRequestFails();
@@ -173,6 +173,19 @@ class AccountTest extends ApiTest
             ]
         );
         $this->assertStringContains('Login failed', $contents);
+        
+        $response = $this->post(
+            'q=login'
+                . '&csrf=' . $this->getCsrf(),
+            [
+                'email' => 'wrongemail@example.com',
+                'password' => 'BadPassword'
+            ]
+        );
+        $results = $this->json->decode($response);
+        $this->assertTrue(
+            in_array('Login failed', $results['messages']['error'], true)
+        );
     }
     
     /**
@@ -276,17 +289,22 @@ class AccountTest extends ApiTest
     /**
      * Method canSeeRegistryWorks
      *
+     * @param string $email    email
+     * @param string $password password
+     *
      * @return void
      */
-    protected function canSeeRegistryWorks(): void
-    {
+    protected function canSeeRegistryWorks(
+        string $email = self::EMAIL,
+        string $password = self::PASSWORD_FIRST
+    ): void {
         $contents = $this->post(
             'q=registry',
             [
                 'csrf' => $this->getCsrf(),
-                'email' => self::EMAIL,
-                'email_retype' => self::EMAIL,
-                'password' => self::PASSWORD_FIRST,
+                'email' => $email,
+                'email_retype' => $email,
+                'password' => $password,
             ]
         );
         //$this->assertStringContains('Activate your account', $contents);
@@ -331,18 +349,21 @@ class AccountTest extends ApiTest
     /**
      * Method canSeeActivationMail
      *
+     * @param string $email email
+     *
      * @return void
+     * @throws RuntimeException
      */
-    protected function canSeeActivationMail(): void
+    protected function canSeeActivationMail(string $email = self::EMAIL): void
     {
         $emailFilename = $this->getLastEmailFilename();
-        $this->assertStringContains(self::EMAIL, $emailFilename);
+        $this->assertStringContains($email, $emailFilename);
         $this->assertStringContains('Activate your account', $emailFilename);
         
         $user = $this->database->getRow(
             'user',
             ['token'],
-            ['email' => self::EMAIL]
+            ['email' => $email]
         );
         $activationLink = $this->config->get('Site')->get('base')
                 . '?q=activate&token=' . ($user['token'] ?? '');
@@ -384,14 +405,16 @@ class AccountTest extends ApiTest
     /**
      * Method canSeeActivationWorks
      *
+     * @param string $email email
+     *
      * @return void
      */
-    protected function canSeeActivationWorks(): void
+    protected function canSeeActivationWorks(string $email = self::EMAIL): void
     {
         $user = $this->database->getRow(
             'user',
             ['token'],
-            ['email' => self::EMAIL]
+            ['email' => $email]
         );
         $contents = $this->get(
             'q=activate&token=' . ($user['token'] ?? '')
@@ -422,19 +445,22 @@ class AccountTest extends ApiTest
     /**
      * Method canSeeLoginWorks
      *
-     * @param string|null $password password
+     * @param string $email    email
+     * @param string $password password
      *
      * @return void
      */
-    protected function canSeeLoginWorks(?string $password = null): void
-    {
+    protected function canSeeLoginWorks(
+        string $email = self::EMAIL,
+        string $password = self::PASSWORD
+    ): void {
         $contents = $this->post(
             'q=login'
                 . '&csrf=' . $this->getCsrf(),
             [
                 'csrf' => $this->getCsrf(),
-                'email' => $this::EMAIL,
-                'password' => null === $password ? $this::PASSWORD : $password,
+                'email' => $email,
+                'password' => $password,
             ]
         );
         $this->assertStringContains('Login success', $contents);

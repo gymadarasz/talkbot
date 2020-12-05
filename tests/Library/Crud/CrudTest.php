@@ -291,8 +291,8 @@ class CrudTest extends ApiTest
             )
         );
         
-        $this->assertEquals('user3@testing.com', $results['email']);
-        $this->assertEquals('user', $results['group']);
+        $this->assertEquals('user3@testing.com', $results['row']['email']);
+        $this->assertEquals('user', $results['row']['group']);
     }
     
     /**
@@ -380,7 +380,7 @@ class CrudTest extends ApiTest
                 'q=view&table=user&fields=id,email&filter[id]=' . $uid
                     . '&csrf=' . $this->getCsrf()
             )
-        );
+        )['row'];
         $this->assertEquals($uid, (int)$user['id']);
         $this->assertEquals('createduser1@testing.com', $user['email']);
         
@@ -489,7 +489,7 @@ class CrudTest extends ApiTest
                 'q=view&table=user&fields=id,email&filter[id]=' . $uid
                     . '&csrf=' . $this->getCsrf()
             )
-        );
+        )['row'];
         $this->assertEquals($uid, (int)$user['id']);
         $this->assertEquals($email, $user['email']);
     }

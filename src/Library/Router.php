@@ -13,9 +13,11 @@
 
 namespace Madsoft\Library;
 
+use Exception;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Validator\Validator;
 use RuntimeException;
+use function count;
 
 /**
  * Router
@@ -30,6 +32,7 @@ use RuntimeException;
 class Router
 {
     const ERR_INVALID = 'Invalid parameter(s)';
+    const ERR_EXCEPTION = 'Hoops! Something went wrong..';
             
     const ROUTE_QUERY_KEY = 'q';
     const ROUTE_CACHE_FILE = __DIR__ . '/../../routes.cache.php';
@@ -72,38 +75,52 @@ class Router
      */
     public function routing(array $routes): array
     {
-        $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
-        
-        if ($route === 'csrf') {
-            return $this->invoker->getInstance(Csrf::class)->getAsArray();
-        }
-        $this->invoker->getInstance(Csrf::class)->check();
-        
-        $area = $this->getRoutingArea();
-        $this->validateArea($routes, $area, $route);
-        $method = $this->server->getMethod();
-        $this->validateMethod($routes, $area, $method, $route);
-        $this->validateRoute($routes, $area, $method, $route);
-        $target = $routes[$area][$method][$route];
-        $this->validateTarget($target, $area, $method, $route);
-        
-        if (isset($target['defaults'])) {
-            $this->params->setDefaults($target['defaults']);
-        }
-        if (isset($target['validations'])) {
-            $errors = $this->getValidationErrors($target['validations']);
-            if ($errors) {
-                return $this->invoker
-                    ->getInstance(ArrayResponder::class)
-                    ->getErrorResponse(self::ERR_INVALID, $errors);
+        try {
+            $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
+
+            if ($route === 'csrf') {
+                return $this->invoker->getInstance(Csrf::class)->getAsArray();
             }
+            $this->invoker->getInstance(Csrf::class)->check();
+
+            $area = $this->getRoutingArea();
+            $this->validateArea($routes, $area, $route);
+            $method = $this->server->getMethod();
+            $this->validateMethod($routes, $area, $method, $route);
+            $this->validateRoute($routes, $area, $method, $route);
+            $target = $routes[$area][$method][$route];
+            $this->validateTarget($target, $area, $method, $route);
+
+            if (isset($target['overrides'])) {
+                $this->params->setOverrides($target['overrides']);
+                unset($target['overrides']);
+            }
+            if (isset($target['defaults'])) {
+                $this->params->setDefaults($target['defaults']);
+                unset($target['defaults']);
+            }
+            if (isset($target['validations'])) {
+                $errors = $this->getValidationErrors($target['validations']);
+                if ($errors) {
+                    return $this->invoker
+                        ->getInstance(ArrayResponder::class)
+                        ->getErrorResponse(self::ERR_INVALID, $errors);
+                }
+                unset($target['validations']);
+            }
+            $this->validateTargetKeys($target, $area, $method, $route);
+            return $this->invoker->invoke(
+                [
+                    'class' => $target['class'],
+                    'method' => $target['method']
+                ]
+            );
+        } catch (Exception $exception) {
+            $this->invoker->getInstance(Logger::class)->exception($exception);
         }
-        return $this->invoker->invoke(
-            [
-                'class' => $target['class'],
-                'method' => $target['method']
-            ]
-        );
+        return $this->invoker
+            ->getInstance(ArrayResponder::class)
+            ->getErrorResponse(self::ERR_EXCEPTION);
     }
     
     /**
@@ -187,10 +204,10 @@ class Router
     /**
      * Method validateTarget
      *
-     * @param mixed[] $target target
-     * @param string  $area   area
-     * @param string  $method method
-     * @param string  $route  route
+     * @param string[] $target target
+     * @param string   $area   area
+     * @param string   $method method
+     * @param string   $route  route
      *
      * @return void
      * @throws RuntimeException
@@ -213,6 +230,36 @@ class Router
             $class = $target['class'];
             throw new RuntimeException(
                 "Method is not defined at routing point for class $class::???() "
+                    . "routes[$area][$method][$route][method] => ??? ?"
+                    . self::ROUTE_QUERY_KEY . '=' . $route .
+                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
+            );
+        }
+    }
+    
+    /**
+     * Method validateTargetKeys
+     *
+     * @param string[] $target target
+     * @param string   $area   area
+     * @param string   $method method
+     * @param string   $route  route
+     *
+     * @return void
+     * @throws RuntimeException
+     */
+    protected function validateTargetKeys(
+        array $target,
+        string $area,
+        string $method,
+        string $route
+    ): void {
+        if (['class', 'method'] !== array_keys($target)) {
+            unset($target['class']);
+            unset($target['method']);
+            throw new RuntimeException(
+                'Invalid routing target keys: "'
+                    . implode('", "', array_keys($target)) . '" at '
                     . "routes[$area][$method][$route][method] => ??? ?"
                     . self::ROUTE_QUERY_KEY . '=' . $route .
                     ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
@@ -247,6 +294,22 @@ class Router
     protected function getValidationErrors(array $validations): array
     {
         foreach ($validations as &$validation) {
+            if (!is_array($validation)) {
+                throw new RuntimeException(
+                    'Validation should be an array: "' . $validation . '" given, '
+                        . 'current validations: "'
+                        . implode('", "', array_keys($validations)) . '"'
+                );
+            }
+            if (!isset($validation['value'])) {
+                throw new RuntimeException(
+                    'Key "value" is missing from validation, '
+                        . 'current keys: "'
+                        . implode('", "', array_keys($validation)) . '", '
+                        . 'current validations: "'
+                        . implode('", "', array_keys($validations)) . '"'
+                );
+            }
             $validation['value'] = $this->getValidationValue(
                 $validation['value']
             );
@@ -268,16 +331,47 @@ class Router
     {
         $matches = null;
         if (preg_match_all(
-            '/\{\{\s*([a-zA-Z0-9_]*)\s*\}\}/',
+            '/\{\{\s*([a-zA-Z0-9_\-\.]*)\s*\}\}/',
             $value,
             $matches
         )
         ) {
             foreach ($matches[1] as $key => $match) {
-                $value = str_replace(
-                    $matches[0][$key],
-                    $this->params->get($match),
-                    $value
+                $splits = explode('.', $match);
+                $count = count($splits);
+                if ($count === 1) {
+                    $value = str_replace(
+                        $matches[0][$key],
+                        $this->params->get($match),
+                        $value
+                    );
+                    continue;
+                }
+                if ($count === 2) {
+                    $field = $this->params->get($splits[0]);
+                    if (!is_array($field)) {
+                        throw new RuntimeException(
+                            'Incorrect parameter validation field: "'
+                                . $splits[0] . '" expected to be an array, '
+                                . $field . ' given.'
+                        );
+                    }
+                    if (!isset($field[$splits[1]])) {
+                        throw new RuntimeException(
+                            'Missing parameter field for validation: "'
+                                . $match . '"'
+                        );
+                    }
+                    $value = str_replace(
+                        $matches[0][$key],
+                        $field[$splits[1]],
+                        $value
+                    );
+                    continue;
+                }
+                throw new RuntimeException(
+                    'Incorrect parameter validation value: "'
+                        . $match . '"'
                 );
             }
         }
