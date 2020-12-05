@@ -55,7 +55,6 @@ class AccountTest extends ApiTest
      */
     protected array $routes = [
         __DIR__ . '/../../../src/Library/Account/routes.php',
-        __DIR__ . '/../../../src/routes.api.php',
     ];
         
     protected Folders $folders;

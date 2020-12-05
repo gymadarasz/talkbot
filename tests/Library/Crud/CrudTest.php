@@ -45,7 +45,6 @@ class CrudTest extends ApiTest
      */
     protected array $routes = [
         __DIR__ . '/../../../src/Library/Crud/routes.php',
-        __DIR__ . '/../../../src/routes.api.php',
     ];
     
     /**

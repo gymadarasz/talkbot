@@ -11,4 +11,6 @@
  * @link      this
  */
 
-$routes = [];
+return $routeset = [
+    __DIR__ . '/Talkbot/routes.php',
+];

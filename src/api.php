@@ -19,14 +19,23 @@ use Madsoft\Library\Router;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL | E_STRICT);
+
+$routeset = [];
+require 'routeset.php';
+
 $invoker = new Invoker();
 $routes = $invoker->getInstance(Router::class)->loadRoutes(
-    [
-        __DIR__ . '/Library/Account/routes.php',
-        __DIR__ . '/Library/Crud/routes.php',
-        __DIR__ . 'routes.api.php',
-        __DIR__ . '/Library/routes.php',
-    ]
+    array_merge(
+        [
+            __DIR__ . '/Library/Account/routes.php',
+            __DIR__ . '/Library/Crud/routes.php',
+            __DIR__ . '/Library/routes.php',
+        ],
+        $routeset
+    )
 );
 $api = new ApiApp($invoker);
 $api->setRoutes($routes);

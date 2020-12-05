@@ -388,13 +388,25 @@ class Router
     public function loadRoutes(array $includes): array
     {
         if (!file_exists(self::ROUTE_CACHE_FILE)) {
-            $routes = [];
+            $routes = [
+                'public' => [],
+                'protected' => [],
+                'private' => [],
+            ];
             foreach ($includes as $include) {
                 $routes = $this->merger->merge(
                     $routes,
                     $this->includeRoutes($include)
                 );
             }
+            $routes['protected'] = $this->merger->merge(
+                $routes['protected'],
+                $routes['public']
+            );
+            $routes['private'] = $this->merger->merge(
+                $routes['private'],
+                $routes['protected']
+            );
             $exported = '<?php $routes = ' . var_export($routes, true) . ';';
             if (!$exported) {
                 throw new RuntimeException('Unable to export routes');
