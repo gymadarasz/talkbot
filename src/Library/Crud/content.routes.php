@@ -4,24 +4,18 @@
  * PHP version 7.4
  *
  * @category  PHP
- * @package   Madsoft\Talkbot
+ * @package   Madsoft\Library\Crud
  * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
 
-namespace Madsoft\Talkbot;
+namespace Madsoft\Library\Crud;
 
 use Madsoft\Library\Crud\Crud;
 use Madsoft\Library\Validator\Rule\MinLength;
 use Madsoft\Library\Validator\Rule\Number;
-
-$overrides = [
-    'table' => 'script',
-    'filter' => ['owner_user_id' => '{{ session:user.id }}'],
-    'values' => ['owner_user_id' => '{{ session:user.id }}'],
-];
 
 $validations = [
     'filter.id' => [
@@ -30,21 +24,34 @@ $validations = [
     ],
 ];
 
+$createValidation = [
+    'values.name' => [
+        'value' => '{{ params:values.name }}',
+        'rules' => [MinLength::class => ['min' => 5]]
+    ],
+];
+
+$overrides = [
+    'table' => 'content',
+    'filter' => ['owner_user_id' => '{{ session:user.id }}'],
+    'values' => ['owner_user_id' => '{{ session:user.id }}'],
+];
+
 return $routes = [
     'protected' => [
         'GET' => [
-            'script/list' => [
+            'content/list' => [
                 'class' => Crud::class,
                 'method' => 'getListResponse',
                 'overrides' => $overrides,
             ],
-            'script/view' => [
+            'content/view' => [
                 'class' => Crud::class,
                 'method' => 'getViewResponse',
                 'validations' => $validations,
                 'overrides' => $overrides,
             ],
-            'script/delete' => [
+            'content/delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',
                 'validations' => $validations,
@@ -52,22 +59,16 @@ return $routes = [
             ],
         ],
         'POST' => [
-            'script/edit' => [
+            'content/edit' => [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',
                 'validations' => $validations,
                 'overrides' => $overrides,
             ],
-            'script/create' => [
+            'content/create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
-                'validations' =>
-                [
-                    'values.name' => [
-                        'value' => '{{ params:values.name }}',
-                        'rules' => [MinLength::class => ['min' => 5]]
-                    ],
-                ],
+                'validations' => $createValidation,
                 'overrides' => $overrides,
             ],
         ],

@@ -15,50 +15,34 @@ namespace Madsoft\Library\Crud;
 
 use Madsoft\Library\Validator\Rule\Mandatory;
 
+$validations = [
+    'table' => [
+        'value' => '{{ params:table }}',
+        'rules' => [
+            Mandatory::class => null,
+        ],
+    ],
+];
+
 return $routes = [
     'private' => [ // for admins
         'GET' => [
             'list' => [
                 'class' => Crud::class,
                 'method' => 'getListResponse',
-                'validations' =>
-                [
-                    'table' => [
-                        'value' => '{{ params:table }}',
-                        'rules' => [
-                            Mandatory::class => null,
-                        ],
-                    ],
-                ],
+                'validations' => $validations,
                 'defaults' => ['table' => ''],
-                // TODO overrides
             ],
             'view' => [
                 'class' => Crud::class,
                 'method' => 'getViewResponse',
-                'validations' =>
-                [
-                    'table' => [
-                        'value' => '{{ params:table }}',
-                        'rules' => [
-                            Mandatory::class => null,
-                        ],
-                    ],
-                ],
+                'validations' => $validations,
                 'defaults' => ['table' => ''],
             ],
             'delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',
-                'validations' =>
-                [
-                    'table' => [
-                        'value' => '{{ params:table }}',
-                        'rules' => [
-                            Mandatory::class => null,
-                        ],
-                    ],
-                ],
+                'validations' => $validations,
                 'defaults' => ['table' => ''],
             ],
         ],
@@ -66,29 +50,13 @@ return $routes = [
             'edit' => [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',
-                'validations' =>
-                [
-                    'table' => [
-                        'value' => '{{ params:table }}',
-                        'rules' => [
-                            Mandatory::class => null,
-                        ],
-                    ],
-                ],
+                'validations' => $validations,
                 'defaults' => ['table' => ''],
             ],
             'create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
-                'validations' =>
-                [
-                    'table' => [
-                        'value' => '{{ params:table }}',
-                        'rules' => [
-                            Mandatory::class => null,
-                        ],
-                    ],
-                ],
+                'validations' => $validations,
                 'defaults' => ['table' => ''],
             ],
         ],
