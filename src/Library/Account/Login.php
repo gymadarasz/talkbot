@@ -88,6 +88,7 @@ class Login extends ArrayResponder
                 'user',
                 ['id', 'email', 'group', 'hash'],
                 '',
+                '',
                 ['email' => $email, 'active' => 1]
             );
         } catch (MysqlNotFoundException $exception) {

@@ -55,15 +55,14 @@ class Replacer
     {
         $matches = null;
         if (preg_match_all(
-            '/\{\{\s*([a-zA-Z0-9_)\:([a-zA-Z0-9_\-\.]*)\s*\}\}/',
+            '/\{\{\s*([a-zA-Z0-9_]+)\s*\:\s*([a-zA-Z0-9_][a-zA-Z0-9_\-\.]*)\s*\}\}/',
             $value,
             $matches
         )
         ) {
-            foreach ($matches[1] as $key => $match) {
-                $splits = explode(':', $match);
-                $assocKey = $splits[0];
-                $assocValue = explode('.', $splits[1]);
+            foreach ($matches[0] as $key => $match) {
+                $assocKey = $matches[1][$key];
+                $assocValue = explode('.', $matches[2][$key]);
                 $count = count($assocValue);
                 if ($count === 1) {
                     $value = str_replace(
@@ -93,7 +92,6 @@ class Replacer
                         );
                     }
                     if (!isset($field[$assocValue[1]])) {
-                        //                        $this->logger->warning(
                         throw new RuntimeException(
                             'Missing field replacement: "' . $match . '"'
                         );

@@ -55,6 +55,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
+     * @param string   $join         join
      * @param string   $where        where
      * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
@@ -64,6 +65,7 @@ class Database
     public function getRow(
         string $tableUnsafe,
         array $fieldsUnsafe,
+        string $join = '',
         string $where = '',
         array $filterUnsafe = [],
         string $filterLogic = 'AND'
@@ -71,6 +73,7 @@ class Database
         return $this->get(
             $tableUnsafe,
             $fieldsUnsafe,
+            $join,
             $where,
             $filterUnsafe,
             $filterLogic,
@@ -84,6 +87,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
+     * @param string   $join         join
      * @param string   $where        where
      * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
@@ -95,6 +99,7 @@ class Database
     public function getRows(
         string $tableUnsafe,
         array $fieldsUnsafe,
+        string $join = '',
         string $where = '',
         array $filterUnsafe = [],
         string $filterLogic = 'AND',
@@ -104,6 +109,7 @@ class Database
         return $this->get(
             $tableUnsafe,
             $fieldsUnsafe,
+            $join,
             $where,
             $filterUnsafe,
             $filterLogic,
@@ -117,6 +123,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
+     * @param string   $join         join
      * @param string   $where        where
      * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
@@ -128,6 +135,7 @@ class Database
     protected function get(
         string $tableUnsafe,
         array $fieldsUnsafe,
+        string $join = '',
         string $where = '',
         array $filterUnsafe = [],
         string $filterLogic = 'AND',
@@ -146,6 +154,7 @@ class Database
             )
         );
         $query = "SELECT $fields FROM `$table`"
+            . ($join ? " $join": '')
             . $this->getWhere($table, $where, $filterUnsafe, $filterLogic);
         if ($limit >= 1) {
             $query .= " LIMIT $offset, $limit";
@@ -207,7 +216,27 @@ class Database
     ): string {
         $conds = [];
         foreach ($filter as $key => $value) {
-            $conds[] = "`$table`.`$key` = " . $this->mysql->value($value);
+            if (is_int($key)) {
+                throw new RuntimeException(
+                    'Invalid filter array. Filter should be an associative array: '
+                        . 'filter[field] => value'
+                );
+            }
+            $splits = explode('.', $key);
+            if (count($splits) === 1) {
+                $conds[] = "`$table`.`$key` = "
+                    . $this->mysql->value($value);
+                continue;
+            }
+            if (count($splits) === 2) {
+                $conds[] = "`{$splits[0]}`.`{$splits[1]}` = "
+                    . $this->mysql->value($value);
+                continue;
+            }
+            throw new RuntimeException(
+                'Invalid filter key given: "' . $value . '", '
+                    . 'filter keys should describe a [table.]field name.'
+            );
         }
         
         $ret = $conds ?
@@ -222,33 +251,42 @@ class Database
     /**
      * Method addRow
      *
-     * @param string  $tableUnsafe  tableUnsafe
-     * @param mixed[] $valuesUnsafe valuesUnsafe
+     * @param string   $tableUnsafe  tableUnsafe
+     * @param mixed[]  $valuesUnsafe valuesUnsafe
+     * @param string[] $noQuotes     noQuotes
      *
      * @return int
      */
-    public function addRow(string $tableUnsafe, array $valuesUnsafe): int
-    {
-        return $this->add($tableUnsafe, $valuesUnsafe);
+    public function addRow(
+        string $tableUnsafe,
+        array $valuesUnsafe,
+        array $noQuotes = []
+    ): int {
+        return $this->add($tableUnsafe, $valuesUnsafe, $noQuotes);
     }
     
     /**
      * Method add
      *
-     * @param string  $tableUnsafe  tableUnsafe
-     * @param mixed[] $valuesUnsafe valuesUnsafe
+     * @param string   $tableUnsafe  tableUnsafe
+     * @param mixed[]  $valuesUnsafe valuesUnsafe
+     * @param string[] $noQuotes     noQuotes
      *
      * @return int
      */
     protected function add(
         string $tableUnsafe,
-        array $valuesUnsafe
+        array $valuesUnsafe,
+        array $noQuotes = []
     ): int {
         $table = $this->mysql->escape($tableUnsafe);
         $fields = $this->safer->freez([$this->mysql, 'escape'], $valuesUnsafe);
         $keys = implode('`, `', array_keys($fields));
-        foreach ($fields as &$field) {
-            $field = $this->mysql->value($field);
+        foreach ($fields as $key => $field) {
+            if (in_array($key, $noQuotes, true)) {
+                continue;
+            }
+            $fields[$key] = $this->mysql->value($field);
         }
         $values = implode(", ", $fields);
         $query = "INSERT INTO `$table` (`$keys`) VALUES ($values)";

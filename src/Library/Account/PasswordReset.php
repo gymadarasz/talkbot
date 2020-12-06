@@ -99,6 +99,7 @@ class PasswordReset extends ArrayResponder
                 'user',
                 ['email'],
                 '',
+                '',
                 ['email' => $email, 'active' => 1]
             );
         } catch (MysqlNotFoundException $exception) {

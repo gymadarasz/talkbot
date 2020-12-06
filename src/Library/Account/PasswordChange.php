@@ -96,6 +96,7 @@ class PasswordChange extends ArrayResponder
                 'user',
                 ['hash'],
                 '',
+                '',
                 ['token' => $token, 'active' => 1]
             );
             $hash = $this->encrypter->encrypt($params->get('password'));

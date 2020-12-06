@@ -89,6 +89,7 @@ class DatabaseTest extends Test
             'user',
             ['email', 'hash', 'token'],
             '',
+            '',
             ['email' => 'testuser@email.com']
         );
         $this->assertEquals(
@@ -107,6 +108,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 '',
                 ['email' => 'testuser@email.com']
             );
@@ -172,6 +174,7 @@ class DatabaseTest extends Test
             'user',
             ['email', 'hash', 'token'],
             '',
+            '',
             ['hash' => 'nohash']
         );
         $this->assertEquals(
@@ -205,6 +208,7 @@ class DatabaseTest extends Test
                 'user',
                 ['email', 'hash', 'token'],
                 '',
+                '',
                 ['hash' => 'nohash']
             );
             $this->assertTrue(false);
@@ -231,6 +235,7 @@ class DatabaseTest extends Test
                 'user',
                 ['email', 'hash', 'token'],
                 '',
+                '',
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
@@ -243,6 +248,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 '',
                 ['email' => 'testusermodified@email.com']
             );
@@ -271,6 +277,7 @@ class DatabaseTest extends Test
             'user',
             ['email', 'hash', 'token'],
             '',
+            '',
             ['email' => 'testusermodified@email.com']
         );
         $this->assertEquals(
@@ -290,6 +297,7 @@ class DatabaseTest extends Test
                 'user',
                 ['email', 'hash', 'token'],
                 '',
+                '',
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
@@ -302,6 +310,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 '',
                 ['email' => 'testusermodified@email.com']
             );
@@ -332,6 +341,7 @@ class DatabaseTest extends Test
                 'user',
                 ['email', 'hash', 'token'],
                 '',
+                '',
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
@@ -344,6 +354,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 '',
                 ['email' => 'testusermodified@email.com']
             );
@@ -372,6 +383,7 @@ class DatabaseTest extends Test
             'user',
             ['email', 'hash', 'token'],
             '',
+            '',
             ['email' => 'testusermodified@email.com']
         );
         $this->assertEquals(
@@ -391,6 +403,7 @@ class DatabaseTest extends Test
                 'user',
                 ['email', 'hash', 'token'],
                 '',
+                '',
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
@@ -403,6 +416,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 '',
                 ['email' => 'testusermodified@email.com']
             );

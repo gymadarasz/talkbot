@@ -45,6 +45,8 @@ class Tester extends Test
      */
     protected array $cleaners = [];
     
+    protected bool $verbose = false;
+    
     protected Folders $folders;
     protected Invoker $invoker;
     protected Coverage $coverage;
@@ -90,6 +92,33 @@ class Tester extends Test
     {
         $this->cleaners = $cleaners;
         return $this;
+    }
+    
+    /**
+     * Method setVerbose
+     *
+     * @param bool $verbose verbose
+     *
+     * @return self
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function setVerbose(bool $verbose): self
+    {
+        $this->verbose = $verbose;
+        return $this;
+    }
+    
+    /**
+     * Method isVerbose
+     *
+     * @return bool
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function isVerbose(): bool
+    {
+        return $this->verbose;
     }
     
     /**
@@ -234,6 +263,7 @@ class Tester extends Test
      */
     protected function run(string $class): void
     {
+        $this->show("\n[$class]:");
         $methods = $this->getClassExactMethods($class);
         $test = $this->getTest($class);
         if (method_exists($test, 'beforeAll')) {
@@ -247,6 +277,7 @@ class Tester extends Test
                             ['class' => $class, 'method' => 'before']
                         );
                     }
+                    $this->show("\n[$class::$method]:");
                     $this->invoker->invoke(['class' => $class, 'method' => $method]);
                     if (method_exists($test, 'after')) {
                         $this->invoker->invoke(
@@ -276,6 +307,20 @@ class Tester extends Test
             $this->invoker->invoke(['class' => $class, 'method' => 'afterAll']);
         }
         $this->invoker->free($class);
+    }
+    
+    /**
+     * Method show
+     *
+     * @param string $message message
+     *
+     * @return void
+     */
+    protected function show(string $message): void
+    {
+        if ($this->verbose) {
+            echo $message;
+        }
     }
     
     /**

@@ -114,4 +114,20 @@ class RulesTest extends Test
         $this->assertFalse($passwordVerify->check('wrong'));
         $this->assertTrue($passwordVerify->check($hash));
     }
+    
+    /**
+     * Method testEnum
+     *
+     * @return void
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function testEnum(): void
+    {
+        $enum = new EnumMock();
+        $enum->setValues(['foo', 'bar']);
+        $this->assertTrue($enum->check('foo'));
+        $this->assertTrue($enum->check('bar'));
+        $this->assertFalse($enum->check('bazz'));
+    }
 }

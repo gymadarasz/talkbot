@@ -104,6 +104,7 @@ class Registry extends ArrayResponder
                 'user',
                 ['email'],
                 '',
+                '',
                 ['email' => $email]
             );
         } catch (MysqlNotFoundException $exception) {

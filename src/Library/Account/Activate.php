@@ -89,6 +89,7 @@ class Activate extends ArrayResponder
                 'user',
                 ['id'],
                 '',
+                '',
                 ['token' => $token, 'active' => 0]
             );
         } catch (MysqlNotFoundException $exception) {

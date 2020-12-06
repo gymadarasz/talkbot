@@ -4,17 +4,18 @@
  * PHP version 7.4
  *
  * @category  PHP
- * @package   Madsoft\Library\Crud
+ * @package   Madsoft\Talkbot
  * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
 
-namespace Madsoft\Library\Crud;
+namespace Madsoft\Talkbot;
 
 use Madsoft\Library\Crud\Crud;
 use Madsoft\Library\Merger;
+use Madsoft\Library\Validator\Rule\Enum;
 use Madsoft\Library\Validator\Rule\Mandatory;
 use Madsoft\Library\Validator\Rule\MinLength;
 use Madsoft\Library\Validator\Rule\Number;
@@ -24,23 +25,31 @@ $merger = new Merger();
 $validations = [
     'filter.id' => [
         'value' => '{{ params: filter.id }}',
-        'rules' => [Mandatory::class => null, Number::class => null]
+        'rules' => [Mandatory::class => null, Number::class => null],
     ],
 ];
 
 $createValidation = [
-    'values.name' => [
-        'value' => '{{ params: values.name }}',
-        'rules' => [Mandatory::class => null, MinLength::class => ['min' => 1]]
+    'values.talks' => [
+        'value' => '{{ params: values.talks }}',
+        'rules' => [
+            Mandatory::class => null,
+            Enum::class => ['values' => ['robot', 'human']],
+        ],
+    ],
+    'values.text' => [
+        'value' => '{{ params: values.text }}',
+        'rules' => [Mandatory::class => null, MinLength::class => ['min' => 1]],
     ],
 ];
 
 $editValidations = $merger->merge($createValidation, $validations);
 
 $overrides = [
-    'table' => 'content',
-    'filter' => ['owner_user_id' => '{{ session: user.id }}'],
-    'values' => ['owner_user_id' => '{{ session: user.id }}'],
+    'table' => 'script',
+    'join' => 'JOIN content ON content.id = script.content_id',
+    'filter' => ['content.owner_user_id' => '{{ session: user.id }}'],
+    'values' => ['content.owner_user_id' => '{{ session: user.id }}'],
 ];
 
 $publicOverrides = $merger->merge(
@@ -50,15 +59,25 @@ $publicOverrides = $merger->merge(
     ]
 );
 
+$createOverrides = $overrides;
+$createOverrides['values'] = [
+    'content_id' => '('
+            . 'SELECT id FROM content '
+            . 'WHERE id = {{ params: values.content_id }} '
+            . 'AND owner_user_id = {{ session: user.id }} '
+        . ')'
+];
+$createOverrides['noQuotes'] = ['content_id'];
+
 return $routes = [
     'public' => [
         'GET' => [
-            'content/list' => [
+            'script/list' => [
                 'class' => Crud::class,
                 'method' => 'getListResponse',
                 'overrides' => $publicOverrides,
             ],
-            'content/view' => [
+            'script/view' => [
                 'class' => Crud::class,
                 'method' => 'getViewResponse',
                 'validations' => $validations,
@@ -68,7 +87,7 @@ return $routes = [
     ],
     'protected' => [
         'GET' => [
-            'content/delete' => [
+            'script/delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',
                 'validations' => $validations,
@@ -76,17 +95,17 @@ return $routes = [
             ],
         ],
         'POST' => [
-            'content/edit' => [
+            'script/edit' => [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',
                 'validations' => $editValidations,
                 'overrides' => $overrides,
             ],
-            'content/create' => [
+            'script/create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
                 'validations' => $createValidation,
-                'overrides' => $overrides,
+                'overrides' => $createOverrides,
             ],
         ],
     ],

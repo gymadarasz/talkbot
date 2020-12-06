@@ -136,9 +136,10 @@ class Mysql
      */
     public function value($value = null): string
     {
-        return is_string($value) ?
-            "'$value'" :
-            (null === $value ? 'NULL' : (string)$value);
+        if (is_string($value)) {
+            return "'$value'";
+        }
+        return null === $value ? 'NULL' : (string)$value;
     }
 
     /**
@@ -163,7 +164,7 @@ class Mysql
             );
         }
         throw new RuntimeException(
-            "MySQL query error:\n$query\nMessage: {$this->mysqli->error}"
+            "MySQL select row error:\n$query\nMessage: {$this->mysqli->error}"
         );
     }
 
@@ -192,7 +193,7 @@ class Mysql
             );
         }
         throw new RuntimeException(
-            "MySQL query error:\n$query\nMessage: {$this->mysqli->error}"
+            "MySQL select rows error:\n$query\nMessage: {$this->mysqli->error}"
         );
     }
 
