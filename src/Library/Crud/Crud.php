@@ -92,29 +92,6 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     }
     
     /**
-     * Method getListOwnedResponse
-     *
-     * @return mixed[]
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function getListOwnedResponse(): array
-    {
-        try {
-            return $this->getResponse(
-                [
-                    'rows' => $this->database->getOwnedRows(
-                        ...$this->getListParams()
-                    ),
-                ]
-            );
-        } catch (MysqlEmptyException $exception) {
-            $this->logger->exception($exception);
-        }
-        return $this->getErrorResponse('Empty list');
-    }
-    
-    /**
      * Method getListParams
      *
      * @return mixed[]
@@ -150,29 +127,6 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
             return $this->getResponse(
                 [
                     'row' => $this->database->getRow(
-                        ...$this->getViewParams()
-                    )
-                ]
-            );
-        } catch (MysqlNotFoundException $exception) {
-            $this->logger->exception($exception);
-        }
-        return $this->getErrorResponse('Not found');
-    }
-    
-    /**
-     * Method getViewOwnedResponse
-     *
-     * @return mixed[]
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function getViewOwnedResponse(): array
-    {
-        try {
-            return $this->getResponse(
-                [
-                    'row' => $this->database->getOwnedRow(
                         ...$this->getViewParams()
                     )
                 ]
@@ -226,27 +180,6 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     }
     
     /**
-     * Method getEditOwnedResponse
-     *
-     * @return mixed[]
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function getEditOwnedResponse(): array
-    {
-        try {
-            return $this->getAffectResponse(
-                $this->database->setOwnedRow(
-                    ...$this->getEditParams()
-                )
-            );
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
-        }
-        return $this->getErrorResponse('Not affected');
-    }
-    
-    /**
      * Method getEditParams
      *
      * @return mixed[]
@@ -287,27 +220,6 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     }
     
     /**
-     * Method getCreateOwnedResponse
-     *
-     * @return mixed[]
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function getCreateOwnedResponse(): array
-    {
-        try {
-            return $this->getInsertResponse(
-                $this->database->addOwnedRow(
-                    ...$this->getCreateParams()
-                )
-            );
-        } catch (MysqlNoInsertException $exception) {
-            $this->logger->exception($exception);
-        }
-        return $this->getErrorResponse('Not inserted');
-    }
-    
-    /**
      * Method getCreateParams
      *
      * @return mixed[]
@@ -332,27 +244,6 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
         try {
             return $this->getAffectResponse(
                 $this->database->delRow(
-                    ...$this->getDeleteParams()
-                )
-            );
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
-        }
-        return $this->getErrorResponse('Not affected');
-    }
-    
-    /**
-     * Method getDeleteOwnedResponse
-     *
-     * @return mixed[]
-     *
-     * @suppress PhanUnreferencedPublicMethod
-     */
-    public function getDeleteOwnedResponse(): array
-    {
-        try {
-            return $this->getAffectResponse(
-                $this->database->delOwnedRow(
                     ...$this->getDeleteParams()
                 )
             );

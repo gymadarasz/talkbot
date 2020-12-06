@@ -14,9 +14,11 @@
 namespace Madsoft\Tests\Library\Account;
 
 use Madsoft\Library\Invoker;
+use Madsoft\Library\Merger;
 use Madsoft\Library\Params;
 use Madsoft\Library\Server;
 use Madsoft\Library\Tester\Test;
+use Madsoft\Tests\Library\Account\ValidatorMock;
 
 /**
  * ValidatorTest
@@ -44,7 +46,7 @@ class ValidatorTest extends Test
     public function testValidator(Invoker $invoker): void
     {
         $validator = new ValidatorMock($invoker);
-        $result = $validator->validateLogin(new Params(new Server()));
+        $result = $validator->validateLogin(new Params(new Server(), new Merger()));
         $this->assertEquals([['an error']], $result);
     }
 }

@@ -23,9 +23,7 @@ use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Safer;
 use Madsoft\Library\Session;
 use Madsoft\Library\Tester\Test;
-use Madsoft\Library\Throwier;
 use Madsoft\Library\Transaction;
-use Madsoft\Library\User;
 use RuntimeException;
 
 /**
@@ -79,7 +77,6 @@ class DatabaseTest extends Test
     public function testGetRow(): void
     {
         $database = $this->getDatabase();
-        $oidBefore = $database->getLastAddedOwnershipId();
         $database->addRow(
             'user',
             [
@@ -88,8 +85,6 @@ class DatabaseTest extends Test
                 'token' => 'notoken',
             ]
         );
-        $oidAfter = $database->getLastAddedOwnershipId();
-        $this->assertEquals($oidAfter, $oidBefore);
         $row = $database->getRow(
             'user',
             ['email', 'hash', 'token'],
@@ -132,10 +127,7 @@ class DatabaseTest extends Test
         $transaction = new Transaction();
         $safer = new Safer();
         $mysql = new Mysql($config, $transaction);
-        $session = new Session();
-        $user = new User($session);
-        $throwier = new Throwier();
-        return new Database($safer, $mysql, $user, $throwier);
+        return new Database($safer, $mysql);
     }
     
     /**
@@ -326,7 +318,7 @@ class DatabaseTest extends Test
         $database = $this->getDatabase();
         $exception = null;
         try {
-            $database->getOwnedRow(
+            $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
                 ['email' => 'testuser@email.com']
@@ -338,7 +330,7 @@ class DatabaseTest extends Test
         
         $exception = null;
         try {
-            $database->getOwnedRow(
+            $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
                 ['email' => 'testusermodified@email.com']
@@ -348,8 +340,7 @@ class DatabaseTest extends Test
         }
         $this->assertTrue(null !== $exception);
         
-        $oidBefore = $database->getLastAddedOwnershipId();
-        $database->addOwnedRow(
+        $database->addRow(
             'user',
             [
                 'email' => 'testuser@email.com',
@@ -357,17 +348,14 @@ class DatabaseTest extends Test
                 'token' => 'notoken',
             ]
         );
-        $oidAfter = $database->getLastAddedOwnershipId();
-        $this->assertNotEquals($oidAfter, $oidBefore);
-        $this->assertEquals(-1, $database->getLastAddedOwnershipId());
-        $result = $database->setOwnedRow(
+        $result = $database->setRow(
             'user',
             ['email' => 'testusermodified@email.com'],
             ['email' => 'testuser@email.com'],
         );
         $this->assertEquals(1, $result);
         
-        $row = $database->getOwnedRow(
+        $row = $database->getRow(
             'user',
             ['email', 'hash', 'token'],
             ['email' => 'testusermodified@email.com']
@@ -382,10 +370,10 @@ class DatabaseTest extends Test
         );
         
         // cleanup
-        $database->delOwnedRows('user', ['email' => 'testusermodified@email.com']);
+        $database->delRows('user', ['email' => 'testusermodified@email.com']);
         $exception = null;
         try {
-            $database->getOwnedRow(
+            $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
                 ['email' => 'testuser@email.com']
@@ -397,7 +385,7 @@ class DatabaseTest extends Test
         
         $exception = null;
         try {
-            $database->getOwnedRow(
+            $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
                 ['email' => 'testusermodified@email.com']

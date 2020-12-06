@@ -86,11 +86,11 @@ class TemplateTest extends Test
         $this->assertEquals('Hello Template foo!', $results);
         $csrf = $template->getVars()['csrf'];
         $this->assertTrue((bool)$csrf);
-        
+        $merger = new Merger();
         $template = new Template(
-            new Config(new Invoker(), new Merger()),
+            new Config(new Invoker(), $merger),
             new Safer(),
-            new Csrf(new Session(), new Params(new Server()))
+            new Csrf(new Session(), new Params(new Server(), $merger))
         );
         $results = $template->process(
             __DIR__ . '/test.phtml',

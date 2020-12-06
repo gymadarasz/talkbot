@@ -46,6 +46,7 @@ class MysqlTest extends Test
      */
     public function testMysql(Mysql $mysql): void
     {
+        $mysql->getTransaction()->start();
         try {
             $mysql->delete("DELETE FROM user WHERE hash = 'test'");
         } catch (MysqlNoAffectException $exception) {
@@ -59,6 +60,30 @@ class MysqlTest extends Test
         $mysql->insert(
             "INSERT INTO user (email, hash, token) VALUES ('test3', 'test', '3')"
         );
+        $mysql->getTransaction()->commit();
+        $results = $mysql->select(
+            "SELECT email FROM user WHERE hash = 'test' ORDER BY token"
+        );
+        $this->assertEquals(3, count($results));
+        $this->assertEquals('test1', $results[0]['email']);
+        $this->assertEquals('test2', $results[1]['email']);
+        $this->assertEquals('test3', $results[2]['email']);
+        
+        $mysql->getTransaction()->start();
+        try {
+            $mysql->delete("DELETE FROM user WHERE hash = 'test'");
+        } catch (MysqlNoAffectException $exception) {
+        }
+        $mysql->insert(
+            "INSERT INTO user (email, hash, token) VALUES ('test1', 'test', '1')"
+        );
+        $mysql->insert(
+            "INSERT INTO user (email, hash, token) VALUES ('test2', 'test', '2')"
+        );
+        $mysql->insert(
+            "INSERT INTO user (email, hash, token) VALUES ('test3', 'test', '3')"
+        );
+        $mysql->getTransaction()->rollback();
         $results = $mysql->select(
             "SELECT email FROM user WHERE hash = 'test' ORDER BY token"
         );

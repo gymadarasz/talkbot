@@ -17,7 +17,6 @@ use Exception;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Validator\Validator;
 use RuntimeException;
-use function count;
 
 /**
  * Router
@@ -28,6 +27,10 @@ use function count;
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
+ *
+ * @todo remove suppress warnings:
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Router
 {
@@ -40,30 +43,38 @@ class Router
     protected Invoker $invoker;
     protected Server $server;
     protected Params $params;
+    protected Session $session;
     protected User $user;
     protected Merger $merger;
+    protected Replacer $replacer;
 
     /**
      * Method __construct
      *
-     * @param Invoker $invoker invoker
-     * @param Server  $server  server
-     * @param Params  $params  params
-     * @param User    $user    user
-     * @param Merger  $merger  merger
+     * @param Invoker  $invoker  invoker
+     * @param Server   $server   server
+     * @param Params   $params   params
+     * @param Session  $session  session
+     * @param User     $user     user
+     * @param Merger   $merger   merger
+     * @param Replacer $replacer replacer
      */
     public function __construct(
         Invoker $invoker,
         Server $server,
         Params $params,
+        Session $session,
         User $user,
-        Merger $merger
+        Merger $merger,
+        Replacer $replacer
     ) {
         $this->invoker = $invoker;
         $this->server = $server;
         $this->params = $params;
+        $this->session = $session;
         $this->user = $user;
         $this->merger = $merger;
+        $this->replacer = $replacer;
     }
     
     /**
@@ -91,13 +102,23 @@ class Router
             $target = $routes[$area][$method][$route];
             $this->validateTarget($target, $area, $method, $route);
 
-            if (isset($target['overrides'])) {
-                $this->params->setOverrides($target['overrides']);
-                unset($target['overrides']);
-            }
             if (isset($target['defaults'])) {
-                $this->params->setDefaults($target['defaults']);
+                $this->params->setDefaults(
+                    $this->replacer->replaceAll(
+                        $target['defaults'],
+                        $this->getReplacerAssocs()
+                    )
+                );
                 unset($target['defaults']);
+            }
+            if (isset($target['overrides'])) {
+                $this->params->setOverrides(
+                    $this->replacer->replaceAll(
+                        $target['overrides'],
+                        $this->getReplacerAssocs()
+                    )
+                );
+                unset($target['overrides']);
             }
             if (isset($target['validations'])) {
                 $errors = $this->getValidationErrors($target['validations']);
@@ -329,53 +350,23 @@ class Router
      */
     protected function getValidationValue(string $value): string
     {
-        $matches = null;
-        if (preg_match_all(
-            '/\{\{\s*([a-zA-Z0-9_\-\.]*)\s*\}\}/',
+        return $this->replacer->replace(
             $value,
-            $matches
-        )
-        ) {
-            foreach ($matches[1] as $key => $match) {
-                $splits = explode('.', $match);
-                $count = count($splits);
-                if ($count === 1) {
-                    $value = str_replace(
-                        $matches[0][$key],
-                        $this->params->get($match),
-                        $value
-                    );
-                    continue;
-                }
-                if ($count === 2) {
-                    $field = $this->params->get($splits[0]);
-                    if (!is_array($field)) {
-                        throw new RuntimeException(
-                            'Incorrect parameter validation field: "'
-                                . $splits[0] . '" expected to be an array, '
-                                . $field . ' given.'
-                        );
-                    }
-                    if (!isset($field[$splits[1]])) {
-                        throw new RuntimeException(
-                            'Missing parameter field for validation: "'
-                                . $match . '"'
-                        );
-                    }
-                    $value = str_replace(
-                        $matches[0][$key],
-                        $field[$splits[1]],
-                        $value
-                    );
-                    continue;
-                }
-                throw new RuntimeException(
-                    'Incorrect parameter validation value: "'
-                        . $match . '"'
-                );
-            }
-        }
-        return $value;
+            $this->getReplacerAssocs()
+        );
+    }
+    
+    /**
+     * Method getReplacerAssocs
+     *
+     * @return Assoc[]
+     */
+    protected function getReplacerAssocs(): array
+    {
+        return [
+            'params' => $this->params,
+            'session' => $this->session,
+        ];
     }
     
     /**

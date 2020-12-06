@@ -12,5 +12,5 @@
  */
 
 return $routeset = [
-    __DIR__ . '/Talkbot/routes.php',
+    __DIR__ . '/Talkbot/script.routes.php',
 ];

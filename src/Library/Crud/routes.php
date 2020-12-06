@@ -24,7 +24,7 @@ return $routes = [
                 'validations' =>
                 [
                     'table' => [
-                        'value' => '{{ table }}',
+                        'value' => '{{ params:table }}',
                         'rules' => [
                             Mandatory::class => null,
                         ],
@@ -39,7 +39,7 @@ return $routes = [
                 'validations' =>
                 [
                     'table' => [
-                        'value' => '{{ table }}',
+                        'value' => '{{ params:table }}',
                         'rules' => [
                             Mandatory::class => null,
                         ],
@@ -53,7 +53,7 @@ return $routes = [
                 'validations' =>
                 [
                     'table' => [
-                        'value' => '{{ table }}',
+                        'value' => '{{ params:table }}',
                         'rules' => [
                             Mandatory::class => null,
                         ],
@@ -69,7 +69,7 @@ return $routes = [
                 'validations' =>
                 [
                     'table' => [
-                        'value' => '{{ table }}',
+                        'value' => '{{ params:table }}',
                         'rules' => [
                             Mandatory::class => null,
                         ],
@@ -83,7 +83,7 @@ return $routes = [
                 'validations' =>
                 [
                     'table' => [
-                        'value' => '{{ table }}',
+                        'value' => '{{ params:table }}',
                         'rules' => [
                             Mandatory::class => null,
                         ],

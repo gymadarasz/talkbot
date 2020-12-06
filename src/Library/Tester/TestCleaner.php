@@ -71,11 +71,11 @@ class TestCleaner
             $this->logger->exception($exception);
         }
         
-        try {
-            $this->database->delRows('ownership', []);
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
-        }
+        //        try {
+        //            $this->database->delRows('ownership', []);
+        //        } catch (MysqlNoAffectException $exception) {
+        //            $this->logger->exception($exception);
+        //        }
         
         $this->deleteMails();
         

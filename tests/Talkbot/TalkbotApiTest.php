@@ -13,6 +13,8 @@
 
 namespace Madsoft\Tests\Talkbot;
 
+use Madsoft\Library\Logger;
+use Madsoft\Library\MysqlNoAffectException;
 use Madsoft\Library\Router;
 use Madsoft\Tests\Library\Account\AccountTest;
 
@@ -40,7 +42,7 @@ class TalkbotApiTest extends AccountTest
      */
     protected array $routes = [
         __DIR__ . '/../../src/Library/Account/routes.php',
-        __DIR__ . '/../../src/Talkbot/routes.php',
+        __DIR__ . '/../../src/Talkbot/script.routes.php',
     ];
     
     /**
@@ -50,6 +52,12 @@ class TalkbotApiTest extends AccountTest
      */
     public function beforeAll(): void
     {
+        try {
+            $this->database->delRows('script', []);
+        } catch (MysqlNoAffectException $exception) {
+            $this->invoker->getInstance(Logger::class)->exception($exception);
+        }
+        
         parent::beforeAll();
         
         $this->canSeeRegistryWorks(self::USER1_EMAIL, self::USER1_PASSWORD);
@@ -71,6 +79,13 @@ class TalkbotApiTest extends AccountTest
     public function afterAll(): void
     {
         $this->canSeeLogoutWorks();
+        
+        try {
+            $this->database->delRows('script', []);
+        } catch (MysqlNoAffectException $exception) {
+            $this->invoker->getInstance(Logger::class)->exception($exception);
+        }
+        
         parent::afterAll();
     }
     
@@ -229,7 +244,7 @@ class TalkbotApiTest extends AccountTest
             )
         );
         $this->assertTrue(
-            in_array(Router::ERR_EXCEPTION, $results['messages']['error'], true)
+            in_array('Not affected', $results['messages']['error'], true)
         );
         
         // check that I can not edit the other users scripts by name
@@ -254,7 +269,7 @@ class TalkbotApiTest extends AccountTest
             )
         );
         $this->assertTrue(
-            in_array(Router::ERR_EXCEPTION, $results['messages']['error'], true)
+            in_array('Not affected', $results['messages']['error'], true)
         );
         
         // check that I can not delete other users strings by name

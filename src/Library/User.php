@@ -45,7 +45,7 @@ class User
      */
     public function getId(): int
     {
-        return $this->session->get('user.id', 0);
+        return $this->session->get('user', ['id' => 0])['id'];
     }
     
     /**
@@ -57,7 +57,9 @@ class User
      */
     public function setId(int $uid): self
     {
-        $this->session->set('user.id', $uid);
+        $user = $this->session->get('user', []);
+        $user['id'] = $uid;
+        $this->session->set('user', $user);
         return $this;
     }
     
@@ -68,7 +70,7 @@ class User
      */
     public function getGroup(): string
     {
-        return $this->session->get('user.group', '');
+        return $this->session->get('user', ['group' => 'user'])['group'];
     }
     
     /**
@@ -80,7 +82,9 @@ class User
      */
     public function setGroup(string $group): self
     {
-        $this->session->set('user.group', $group);
+        $user = $this->session->get('user', []);
+        $user['group'] = $group;
+        $this->session->set('user', $user);
         return $this;
     }
     

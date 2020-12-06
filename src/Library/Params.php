@@ -44,15 +44,18 @@ class Params implements Assoc
     protected array $overrides = [];
     
     protected Server $server;
+    protected Merger $merger;
     
     /**
      * Method __construct
      *
      * @param Server $server server
+     * @param Merger $merger merger
      */
-    public function __construct(Server $server)
+    public function __construct(Server $server, Merger $merger)
     {
         $this->server = $server;
+        $this->merger = $merger;
     }
     
     /**
@@ -92,29 +95,93 @@ class Params implements Assoc
      */
     public function get(string $key, $default = null)
     {
-        if (in_array($key, array_keys($this->overrides), true)) {
-            return $this->overrides[$key];
+        $overrides = [];
+        if (isset($this->overrides[$key])) {
+            if (is_scalar($this->overrides[$key])) {
+                return $this->overrides[$key];
+            }
+            $overrides = (array)$this->overrides[$key];
         }
         $method = $this->server->get('REQUEST_METHOD');
         switch ($method) {
         case 'GET':
             if (isset($_GET[$key])) {
-                return $_GET[$key];
+                return $this->getOverridedGet($overrides, $key);
             }
             break;
 
         case 'POST':
             if (isset($_POST[$key])) {
-                return $_POST[$key];
+                return $this->getOverridedPost($overrides, $key);
             }
             break;
         default:
             throw new RuntimeException('Incorrect method: "' . $method . '"');
         }
         if (isset($_REQUEST[$key])) {
-            return $_REQUEST[$key];
+            return $this->getOverridedRequest($overrides, $key);
+        }
+        if ($overrides) {
+            return $overrides;
         }
         return $this->getDefaultValue($key, $default);
+    }
+    
+    /**
+     * Method getOverridedGet
+     *
+     * @param mixed[] $overrides overrides
+     * @param string  $key       key
+     *
+     * @return mixed
+     */
+    protected function getOverridedGet(array $overrides, string $key)
+    {
+        if ($overrides) {
+            if (is_array($_GET[$key])) {
+                return $this->merger->merge((array)$_GET[$key], $overrides);
+            }
+            return $overrides;
+        }
+        return $_GET[$key];
+    }
+    
+    /**
+     * Method getOverridedPost
+     *
+     * @param mixed[] $overrides overrides
+     * @param string  $key       key
+     *
+     * @return mixed
+     */
+    protected function getOverridedPost(array $overrides, string $key)
+    {
+        if ($overrides) {
+            if (is_array($_POST[$key])) {
+                return $this->merger->merge((array)$_POST[$key], $overrides);
+            }
+            return $overrides;
+        }
+        return $_POST[$key];
+    }
+    
+    /**
+     * Method getOverridedRequest
+     *
+     * @param mixed[] $overrides overrides
+     * @param string  $key       key
+     *
+     * @return mixed
+     */
+    protected function getOverridedRequest(array $overrides, string $key)
+    {
+        if ($overrides) {
+            if (is_array($_REQUEST[$key])) {
+                return $this->merger->merge((array)$_REQUEST[$key], $overrides);
+            }
+            return $overrides;
+        }
+        return $_REQUEST[$key];
     }
     
     /**
@@ -147,7 +214,7 @@ class Params implements Assoc
      */
     public function has(string $key): bool
     {
-        if (in_array($key, array_keys($this->overrides), true)) {
+        if (isset($this->overrides[$key])) {
             return true;
         }
         $method = $this->server->get('REQUEST_METHOD');
