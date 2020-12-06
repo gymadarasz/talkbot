@@ -31,6 +31,7 @@ class DatabaseMock extends Database
      * Method getWherePublic
      *
      * @param string   $table        table
+     * @param string   $where        where
      * @param string[] $filterUnsafe filterUnsafe
      * @param string   $logic        logic
      *
@@ -38,9 +39,10 @@ class DatabaseMock extends Database
      */
     public function getWherePublic(
         string $table,
-        array $filterUnsafe,
-        string $logic
+        string $where = '',
+        array $filterUnsafe = [],
+        string $logic = 'AND'
     ): string {
-        return parent::getWhere($table, $filterUnsafe, $logic);
+        return parent::getWhere($table, $where, $filterUnsafe, $logic);
     }
 }

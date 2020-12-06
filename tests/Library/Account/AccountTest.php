@@ -362,6 +362,7 @@ class AccountTest extends ApiTest
         $user = $this->database->getRow(
             'user',
             ['token'],
+            '',
             ['email' => $email]
         );
         $activationLink = $this->config->get('Site')->get('base')
@@ -413,6 +414,7 @@ class AccountTest extends ApiTest
         $user = $this->database->getRow(
             'user',
             ['token'],
+            '',
             ['email' => $email]
         );
         $contents = $this->get(
@@ -432,6 +434,7 @@ class AccountTest extends ApiTest
         $user = $this->database->getRow(
             'user',
             ['token'],
+            '',
             ['email' => self::EMAIL]
         );
         $contents = $this->get(
@@ -562,6 +565,7 @@ class AccountTest extends ApiTest
         $user = $this->database->getRow(
             'user',
             ['token'],
+            '',
             ['email' => self::EMAIL]
         );
         $token = $user['token'] ?? '';
@@ -636,6 +640,7 @@ class AccountTest extends ApiTest
         $user = $this->database->getRow(
             'user',
             ['token'],
+            '',
             ['email' => self::EMAIL]
         );
         $contents = $this->post(
@@ -660,6 +665,7 @@ class AccountTest extends ApiTest
         $user = $this->database->getRow(
             'user',
             ['token'],
+            '',
             ['email' => self::EMAIL]
         );
         $contents = $this->post(

@@ -151,9 +151,8 @@ class Mysql
      */
     public function selectOne(string $query): array
     {
-        $this->connect();
-        $result = $this->mysqli->query($query);
-        if (false !== $result && $result instanceof mysqli_result) {
+        $result = $this->query($query);
+        if ($result instanceof mysqli_result) {
             // return (new Row())->setFields($result->fetch_assoc() ?: []);
             $row = $result->fetch_assoc() ?: [];
             if (!empty($row)) {
@@ -178,8 +177,7 @@ class Mysql
      */
     public function select(string $query): array
     {
-        $this->connect();
-        $result = $this->mysqli->query($query);
+        $result = $this->query($query);
         if ($result instanceof mysqli_result) {
             $rows = [];
             while ($row = $result->fetch_assoc()) {

@@ -37,20 +37,38 @@ $overrides = [
     'values' => ['owner_user_id' => '{{ session:user.id }}'],
 ];
 
+$publicListOverrides = [
+    'table' => 'content',
+    'where' => 'OR content.published = 1',
+    'filter' => ['owner_user_id' => '{{ session:user.id }}'],
+    'values' => ['owner_user_id' => '{{ session:user.id }}'],
+];
+
+$publicViewOverrides = [
+    'table' => 'content',
+    'where' => 'OR content.published = 1',
+    'filter' => ['owner_user_id' => '{{ session:user.id }}'],
+    'values' => ['owner_user_id' => '{{ session:user.id }}'],
+];
+
 return $routes = [
-    'protected' => [
+    'public' => [
         'GET' => [
             'content/list' => [
                 'class' => Crud::class,
                 'method' => 'getListResponse',
-                'overrides' => $overrides,
+                'overrides' => $publicListOverrides,
             ],
             'content/view' => [
                 'class' => Crud::class,
                 'method' => 'getViewResponse',
                 'validations' => $validations,
-                'overrides' => $overrides,
+                'overrides' => $publicViewOverrides,
             ],
+        ],
+    ],
+    'protected' => [
+        'GET' => [
             'content/delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',

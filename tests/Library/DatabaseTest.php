@@ -58,7 +58,7 @@ class DatabaseTest extends Test
         $exc = null;
         $database = $invoker->getInstance(DatabaseMock::class);
         try {
-            $database->getWherePublic('atable', [], 'NOT VALID LOGIC');
+            $database->getWherePublic('atable', '', [], 'NOT VALID LOGIC');
             $this->assertTrue(false);
         } catch (RuntimeException $exc) {
         }
@@ -88,6 +88,7 @@ class DatabaseTest extends Test
         $row = $database->getRow(
             'user',
             ['email', 'hash', 'token'],
+            '',
             ['email' => 'testuser@email.com']
         );
         $this->assertEquals(
@@ -100,12 +101,13 @@ class DatabaseTest extends Test
         );
         
         // cleanup
-        $database->delRows('user', ['email' => 'testuser@email.com']);
+        $database->delRows('user', '', ['email' => 'testuser@email.com']);
         $exception = null;
         try {
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
@@ -169,6 +171,7 @@ class DatabaseTest extends Test
         $row = $database->getRows(
             'user',
             ['email', 'hash', 'token'],
+            '',
             ['hash' => 'nohash']
         );
         $this->assertEquals(
@@ -193,14 +196,15 @@ class DatabaseTest extends Test
         );
         
         // clean up
-        $database->delRows('user', ['email' => 'testuser1@email.com']);
-        $database->delRows('user', ['email' => 'testuser2@email.com']);
-        $database->delRows('user', ['email' => 'testuser3@email.com']);
+        $database->delRows('user', '', ['email' => 'testuser1@email.com']);
+        $database->delRows('user', '', ['email' => 'testuser2@email.com']);
+        $database->delRows('user', '', ['email' => 'testuser3@email.com']);
         $exception = null;
         try {
             $database->getRows(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['hash' => 'nohash']
             );
             $this->assertTrue(false);
@@ -226,6 +230,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
@@ -238,6 +243,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['email' => 'testusermodified@email.com']
             );
             $this->assertTrue(false);
@@ -256,6 +262,7 @@ class DatabaseTest extends Test
         $result = $database->setRow(
             'user',
             ['email' => 'testusermodified@email.com'],
+            '',
             ['email' => 'testuser@email.com'],
         );
         $this->assertEquals(1, $result);
@@ -263,6 +270,7 @@ class DatabaseTest extends Test
         $row = $database->getRow(
             'user',
             ['email', 'hash', 'token'],
+            '',
             ['email' => 'testusermodified@email.com']
         );
         $this->assertEquals(
@@ -275,12 +283,13 @@ class DatabaseTest extends Test
         );
         
         // cleanup
-        $database->delRows('user', ['email' => 'testusermodified@email.com']);
+        $database->delRows('user', '', ['email' => 'testusermodified@email.com']);
         $exception = null;
         try {
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
@@ -293,6 +302,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['email' => 'testusermodified@email.com']
             );
             $this->assertTrue(false);
@@ -321,6 +331,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
@@ -333,6 +344,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['email' => 'testusermodified@email.com']
             );
             $this->assertTrue(false);
@@ -351,6 +363,7 @@ class DatabaseTest extends Test
         $result = $database->setRow(
             'user',
             ['email' => 'testusermodified@email.com'],
+            '',
             ['email' => 'testuser@email.com'],
         );
         $this->assertEquals(1, $result);
@@ -358,6 +371,7 @@ class DatabaseTest extends Test
         $row = $database->getRow(
             'user',
             ['email', 'hash', 'token'],
+            '',
             ['email' => 'testusermodified@email.com']
         );
         $this->assertEquals(
@@ -370,12 +384,13 @@ class DatabaseTest extends Test
         );
         
         // cleanup
-        $database->delRows('user', ['email' => 'testusermodified@email.com']);
+        $database->delRows('user', '', ['email' => 'testusermodified@email.com']);
         $exception = null;
         try {
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['email' => 'testuser@email.com']
             );
             $this->assertTrue(false);
@@ -388,6 +403,7 @@ class DatabaseTest extends Test
             $database->getRow(
                 'user',
                 ['email', 'hash', 'token'],
+                '',
                 ['email' => 'testusermodified@email.com']
             );
             $this->assertTrue(false);

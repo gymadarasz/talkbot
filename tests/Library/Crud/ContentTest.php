@@ -53,7 +53,7 @@ class ContentTest extends AccountTest
     public function beforeAll(): void
     {
         try {
-            $this->database->delRows('content', []);
+            $this->database->delRows('content');
         } catch (MysqlNoAffectException $exception) {
             $this->invoker->getInstance(Logger::class)->exception($exception);
         }
@@ -81,7 +81,7 @@ class ContentTest extends AccountTest
         $this->canSeeLogoutWorks();
         
         try {
-            $this->database->delRows('content', []);
+            $this->database->delRows('content');
         } catch (MysqlNoAffectException $exception) {
             $this->invoker->getInstance(Logger::class)->exception($exception);
         }

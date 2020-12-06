@@ -98,6 +98,7 @@ class PasswordReset extends ArrayResponder
             $this->database->getRow(
                 'user',
                 ['email'],
+                '',
                 ['email' => $email, 'active' => 1]
             );
         } catch (MysqlNotFoundException $exception) {
@@ -112,6 +113,7 @@ class PasswordReset extends ArrayResponder
             $this->database->setRow(
                 'user',
                 ['token' => $token],
+                '',
                 ['email' => $email, 'active' => 1]
             );
         } catch (MysqlNoAffectException $exception) {

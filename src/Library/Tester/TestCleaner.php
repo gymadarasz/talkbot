@@ -66,7 +66,13 @@ class TestCleaner
     public function cleanUp(): void
     {
         try {
-            $this->database->delRows('user', []);
+            $this->database->delRows('content');
+        } catch (MysqlNoAffectException $exception) {
+            $this->logger->exception($exception);
+        }
+        
+        try {
+            $this->database->delRows('user');
         } catch (MysqlNoAffectException $exception) {
             $this->logger->exception($exception);
         }

@@ -95,6 +95,7 @@ class PasswordChange extends ArrayResponder
             $user = $this->database->getRow(
                 'user',
                 ['hash'],
+                '',
                 ['token' => $token, 'active' => 1]
             );
             $hash = $this->encrypter->encrypt($params->get('password'));
@@ -110,6 +111,7 @@ class PasswordChange extends ArrayResponder
                     'hash' => $hash,
                     'token' => null,
                 ],
+                '',
                 [
                     'token' => $params->get('token'),
                     'active' => 1,

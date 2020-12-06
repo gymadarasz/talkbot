@@ -55,6 +55,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
+     * @param string   $where        where
      * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
      *
@@ -63,12 +64,14 @@ class Database
     public function getRow(
         string $tableUnsafe,
         array $fieldsUnsafe,
+        string $where = '',
         array $filterUnsafe = [],
         string $filterLogic = 'AND'
     ): array {
         return $this->get(
             $tableUnsafe,
             $fieldsUnsafe,
+            $where,
             $filterUnsafe,
             $filterLogic,
             1,
@@ -81,6 +84,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
+     * @param string   $where        where
      * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
      * @param int      $limit        limit
@@ -91,6 +95,7 @@ class Database
     public function getRows(
         string $tableUnsafe,
         array $fieldsUnsafe,
+        string $where = '',
         array $filterUnsafe = [],
         string $filterLogic = 'AND',
         int $limit = 0,
@@ -99,6 +104,7 @@ class Database
         return $this->get(
             $tableUnsafe,
             $fieldsUnsafe,
+            $where,
             $filterUnsafe,
             $filterLogic,
             $limit,
@@ -111,6 +117,7 @@ class Database
      *
      * @param string   $tableUnsafe  tableUnsafe
      * @param string[] $fieldsUnsafe fieldsUnsafe
+     * @param string   $where        where
      * @param mixed[]  $filterUnsafe filterUnsafe
      * @param string   $filterLogic  filterLogic
      * @param int      $limit        limit
@@ -121,6 +128,7 @@ class Database
     protected function get(
         string $tableUnsafe,
         array $fieldsUnsafe,
+        string $where = '',
         array $filterUnsafe = [],
         string $filterLogic = 'AND',
         int $limit = 1,
@@ -138,7 +146,7 @@ class Database
             )
         );
         $query = "SELECT $fields FROM `$table`"
-            . $this->getWhere($table, $filterUnsafe, $filterLogic);
+            . $this->getWhere($table, $where, $filterUnsafe, $filterLogic);
         if ($limit >= 1) {
             $query .= " LIMIT $offset, $limit";
         }
@@ -152,6 +160,7 @@ class Database
      * Method getWhere
      *
      * @param string  $table        table
+     * @param string  $where        where
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $logic        logic
      *
@@ -160,8 +169,9 @@ class Database
      */
     protected function getWhere(
         string $table,
-        array $filterUnsafe,
-        string $logic
+        string $where = '',
+        array $filterUnsafe = [],
+        string $logic = 'AND'
     ): string {
         $filter = $this->safer->freez([$this->mysql, 'escape'], $filterUnsafe);
         if (!in_array($logic, self::LOGICS, true)) {
@@ -169,7 +179,12 @@ class Database
         }
         $query = '';
         if ($filter) {
-            $query .= " WHERE " . $this->getConditions($table, $filter, $logic);
+            $query .= " WHERE " . $this->getConditions(
+                $table,
+                $where,
+                $filter,
+                $logic
+            );
         }
         return $query;
     }
@@ -178,6 +193,7 @@ class Database
      * Method getConditions
      *
      * @param string  $table  table
+     * @param string  $where  where
      * @param mixed[] $filter filter
      * @param string  $logic  logic
      *
@@ -185,16 +201,22 @@ class Database
      */
     protected function getConditions(
         string $table,
-        array $filter,
-        string $logic
+        string $where = '',
+        array $filter = [],
+        string $logic = 'AND'
     ): string {
         $conds = [];
         foreach ($filter as $key => $value) {
             $conds[] = "`$table`.`$key` = " . $this->mysql->value($value);
         }
-        return $conds ?
+        
+        $ret = $conds ?
             implode(" $logic ", $conds) :
             $this::NO_CONDITION_FILTERS[$logic];
+        if (trim($where)) {
+            $ret = "($ret) $where";
+        }
+        return $ret;
     }
     
     /**
@@ -237,6 +259,7 @@ class Database
      * Method delRow
      *
      * @param string  $tableUnsafe  tableUnsafe
+     * @param string  $where        where
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
@@ -245,12 +268,14 @@ class Database
      */
     public function delRow(
         string $tableUnsafe,
-        array $filterUnsafe,
+        string $where = '',
+        array $filterUnsafe = [],
         string $filterLogic = 'AND',
         int $limit = 1
     ): int {
         return $this->del(
             $tableUnsafe,
+            $where,
             $filterUnsafe,
             $filterLogic,
             $limit
@@ -261,6 +286,7 @@ class Database
      * Method delRows
      *
      * @param string  $tableUnsafe  tableUnsafe
+     * @param string  $where        where
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
@@ -269,12 +295,14 @@ class Database
      */
     public function delRows(
         string $tableUnsafe,
-        array $filterUnsafe,
+        string $where = '',
+        array $filterUnsafe = [],
         string $filterLogic = 'AND',
         int $limit = 0
     ): int {
         return $this->delRow(
             $tableUnsafe,
+            $where,
             $filterUnsafe,
             $filterLogic,
             $limit
@@ -285,6 +313,7 @@ class Database
      * Method del
      *
      * @param string  $tableUnsafe  tableUnsafe
+     * @param string  $where        where
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
@@ -294,7 +323,8 @@ class Database
      */
     protected function del(
         string $tableUnsafe,
-        array $filterUnsafe,
+        string $where = '',
+        array $filterUnsafe = [],
         string $filterLogic = 'AND',
         int $limit = 1
     ): int {
@@ -303,7 +333,7 @@ class Database
         }
         $table = $this->mysql->escape($tableUnsafe);
         $query = "DELETE FROM `$table`";
-        $query .= $this->getWhere($table, $filterUnsafe, $filterLogic);
+        $query .= $this->getWhere($table, $where, $filterUnsafe, $filterLogic);
         if ($limit >= 1) {
             $query .= " LIMIT $limit";
         }
@@ -315,6 +345,7 @@ class Database
      *
      * @param string  $tableUnsafe  tableUnsafe
      * @param mixed[] $valuesUnsafe valuesUnsafe
+     * @param string  $where        where
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
@@ -324,13 +355,15 @@ class Database
     public function setRow(
         string $tableUnsafe,
         array $valuesUnsafe,
-        array $filterUnsafe,
+        string $where = '',
+        array $filterUnsafe = [],
         string $filterLogic = 'AND',
         int $limit = 1
     ): int {
         return $this->set(
             $tableUnsafe,
             $valuesUnsafe,
+            $where,
             $filterUnsafe,
             $filterLogic,
             $limit
@@ -342,6 +375,7 @@ class Database
      *
      * @param string  $tableUnsafe  tableUnsafe
      * @param mixed[] $valuesUnsafe valuesUnsafe
+     * @param string  $where        where
      * @param mixed[] $filterUnsafe filterUnsafe
      * @param string  $filterLogic  filterLogic
      * @param int     $limit        limit
@@ -351,7 +385,8 @@ class Database
     protected function set(
         string $tableUnsafe,
         array $valuesUnsafe,
-        array $filterUnsafe,
+        string $where = '',
+        array $filterUnsafe = [],
         string $filterLogic = 'AND',
         int $limit = 1
     ): int {
@@ -362,7 +397,7 @@ class Database
             $sets[] = "`$table`.`$key` = " . $this->mysql->value($value);
         }
         $setstr = implode(', ', $sets);
-        $where = $this->getWhere($table, $filterUnsafe, $filterLogic);
+        $where = $this->getWhere($table, $where, $filterUnsafe, $filterLogic);
         $query = "UPDATE `$table` SET $setstr $where";
         if ($limit >= 1) {
             $query .= " LIMIT $limit";

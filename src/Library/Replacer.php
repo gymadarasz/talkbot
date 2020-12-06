@@ -60,23 +60,32 @@ class Replacer
                     continue;
                 }
                 if ($count === 2) {
-                    $field = $assocs[$assocKey]->get($assocValue[0]);
+                    if (!isset($assocs[$assocKey])) {
+                        throw new RuntimeException(
+                            'Associative content missing at key: "' . $assocKey . '"'
+                                . ', possible keys: "'
+                                . implode('", "', array_keys($assocs)) . '"'
+                        );
+                    }
+                    $field = $assocs[$assocKey]->get($assocValue[0], []);
                     if (!is_array($field)) {
                         throw new RuntimeException(
                             'Incorrect field replacement: "'
                                 . $assocValue[0] . '" expected to be an array, '
-                                . $field . ' given.'
+                                . gettype($field) . ' given.'
+                                . (is_scalar($field) ? ' (' . $field . ')' : '')
                         );
                     }
                     if (!isset($field[$assocValue[1]])) {
+                        //                        $this->logger->warning(
                         throw new RuntimeException(
-                            'Missing field replacement: "'
-                                . $match . '"'
+                            'Missing field replacement: "' . $match . '"'
                         );
                     }
+                    $replace = $field[$assocValue[1]] ?? '';
                     $value = str_replace(
                         $matches[0][$key],
-                        $field[$assocValue[1]],
+                        $replace,
                         $value
                     );
                     continue;

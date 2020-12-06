@@ -100,7 +100,12 @@ class Registry extends ArrayResponder
         
         
         try {
-            $user = $this->database->getRow('user', ['email'], ['email' => $email]);
+            $user = $this->database->getRow(
+                'user',
+                ['email'],
+                '',
+                ['email' => $email]
+            );
         } catch (MysqlNotFoundException $exception) {
             $this->logger->exception($exception);
             $user = [];

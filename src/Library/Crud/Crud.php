@@ -104,6 +104,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
                 ',',
                 $this->params->get('fields', self::DEFAULT_FIELDS)
             ),
+            $this->params->get('where', ''),
             $this->params->get('filter', []),
             $this->params->get(
                 'filterLogic',
@@ -150,6 +151,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
                 ',',
                 $this->params->get('fields', self::DEFAULT_FIELDS)
             ),
+            $this->params->get('where', ''),
             $this->params->get('filter', []),
             $this->params->get(
                 'filterLogic',
@@ -189,6 +191,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
         return [
             $this->params->get('table'),
             $this->params->get('values', []),
+            $this->params->get('where', ''),
             $this->params->get('filter', []),
             $this->params->get(
                 'filterLogic',
@@ -262,6 +265,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     {
         return [
             $this->params->get('table'),
+            $this->params->get('where', ''),
             $this->params->get('filter', []),
             $this->params->get(
                 'filterLogic',
