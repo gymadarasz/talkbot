@@ -111,15 +111,21 @@ class Router
                 );
                 unset($target['defaults']);
             }
-            if (isset($target['overrides'])) {
-                $this->params->setOverrides(
-                    $this->replacer->replaceAll(
-                        $target['overrides'],
-                        $this->getReplacerAssocs()
-                    )
-                );
-                unset($target['overrides']);
+            
+            if (!isset($target['overrides'])) {
+                $target['overrides'] = ['where' => ''];
             }
+            if (!isset($target['overrides']['where'])) {
+                $target['overrides']['where'] = '';
+            }
+            $this->params->setOverrides(
+                $this->replacer->replaceAll(
+                    $target['overrides'],
+                    $this->getReplacerAssocs()
+                )
+            );
+            unset($target['overrides']);
+                
             if (isset($target['validations'])) {
                 $errors = $this->getValidationErrors($target['validations']);
                 if ($errors) {

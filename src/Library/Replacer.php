@@ -28,6 +28,20 @@ use function count;
  */
 class Replacer
 {
+    protected ?Mysql $mysql = null;
+    
+    protected Invoker $invoker;
+    
+    /**
+     * Method __construct
+     *
+     * @param Invoker $invoker invoker
+     */
+    public function __construct(Invoker $invoker)
+    {
+        $this->invoker = $invoker;
+    }
+    
     /**
      * Method replace
      *
@@ -54,7 +68,9 @@ class Replacer
                 if ($count === 1) {
                     $value = str_replace(
                         $matches[0][$key],
-                        $assocs[$assocKey]->get($assocValue[0]),
+                        $this->getMysql()->escape(
+                            $assocs[$assocKey]->get($assocValue[0]),
+                        ),
                         $value
                     );
                     continue;
@@ -85,7 +101,7 @@ class Replacer
                     $replace = $field[$assocValue[1]] ?? '';
                     $value = str_replace(
                         $matches[0][$key],
-                        $replace,
+                        $this->getMysql()->escape($replace),
                         $value
                     );
                     continue;
@@ -131,5 +147,18 @@ class Replacer
             );
         }
         return $ret;
+    }
+    
+    /**
+     * Method getMysql
+     *
+     * @return Mysql
+     */
+    protected function getMysql(): Mysql
+    {
+        if (null === $this->mysql) {
+            $this->mysql = $this->invoker->getInstance(Mysql::class);
+        }
+        return $this->mysql;
     }
 }
