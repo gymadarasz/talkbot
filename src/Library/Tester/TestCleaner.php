@@ -16,9 +16,7 @@ namespace Madsoft\Library\Tester;
 use Madsoft\Library\Config;
 use Madsoft\Library\Database;
 use Madsoft\Library\Folders;
-use Madsoft\Library\Logger;
 use Madsoft\Library\Mailer;
-use Madsoft\Library\MysqlNoAffectException;
 use Madsoft\Library\Router;
 use RuntimeException;
 
@@ -37,7 +35,6 @@ class TestCleaner
     protected Database $database;
     protected Folders $folders;
     protected Config $config;
-    protected Logger $logger;
 
     /**
      * Method __construct
@@ -45,18 +42,15 @@ class TestCleaner
      * @param Database $database database
      * @param Folders  $folders  folders
      * @param Config   $config   config
-     * @param Logger   $logger   logger
      */
     public function __construct(
         Database $database,
         Folders $folders,
-        Config $config,
-        Logger $logger
+        Config $config
     ) {
         $this->database = $database;
         $this->folders = $folders;
         $this->config = $config;
-        $this->logger = $logger;
     }
     /**
      * Method cleanUp
@@ -65,17 +59,8 @@ class TestCleaner
      */
     public function cleanUp(): void
     {
-        try {
-            $this->database->delRows('content');
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
-        }
-        
-        try {
-            $this->database->delRows('user');
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
-        }
+        $this->database->delRows('content');
+        $this->database->delRows('user');
         
         //        try {
         //            $this->database->delRows('ownership', []);

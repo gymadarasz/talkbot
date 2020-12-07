@@ -138,6 +138,9 @@ class Router
             );
         } catch (Exception $exception) {
             $this->invoker->getInstance(Logger::class)->exception($exception);
+            if ('test' === $this->invoker->getInstance(Config::class)->getEnv()) {
+                $this->invoker->getInstance(Throwier::class)->forward($exception);
+            }
         }
         return $this->invoker
             ->getInstance(ArrayResponder::class)

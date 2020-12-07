@@ -139,7 +139,10 @@ class Params implements Assoc
     {
         if ($overrides) {
             if (is_array($_GET[$key])) {
-                return $this->merger->merge((array)$_GET[$key], $overrides);
+                return $this->merger->merge(
+                    $this->merger->merge($this->defaults, $_GET)[$key],
+                    $overrides
+                );
             }
             return $overrides;
         }
@@ -158,7 +161,10 @@ class Params implements Assoc
     {
         if ($overrides) {
             if (is_array($_POST[$key])) {
-                return $this->merger->merge((array)$_POST[$key], $overrides);
+                return $this->merger->merge(
+                    $this->merger->merge($this->defaults, $_POST)[$key],
+                    $overrides
+                );
             }
             return $overrides;
         }
@@ -177,7 +183,10 @@ class Params implements Assoc
     {
         if ($overrides) {
             if (is_array($_REQUEST[$key])) {
-                return $this->merger->merge((array)$_REQUEST[$key], $overrides);
+                return $this->merger->merge(
+                    $this->merger->merge($this->defaults, $_REQUEST)[$key],
+                    $overrides
+                );
             }
             return $overrides;
         }

@@ -15,10 +15,7 @@ namespace Madsoft\Library\Account;
 
 use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
-use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
-use Madsoft\Library\MysqlNoAffectException;
-use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Session;
@@ -37,7 +34,6 @@ class Activate extends ArrayResponder
 {
     protected Database $database;
     protected AccountValidator $validator;
-    protected Logger $logger;
 
 
     /**
@@ -47,19 +43,16 @@ class Activate extends ArrayResponder
      * @param Csrf             $csrf      csrf
      * @param Database         $database  database
      * @param AccountValidator $validator validator
-     * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
         Csrf $csrf,
         Database $database,
-        AccountValidator $validator,
-        Logger $logger
+        AccountValidator $validator
     ) {
         parent::__construct($messages, $csrf);
         $this->database = $database;
         $this->validator = $validator;
-        $this->logger = $logger;
     }
     
     /**
@@ -84,33 +77,25 @@ class Activate extends ArrayResponder
         
         $token = $params->get('token');
         
-        try {
-            $this->database->getRow(
-                'user',
-                ['id'],
-                '',
-                '',
-                ['token' => $token, 'active' => 0]
-            );
-        } catch (MysqlNotFoundException $exception) {
-            $this->logger->exception($exception);
-            return $this->getErrorResponse(
-                'Invalid token'
-            );
+        if (!$this->database->getRow(
+            'user',
+            ['id'],
+            '',
+            '',
+            ['token' => $token, 'active' => 0]
+        )
+        ) {
+            return $this->getErrorResponse('Invalid token');
         }
-        
-        try {
-            $this->database->setRow(
-                'user',
-                ['active' => 1],
-                '',
-                ['token' => $token]
-            );
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
-            return $this->getErrorResponse(
-                'User activation failed'
-            );
+                
+        if (!$this->database->setRow(
+            'user',
+            ['active' => 1],
+            '',
+            ['token' => $token]
+        )
+        ) {
+            return $this->getErrorResponse('User activation failed');
         }
         
         $session->unset('resend');

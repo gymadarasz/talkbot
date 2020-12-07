@@ -15,10 +15,7 @@ namespace Madsoft\Library\Account;
 
 use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
-use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
-use Madsoft\Library\MysqlNoAffectException;
-use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Token;
@@ -42,7 +39,6 @@ class PasswordReset extends ArrayResponder
     protected Database $database;
     protected AccountValidator $validator;
     protected AccountMailer $mailer;
-    protected Logger $logger;
 
     /**
      * Method __construct
@@ -53,7 +49,6 @@ class PasswordReset extends ArrayResponder
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param AccountMailer    $mailer    mailer
-     * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
@@ -61,15 +56,13 @@ class PasswordReset extends ArrayResponder
         Token $token,
         Database $database,
         AccountValidator $validator,
-        AccountMailer $mailer,
-        Logger $logger
+        AccountMailer $mailer
     ) {
         parent::__construct($messages, $csrf);
         $this->token = $token;
         $this->database = $database;
         $this->validator = $validator;
         $this->mailer = $mailer;
-        $this->logger = $logger;
     }
 
     /**
@@ -94,34 +87,26 @@ class PasswordReset extends ArrayResponder
         
         $email = $params->get('email');
         
-        try {
-            $this->database->getRow(
-                'user',
-                ['email'],
-                '',
-                '',
-                ['email' => $email, 'active' => 1]
-            );
-        } catch (MysqlNotFoundException $exception) {
-            $this->logger->exception($exception);
-            return $this->getErrorResponse(
-                'Email address not found'
-            );
+        if (!$this->database->getRow(
+            'user',
+            ['email'],
+            '',
+            '',
+            ['email' => $email, 'active' => 1]
+        )
+        ) {
+            return $this->getErrorResponse('Email address not found');
         }
         
         $token = $this->token->generate();
-        try {
-            $this->database->setRow(
-                'user',
-                ['token' => $token],
-                '',
-                ['email' => $email, 'active' => 1]
-            );
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
-            return $this->getErrorResponse(
-                'Token is not updated'
-            );
+        if (!$this->database->setRow(
+            'user',
+            ['token' => $token],
+            '',
+            ['email' => $email, 'active' => 1]
+        )
+        ) {
+            return $this->getErrorResponse('Token is not updated');
         }
         
         if (!$this->mailer->sendResetEmail($email, $token)) {

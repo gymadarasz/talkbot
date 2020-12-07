@@ -13,8 +13,6 @@
 
 namespace Madsoft\Talkbot;
 
-use Madsoft\Library\Logger;
-use Madsoft\Library\MysqlNoAffectException;
 use Madsoft\Tests\Library\Crud\ContentTest;
 
 /**
@@ -35,9 +33,9 @@ class ScriptTest extends ContentTest
      * @var string[]
      */
     protected array $routes = [
-        __DIR__ . '/../../src/Library/Account/routes.php',
-        __DIR__ . '/../../src/Library/Crud/content.routes.php',
-        __DIR__ . '/../../src/Talkbot/script.routes.php',
+        __DIR__ . '/../../src/Library/Account/account.api.routes.php',
+        __DIR__ . '/../../src/Library/Crud/content.api.routes.php',
+        __DIR__ . '/../../src/Talkbot/script.api.routes.php',
     ];
     
     /**
@@ -47,11 +45,7 @@ class ScriptTest extends ContentTest
      */
     public function beforeAll(): void
     {
-        try {
-            $this->database->delRows('script');
-        } catch (MysqlNoAffectException $exception) {
-            $this->invoker->getInstance(Logger::class)->exception($exception);
-        }
+        $this->database->delRows('script');
         parent::beforeAll();
     }
     
@@ -62,11 +56,7 @@ class ScriptTest extends ContentTest
      */
     public function afterAll(): void
     {
-        try {
-            $this->database->delRows('script');
-        } catch (MysqlNoAffectException $exception) {
-            $this->invoker->getInstance(Logger::class)->exception($exception);
-        }
+        $this->database->delRows('script');
         parent::afterAll();
     }
     

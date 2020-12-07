@@ -70,15 +70,30 @@ class Database
         array $filterUnsafe = [],
         string $filterLogic = 'AND'
     ): array {
-        return $this->get(
+        $count = $this->count(
             $tableUnsafe,
-            $fieldsUnsafe,
             $join,
             $where,
             $filterUnsafe,
-            $filterLogic,
-            1,
-            0
+            $filterLogic
+        );
+        if ($count === 0) {
+            return [];
+        }
+        if ($count === 1) {
+            return $this->get(
+                $tableUnsafe,
+                $fieldsUnsafe,
+                $join,
+                $where,
+                $filterUnsafe,
+                $filterLogic,
+                1,
+                0
+            );
+        }
+        throw new RuntimeException(
+            'Getter query expect only and exactly one row but found ' . $count
         );
     }
     
@@ -106,6 +121,16 @@ class Database
         int $limit = 0,
         int $offset = 0
     ): array {
+        if (!$this->count(
+            $tableUnsafe,
+            $join,
+            $where,
+            $filterUnsafe,
+            $filterLogic
+        )
+        ) {
+            return [];
+        }
         return $this->get(
             $tableUnsafe,
             $fieldsUnsafe,
@@ -142,6 +167,74 @@ class Database
         int $limit = 1,
         int $offset = 0
     ): array {
+        $query = $this->getSelect(
+            $tableUnsafe,
+            $fieldsUnsafe,
+            $join,
+            $where,
+            $filterUnsafe,
+            $filterLogic
+        );
+        if ($limit >= 1) {
+            $query .= " LIMIT $offset, $limit";
+        }
+        if ($limit === 1) {
+            return $this->mysql->selectOne($query);
+        }
+        return $this->mysql->select($query);
+    }
+    
+    /**
+     * Method count
+     *
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param string  $join         join
+     * @param string  $where        where
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     *
+     * @return int
+     */
+    public function count(
+        string $tableUnsafe,
+        string $join = '',
+        string $where = '',
+        array $filterUnsafe = [],
+        string $filterLogic = 'AND'
+    ): int {
+        $table = $this->mysql->escape($tableUnsafe);
+        $query = $this->getSelectQuery(
+            'COUNT(*) as count_results_of_select',
+            $table,
+            $join,
+            $where,
+            $filterUnsafe,
+            $filterLogic
+        );
+        
+        return (int)$this->mysql->selectOne($query)['count_results_of_select'];
+    }
+    
+    /**
+     * Method getSelect
+     *
+     * @param string   $tableUnsafe  tableUnsafe
+     * @param string[] $fieldsUnsafe fieldsUnsafe
+     * @param string   $join         join
+     * @param string   $where        where
+     * @param mixed[]  $filterUnsafe filterUnsafe
+     * @param string   $filterLogic  filterLogic
+     *
+     * @return string
+     */
+    protected function getSelect(
+        string $tableUnsafe,
+        array $fieldsUnsafe,
+        string $join = '',
+        string $where = '',
+        array $filterUnsafe = [],
+        string $filterLogic = 'AND'
+    ): string {
         $table = $this->mysql->escape($tableUnsafe);
         $mysql = $this->mysql;
         $fields = implode(
@@ -153,16 +246,39 @@ class Database
                 $fieldsUnsafe
             )
         );
-        $query = "SELECT $fields FROM `$table`"
+        return $this->getSelectQuery(
+            $fields,
+            $table,
+            $join,
+            $where,
+            $filterUnsafe,
+            $filterLogic
+        );
+    }
+    
+    /**
+     * Method getSelectQuery
+     *
+     * @param string  $fields       fields
+     * @param string  $table        table
+     * @param string  $join         join
+     * @param string  $where        where
+     * @param mixed[] $filterUnsafe filterUnsafe
+     * @param string  $filterLogic  filterLogic
+     *
+     * @return string
+     */
+    protected function getSelectQuery(
+        string $fields,
+        string $table,
+        string $join = '',
+        string $where = '',
+        array $filterUnsafe = [],
+        string $filterLogic = 'AND'
+    ): string {
+        return "SELECT $fields FROM `$table`"
             . ($join ? " $join": '')
             . $this->getWhere($table, $where, $filterUnsafe, $filterLogic);
-        if ($limit >= 1) {
-            $query .= " LIMIT $offset, $limit";
-        }
-        if ($limit === 1) {
-            return $this->mysql->selectOne($query);
-        }
-        return $this->mysql->select($query);
     }
     
     /**
@@ -255,13 +371,13 @@ class Database
      * @param mixed[]  $valuesUnsafe valuesUnsafe
      * @param string[] $noQuotes     noQuotes
      *
-     * @return int
+     * @return int|string
      */
     public function addRow(
         string $tableUnsafe,
         array $valuesUnsafe,
         array $noQuotes = []
-    ): int {
+    ) {
         return $this->add($tableUnsafe, $valuesUnsafe, $noQuotes);
     }
     
@@ -272,13 +388,13 @@ class Database
      * @param mixed[]  $valuesUnsafe valuesUnsafe
      * @param string[] $noQuotes     noQuotes
      *
-     * @return int
+     * @return int|string
      */
     protected function add(
         string $tableUnsafe,
         array $valuesUnsafe,
         array $noQuotes = []
-    ): int {
+    ) {
         $table = $this->mysql->escape($tableUnsafe);
         $fields = $this->safer->freez([$this->mysql, 'escape'], $valuesUnsafe);
         $keys = implode('`, `', array_keys($fields));
@@ -311,12 +427,21 @@ class Database
         string $filterLogic = 'AND',
         int $limit = 1
     ): int {
-        return $this->del(
-            $tableUnsafe,
-            $where,
-            $filterUnsafe,
-            $filterLogic,
-            $limit
+        $count = $this->count($tableUnsafe, '', $where, $filterUnsafe, $filterLogic);
+        if (!$count) {
+            return 0;
+        }
+        if ($count === 1) {
+            return $this->del(
+                $tableUnsafe,
+                $where,
+                $filterUnsafe,
+                $filterLogic,
+                $limit
+            );
+        }
+        throw new RuntimeException(
+            'Delete query expect only and exactly one row but found ' . $count
         );
     }
     
@@ -338,13 +463,16 @@ class Database
         string $filterLogic = 'AND',
         int $limit = 0
     ): int {
-        return $this->delRow(
-            $tableUnsafe,
-            $where,
-            $filterUnsafe,
-            $filterLogic,
-            $limit
-        );
+        if ($this->count($tableUnsafe, '', $where, $filterUnsafe, $filterLogic)) {
+            return $this->del(
+                $tableUnsafe,
+                $where,
+                $filterUnsafe,
+                $filterLogic,
+                $limit
+            );
+        }
+        return 0;
     }
     
     /**
@@ -398,6 +526,9 @@ class Database
         string $filterLogic = 'AND',
         int $limit = 1
     ): int {
+        if (!$this->count($tableUnsafe, '', $where, $filterUnsafe, $filterLogic)) {
+            return 0;
+        }
         return $this->set(
             $tableUnsafe,
             $valuesUnsafe,

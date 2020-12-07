@@ -98,13 +98,13 @@ class ArrayResponder
     /**
      * Method getInsertResponse
      *
-     * @param int    $insertId insertId
-     * @param string $message  message
+     * @param int|string $insertId insertId
+     * @param string     $message  message
      *
      * @return mixed[]
      */
     public function getInsertResponse(
-        int $insertId,
+        $insertId,
         string $message = self::LBL_SUCCESS
     ): array {
         return $this->getSuccessResponse($message, ['insertId' => $insertId]);

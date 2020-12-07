@@ -16,10 +16,7 @@ namespace Madsoft\Library\Account;
 use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
 use Madsoft\Library\Encrypter;
-use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
-use Madsoft\Library\MysqlNoAffectException;
-use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 
@@ -38,7 +35,6 @@ class PasswordChange extends ArrayResponder
     protected Database $database;
     protected AccountValidator $validator;
     protected Encrypter $encrypter;
-    protected Logger $logger;
 
     /**
      * Method __construct
@@ -48,21 +44,18 @@ class PasswordChange extends ArrayResponder
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Encrypter        $encrypter encrypter
-     * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
         Csrf $csrf,
         Database $database,
         AccountValidator $validator,
-        Encrypter $encrypter,
-        Logger $logger
+        Encrypter $encrypter
     ) {
         parent::__construct($messages, $csrf);
         $this->database = $database;
         $this->validator = $validator;
         $this->encrypter = $encrypter;
-        $this->logger = $logger;
     }
     
     /**
@@ -90,39 +83,37 @@ class PasswordChange extends ArrayResponder
         }
         // TODO add test for sql injection escaping
         
-        try {
-            // TODO add test when token matches but user is inactive
-            $user = $this->database->getRow(
-                'user',
-                ['hash'],
-                '',
-                '',
-                ['token' => $token, 'active' => 1]
+        // TODO add test when token matches but user is inactive
+        $user = $this->database->getRow(
+            'user',
+            ['hash'],
+            '',
+            '',
+            ['token' => $token, 'active' => 1]
+        );
+        if (!$user) {
+            return $this->getErrorResponse('User not found at the given token');
+        }
+        $hash = $this->encrypter->encrypt($params->get('password'));
+        if ($user['hash'] === $hash) {
+            // TODO add test when password is not changed
+            return $this->getErrorResponse(
+                'Same password already taken and not changed.'
             );
-            $hash = $this->encrypter->encrypt($params->get('password'));
-            if ($user['hash'] === $hash) {
-                // TODO add test when password is not changed
-                return $this->getErrorResponse(
-                    'Same password already taken and not changed.'
-                );
-            }
-            $this->database->setRow(
-                'user',
-                [
+        }
+        if (!$this->database->setRow(
+            'user',
+            [
                     'hash' => $hash,
                     'token' => null,
                 ],
-                '',
-                [
+            '',
+            [
                     'token' => $params->get('token'),
                     'active' => 1,
                 ]
-            );
-        } catch (MysqlNotFoundException $exception) {
-            $this->logger->exception($exception);
-            return $this->getErrorResponse('User not found at the given token');
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
+        )
+        ) {
             return $this->getErrorResponse('Password is not saved');
         }
         

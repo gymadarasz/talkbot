@@ -252,13 +252,13 @@ class Mysql
      *
      * @param string $query query
      *
-     * @return int
+     * @return int|string
      * @throws RuntimeException
      */
-    public function insert(string $query): int
+    public function insert(string $query)
     {
-        if (false !== $this->query($query) && (int)$this->mysqli->insert_id > 0) {
-            return (int)$this->mysqli->insert_id;
+        if (false !== $this->query($query)) {
+            return $this->mysqli->insert_id;
         }
         throw new MysqlNoInsertException(
             "Not inserted by query:\n$query\n"

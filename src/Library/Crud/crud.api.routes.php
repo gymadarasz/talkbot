@@ -15,6 +15,10 @@ namespace Madsoft\Library\Crud;
 
 use Madsoft\Library\Validator\Rule\Mandatory;
 
+$defaults = [
+    'table' => '',
+];
+
 $validations = [
     'table' => [
         'value' => '{{ params:table }}',
@@ -31,19 +35,19 @@ return $routes = [
                 'class' => Crud::class,
                 'method' => 'getListResponse',
                 'validations' => $validations,
-                'defaults' => ['table' => ''],
+                'defaults' => $defaults,
             ],
             'view' => [
                 'class' => Crud::class,
                 'method' => 'getViewResponse',
                 'validations' => $validations,
-                'defaults' => ['table' => ''],
+                'defaults' => $defaults,
             ],
             'delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',
                 'validations' => $validations,
-                'defaults' => ['table' => ''],
+                'defaults' => $defaults,
             ],
         ],
         'POST' => [
@@ -51,13 +55,13 @@ return $routes = [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',
                 'validations' => $validations,
-                'defaults' => ['table' => ''],
+                'defaults' => $defaults,
             ],
             'create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
                 'validations' => $validations,
-                'defaults' => ['table' => ''],
+                'defaults' => $defaults,
             ],
         ],
     ],

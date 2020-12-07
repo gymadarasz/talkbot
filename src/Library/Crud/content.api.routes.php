@@ -21,6 +21,10 @@ use Madsoft\Library\Validator\Rule\Number;
 
 $merger = new Merger();
 
+$defaults = [
+    'filter' => ['id' => ''],
+];
+
 $validations = [
     'filter.id' => [
         'value' => '{{ params: filter.id }}',
@@ -28,14 +32,14 @@ $validations = [
     ],
 ];
 
-$createValidation = [
+$createValidations = [
     'values.name' => [
         'value' => '{{ params: values.name }}',
         'rules' => [Mandatory::class => null, MinLength::class => ['min' => 1]]
     ],
 ];
 
-$editValidations = $merger->merge($createValidation, $validations);
+$editValidations = $merger->merge($createValidations, $validations);
 
 $overrides = [
     'table' => 'content',
@@ -61,6 +65,7 @@ return $routes = [
             'content/view' => [
                 'class' => Crud::class,
                 'method' => 'getViewResponse',
+                'defaults' => $defaults,
                 'validations' => $validations,
                 'overrides' => $publicOverrides,
             ],
@@ -71,6 +76,7 @@ return $routes = [
             'content/delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',
+                'defaults' => $defaults,
                 'validations' => $validations,
                 'overrides' => $overrides,
             ],
@@ -79,13 +85,14 @@ return $routes = [
             'content/edit' => [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',
+                'defaults' => $defaults,
                 'validations' => $editValidations,
                 'overrides' => $overrides,
             ],
             'content/create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
-                'validations' => $createValidation,
+                'validations' => $createValidations,
                 'overrides' => $overrides,
             ],
         ],

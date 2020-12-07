@@ -15,12 +15,7 @@ namespace Madsoft\Library\Crud;
 
 use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
-use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
-use Madsoft\Library\MysqlEmptyException;
-use Madsoft\Library\MysqlNoAffectException;
-use Madsoft\Library\MysqlNoInsertException;
-use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 
@@ -43,7 +38,6 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     
     protected Database $database;
     protected Params $params;
-    protected Logger $logger;
     
     /**
      * Method __construct
@@ -52,19 +46,16 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      * @param Csrf     $csrf     csrf
      * @param Database $database database
      * @param Params   $params   params
-     * @param Logger   $logger   logger
      */
     public function __construct(
         Messages $messages,
         Csrf $csrf,
         Database $database,
-        Params $params,
-        Logger $logger
+        Params $params
     ) {
         parent::__construct($messages, $csrf);
         $this->database = $database;
         $this->params = $params;
-        $this->logger = $logger;
     }
     
     /**
@@ -76,19 +67,16 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      */
     public function getListResponse(): array
     {
-        try {
-            // TODO order field (ASC/DESC)
-            return $this->getResponse(
-                [
-                    'rows' => $this->database->getRows(
-                        ...$this->getListParams()
-                    ),
-                ]
-            );
-        } catch (MysqlEmptyException $exception) {
-            $this->logger->exception($exception);
+        $rows =  $this->database->getRows(...$this->getListParams());
+        if (!$rows) {
+            return $this->getErrorResponse('Empty list');
         }
-        return $this->getErrorResponse('Empty list');
+        // TODO order field (ASC/DESC)
+        return $this->getResponse(
+            [
+                    'rows' => $rows,
+                ]
+        );
     }
     
     /**
@@ -125,18 +113,15 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      */
     public function getViewResponse(): array
     {
-        try {
-            return $this->getResponse(
-                [
-                    'row' => $this->database->getRow(
-                        ...$this->getViewParams()
-                    )
-                ]
-            );
-        } catch (MysqlNotFoundException $exception) {
-            $this->logger->exception($exception);
+        $row  =$this->database->getRow(...$this->getViewParams());
+        if (!$row) {
+            return $this->getErrorResponse('Not found');
         }
-        return $this->getErrorResponse('Not found');
+        return $this->getResponse(
+            [
+                    'row' => $row
+                ]
+        );
     }
     
     /**
@@ -171,14 +156,9 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      */
     public function getEditResponse(): array
     {
-        try {
-            return $this->getAffectResponse(
-                $this->database->setRow(
-                    ...$this->getEditParams()
-                )
-            );
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
+        $affecteds = $this->database->setRow(...$this->getEditParams());
+        if ($affecteds) {
+            return $this->getAffectResponse($affecteds);
         }
         return $this->getErrorResponse('Not affected');
     }
@@ -212,14 +192,9 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      */
     public function getCreateResponse(): array
     {
-        try {
-            return $this->getInsertResponse(
-                $this->database->addRow(
-                    ...$this->getCreateParams()
-                )
-            );
-        } catch (MysqlNoInsertException $exception) {
-            $this->logger->exception($exception);
+        $insertId = $this->database->addRow(...$this->getCreateParams());
+        if ($insertId) {
+            return $this->getInsertResponse($insertId);
         }
         return $this->getErrorResponse('Not inserted');
     }
@@ -247,14 +222,9 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      */
     public function getDeleteResponse(): array
     {
-        try {
-            return $this->getAffectResponse(
-                $this->database->delRow(
-                    ...$this->getDeleteParams()
-                )
-            );
-        } catch (MysqlNoAffectException $exception) {
-            $this->logger->exception($exception);
+        $affecteds = $this->database->delRow(...$this->getDeleteParams());
+        if ($affecteds) {
+            return $this->getAffectResponse($affecteds);
         }
         return $this->getErrorResponse('Not affected');
     }

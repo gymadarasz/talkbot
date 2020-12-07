@@ -16,10 +16,7 @@ namespace Madsoft\Library\Account;
 use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
 use Madsoft\Library\Encrypter;
-use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
-use Madsoft\Library\MysqlNoInsertException;
-use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Session;
@@ -42,7 +39,6 @@ class Registry extends ArrayResponder
     protected Database $database;
     protected AccountValidator $validator;
     protected AccountMailer $mailer;
-    protected Logger $logger;
 
     /**
      * Method __construct
@@ -54,7 +50,6 @@ class Registry extends ArrayResponder
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param AccountMailer    $mailer    mailer
-     * @param Logger           $logger    logger
      */
     public function __construct(
         Messages $messages,
@@ -63,8 +58,7 @@ class Registry extends ArrayResponder
         Encrypter $encrypter,
         Database $database,
         AccountValidator $validator,
-        AccountMailer $mailer,
-        Logger $logger
+        AccountMailer $mailer
     ) {
         parent::__construct($messages, $csrf);
         $this->token = $token;
@@ -72,7 +66,6 @@ class Registry extends ArrayResponder
         $this->database = $database;
         $this->validator = $validator;
         $this->mailer = $mailer;
-        $this->logger = $logger;
     }
 
     /**
@@ -98,39 +91,29 @@ class Registry extends ArrayResponder
         $email = $params->get('email');
         $token = $this->token->generate();
         
-        
-        try {
-            $user = $this->database->getRow(
-                'user',
-                ['email'],
-                '',
-                '',
-                ['email' => $email]
-            );
-        } catch (MysqlNotFoundException $exception) {
-            $this->logger->exception($exception);
-            $user = [];
-        }
+        $user = $this->database->getRow(
+            'user',
+            ['email'],
+            '',
+            '',
+            ['email' => $email]
+        );
         
         if (!empty($user)) {
             return $this->getErrorResponse('Email address already registered');
         }
         
-        try {
-            $this->database->addRow(
-                'user',
-                [
+        if (!$this->database->addRow(
+            'user',
+            [
                     'email' => $email,
                     'hash' => $this->encrypter->encrypt($params->get('password')),
                     'token' => $token,
                     'active' => 0,
                 ]
-            );
-        } catch (MysqlNoInsertException $exception) {
-            $this->logger->exception($exception);
-            return $this->getErrorResponse(
-                'User is not saved'
-            );
+        )
+        ) {
+            return $this->getErrorResponse('User is not saved');
         }
         
         $session->set('resend', ['email' => $email, 'token' => $token]);

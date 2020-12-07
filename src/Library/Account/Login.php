@@ -18,7 +18,6 @@ use Madsoft\Library\Csrf;
 use Madsoft\Library\Database;
 use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
-use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\User;
@@ -83,18 +82,17 @@ class Login extends ArrayResponder
             return $this->loginError($errors, $email, 'Invalid params');
         }
         
-        try {
-            $user = $this->database->getRow(
-                'user',
-                ['id', 'email', 'group', 'hash'],
-                '',
-                '',
-                ['email' => $email, 'active' => 1]
-            );
-        } catch (MysqlNotFoundException $exception) {
-            $this->logger->exception($exception);
+        $user = $this->database->getRow(
+            'user',
+            ['id', 'email', 'group', 'hash'],
+            '',
+            '',
+            ['email' => $email, 'active' => 1]
+        );
+        if (!$user) {
             return $this->loginError([], $email, 'Not found');
         }
+        
         
         
         $errors = $this->validator->validateUser(
@@ -105,7 +103,7 @@ class Login extends ArrayResponder
             return $this->loginError($errors, $email, 'Invalid data');
         }
         
-        $this->user->login((int)$user['id'], $user['group']);
+        $this->user->login($user['id'], $user['group']);
         
         return $this->getSuccessResponse(
             'Login success'
@@ -131,8 +129,8 @@ class Login extends ArrayResponder
             $reasonstr .= " field '$field', error(s): '"
                     . implode("', '", $errors) . "'";
         }
-        $this->logger->error(
-            "Login error, reason: $mainreason -$reasonstr"
+        $this->logger->fail(
+            "Login failed, reason: $mainreason -$reasonstr"
                 . ($email ? " (email: '$email')" : '')
         );
         return $this->getErrorResponse('Login failed');

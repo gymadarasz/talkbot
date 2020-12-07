@@ -41,9 +41,9 @@ class User
     /**
      * Method getId
      *
-     * @return int
+     * @return int|string
      */
-    public function getId(): int
+    public function getId()
     {
         return $this->session->get('user', ['id' => 0])['id'];
     }
@@ -51,11 +51,11 @@ class User
     /**
      * Method setId
      *
-     * @param int $uid uid
+     * @param int|string $uid uid
      *
      * @return self
      */
-    public function setId(int $uid): self
+    public function setId($uid): self
     {
         $user = $this->session->get('user', []);
         $user['id'] = $uid;
@@ -111,12 +111,12 @@ class User
     /**
      * Method login
      *
-     * @param int    $uid   uid
-     * @param string $group group
+     * @param int|string $uid   uid
+     * @param string     $group group
      *
      * @return self
      */
-    public function login(int $uid, string $group): self
+    public function login($uid, string $group): self
     {
         return $this->setId($uid)->setGroup($group);
     }

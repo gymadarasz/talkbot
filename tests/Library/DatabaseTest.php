@@ -18,8 +18,6 @@ use Madsoft\Library\Database;
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Merger;
 use Madsoft\Library\Mysql;
-use Madsoft\Library\MysqlEmptyException;
-use Madsoft\Library\MysqlNotFoundException;
 use Madsoft\Library\Safer;
 use Madsoft\Library\Session;
 use Madsoft\Library\Tester\Test;
@@ -103,19 +101,14 @@ class DatabaseTest extends Test
         
         // cleanup
         $database->delRows('user', '', ['email' => 'testuser@email.com']);
-        $exception = null;
-        try {
-            $database->getRow(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['email' => 'testuser@email.com']
-            );
-            $this->assertTrue(false);
-        } catch (MysqlNotFoundException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
+        $user = $database->getRow(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['email' => 'testuser@email.com']
+        );
+        $this->assertEquals([], $user);
     }
     
     /**
@@ -202,19 +195,14 @@ class DatabaseTest extends Test
         $database->delRows('user', '', ['email' => 'testuser1@email.com']);
         $database->delRows('user', '', ['email' => 'testuser2@email.com']);
         $database->delRows('user', '', ['email' => 'testuser3@email.com']);
-        $exception = null;
-        try {
-            $database->getRows(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['hash' => 'nohash']
-            );
-            $this->assertTrue(false);
-        } catch (MysqlEmptyException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
+        $user = $database->getRows(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['hash' => 'nohash']
+        );
+        $this->assertEquals([], $user);
     }
     
     /**
@@ -229,33 +217,23 @@ class DatabaseTest extends Test
     public function testSetRow(): void
     {
         $database = $this->getDatabase();
-        $exception = null;
-        try {
-            $database->getRow(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['email' => 'testuser@email.com']
-            );
-            $this->assertTrue(false);
-        } catch (MysqlNotFoundException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
+        $user = $database->getRow(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['email' => 'testuser@email.com']
+        );
+        $this->assertEquals([], $user);
         
-        $exception = null;
-        try {
-            $database->getRow(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['email' => 'testusermodified@email.com']
-            );
-            $this->assertTrue(false);
-        } catch (MysqlNotFoundException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
+        $user = $database->getRow(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['email' => 'testusermodified@email.com']
+        );
+        $this->assertEquals([], $user);
         
         $database->addRow(
             'user',
@@ -291,33 +269,24 @@ class DatabaseTest extends Test
         
         // cleanup
         $database->delRows('user', '', ['email' => 'testusermodified@email.com']);
-        $exception = null;
-        try {
-            $database->getRow(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['email' => 'testuser@email.com']
-            );
-            $this->assertTrue(false);
-        } catch (MysqlNotFoundException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
         
-        $exception = null;
-        try {
-            $database->getRow(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['email' => 'testusermodified@email.com']
-            );
-            $this->assertTrue(false);
-        } catch (MysqlNotFoundException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
+        $user = $database->getRow(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['email' => 'testuser@email.com']
+        );
+        $this->assertEquals([], $user);
+        
+        $user = $database->getRow(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['email' => 'testusermodified@email.com']
+        );
+        $this->assertEquals([], $user);
     }
     
     /**
@@ -335,33 +304,23 @@ class DatabaseTest extends Test
     {
         $session->set('uid', 1);
         $database = $this->getDatabase();
-        $exception = null;
-        try {
-            $database->getRow(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['email' => 'testuser@email.com']
-            );
-            $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
+        $user = $database->getRow(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['email' => 'testuser@email.com']
+        );
+        $this->assertEquals([], $user);
         
-        $exception = null;
-        try {
-            $database->getRow(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['email' => 'testusermodified@email.com']
-            );
-            $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
+        $user = $database->getRow(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['email' => 'testusermodified@email.com']
+        );
+        $this->assertEquals([], $user);
         
         $database->addRow(
             'user',
@@ -397,33 +356,23 @@ class DatabaseTest extends Test
         
         // cleanup
         $database->delRows('user', '', ['email' => 'testusermodified@email.com']);
-        $exception = null;
-        try {
-            $database->getRow(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['email' => 'testuser@email.com']
-            );
-            $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
+        $user = $database->getRow(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['email' => 'testuser@email.com']
+        );
+        $this->assertEquals([], $user);
         
-        $exception = null;
-        try {
-            $database->getRow(
-                'user',
-                ['email', 'hash', 'token'],
-                '',
-                '',
-                ['email' => 'testusermodified@email.com']
-            );
-            $this->assertTrue(false);
-        } catch (RuntimeException $exception) {
-        }
-        $this->assertTrue(null !== $exception);
+        $user = $database->getRow(
+            'user',
+            ['email', 'hash', 'token'],
+            '',
+            '',
+            ['email' => 'testusermodified@email.com']
+        );
+        $this->assertEquals([], $user);
         
         $session->unset('uid');
     }

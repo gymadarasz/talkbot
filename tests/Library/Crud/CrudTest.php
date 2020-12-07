@@ -44,7 +44,7 @@ class CrudTest extends ApiTest
      * @var string[]
      */
     protected array $routes = [
-        __DIR__ . '/../../../src/Library/Crud/routes.php',
+        __DIR__ . '/../../../src/Library/Crud/crud.api.routes.php',
     ];
     
     /**
@@ -77,9 +77,9 @@ class CrudTest extends ApiTest
      * @param string $email email
      * @param string $group group
      *
-     * @return int
+     * @return int|string
      */
-    protected function createUser(string $email, string $group): int
+    protected function createUser(string $email, string $group)
     {
         return $this->database->addRow(
             'user',

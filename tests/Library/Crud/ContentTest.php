@@ -13,9 +13,6 @@
 
 namespace Madsoft\Tests\Library\Crud;
 
-use Madsoft\Library\Logger;
-use Madsoft\Library\MysqlNoAffectException;
-use Madsoft\Library\Router;
 use Madsoft\Tests\Library\Account\AccountTest;
 
 /**
@@ -41,8 +38,8 @@ class ContentTest extends AccountTest
      * @var string[]
      */
     protected array $routes = [
-        __DIR__ . '/../../../src/Library/Account/routes.php',
-        __DIR__ . '/../../../src/Library/Crud/content.routes.php',
+        __DIR__ . '/../../../src/Library/Account/account.api.routes.php',
+        __DIR__ . '/../../../src/Library/Crud/content.api.routes.php',
     ];
     
     /**
@@ -52,11 +49,7 @@ class ContentTest extends AccountTest
      */
     public function beforeAll(): void
     {
-        try {
-            $this->database->delRows('content');
-        } catch (MysqlNoAffectException $exception) {
-            $this->invoker->getInstance(Logger::class)->exception($exception);
-        }
+        $this->database->delRows('content');
         
         parent::beforeAll();
         
@@ -79,12 +72,7 @@ class ContentTest extends AccountTest
     public function afterAll(): void
     {
         $this->canSeeLogoutWorks();
-        
-        try {
-            $this->database->delRows('content');
-        } catch (MysqlNoAffectException $exception) {
-            $this->invoker->getInstance(Logger::class)->exception($exception);
-        }
+        $this->database->delRows('content');
         
         parent::afterAll();
     }
@@ -230,8 +218,15 @@ class ContentTest extends AccountTest
             )
         );
         $this->assertTrue(
-            in_array(Router::ERR_EXCEPTION, $results['messages']['error'], true)
+            in_array('Invalid parameter(s)', $results['messages']['error'], true)
         );
+        $this->assertTrue(
+            in_array('Mandatory', $results['errors']['filter.id'], true)
+        );
+        $this->assertTrue(
+            in_array('Not a number', $results['errors']['filter.id'], true)
+        );
+        
         
         // check that I can not edit the other users contents
         $results = $this->json->decode(
@@ -258,9 +253,16 @@ class ContentTest extends AccountTest
             )
         );
         $this->assertTrue(
-            in_array(Router::ERR_EXCEPTION, $results['messages']['error'], true)
+            in_array('Invalid parameter(s)', $results['messages']['error'], true)
+        );
+        $this->assertTrue(
+            in_array('Mandatory', $results['errors']['filter.id'], true)
+        );
+        $this->assertTrue(
+            in_array('Not a number', $results['errors']['filter.id'], true)
         );
         
+    
         // check that I can not delete the other users contents
         $results = $this->json->decode(
             $this->get(
@@ -272,15 +274,22 @@ class ContentTest extends AccountTest
             in_array('Not affected', $results['messages']['error'], true)
         );
         
-        // check that I can not delete other users strings by name
+        // check that I can not delete other users contents by name
         $results = $this->json->decode(
             $this->get(
                 'q=content/delete&filter[name]=' . $user2contents[0]['name']
                     . '&csrf=' . $this->getCsrf()
             )
         );
+        
         $this->assertTrue(
-            in_array(Router::ERR_EXCEPTION, $results['messages']['error'], true)
+            in_array('Invalid parameter(s)', $results['messages']['error'], true)
+        );
+        $this->assertTrue(
+            in_array('Mandatory', $results['errors']['filter.id'], true)
+        );
+        $this->assertTrue(
+            in_array('Not a number', $results['errors']['filter.id'], true)
         );
     }
     
