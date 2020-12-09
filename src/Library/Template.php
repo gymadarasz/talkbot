@@ -37,6 +37,8 @@ class Template
         'csrf',
         'csrfgen',
         'base',
+        'tplReservedVarKey',
+        'tplReservedVarValue',
     ];
     
     /**
@@ -47,6 +49,8 @@ class Template
     public array $vars;
     
     protected bool $htmlViewTemplate = true;
+    
+    protected ?string $encoder = 'htmlentities';
 
     protected Config $config;
     protected Safer $safer;
@@ -80,6 +84,19 @@ class Template
     }
     
     /**
+     * Method setEncoder
+     *
+     * @param string|null $encoder encoder
+     *
+     * @return self
+     */
+    public function setEncoder(?string $encoder = null): self
+    {
+        $this->encoder = $encoder;
+        return $this;
+    }
+    
+    /**
      * Method getVars
      *
      * @return mixed[]
@@ -105,9 +122,19 @@ class Template
         ?string $path = null
     ): string {
         $this->vars = [];
+        $that = $this;
         foreach ($this->safer->freez(
-            static function ($value) {
-                return htmlentities((string)$value);
+            static function ($value) use ($that) {
+                if ($that->encoder) {
+                    $encoder = $that->encoder;
+                    if (!is_callable($encoder)) {
+                        throw new RuntimeException(
+                            "'$encoder' is not callable to encode template variables"
+                        );
+                    }
+                    return $encoder((string)$value);
+                }
+                return (string)$value;
             },
             $data
         ) as $key => $value) {
@@ -128,7 +155,7 @@ class Template
             $this->vars['base'] = $this->config->get('Site')->get('base');
         }
         ob_start();
-        $this->include($filename, $path);
+        $this->includeTemplateFile($filename, $path);
         $contents = (string)ob_get_contents();
         ob_end_clean();
         $this->setHtmlViewTemplate(true);
@@ -146,22 +173,17 @@ class Template
      * @suppress PhanUnusedVariable
      * @suppress PhanPluginDollarDollar
      */
-    protected function include(string $filename, ?string $path = null): void
-    {
-        foreach ($this->vars as $key => $value) {
-            $$key = $value;
+    protected function includeTemplateFile(
+        string $filename,
+        ?string $path = null
+    ): void {
+        foreach ($this->vars as $tplReservedVarKey => $tplReservedVarValue) {
+            $$tplReservedVarKey = $tplReservedVarValue;
         }
+        unset($tplReservedVarKey);
+        unset($tplReservedVarValue);
         include null === $path ?
             $this->getTemplateFile($filename) : ($path . $filename);
-    }
-    
-    /**
-     * Method restrict
-     *
-     * @return void
-     */
-    public function restrict(): void
-    {
     }
     
     /**
@@ -185,5 +207,14 @@ class Template
             );
         }
         return $fullpath;
+    }
+    
+    /**
+     * Method restrict
+     *
+     * @return void
+     */
+    public function restrict(): void
+    {
     }
 }

@@ -27,7 +27,7 @@ use RuntimeException;
  *
  * @SuppressWarnings(PHPMD.Superglobals)
  */
-class Params implements Assoc
+class Params extends Sanitizer implements Assoc
 {
     /**
      * Variable $defaults
@@ -45,15 +45,20 @@ class Params implements Assoc
     
     protected Server $server;
     protected Merger $merger;
-    
+
+
+
+
     /**
      * Method __construct
      *
      * @param Server $server server
      * @param Merger $merger merger
      */
-    public function __construct(Server $server, Merger $merger)
-    {
+    public function __construct(
+        Server $server,
+        Merger $merger
+    ) {
         $this->server = $server;
         $this->merger = $merger;
     }

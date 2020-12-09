@@ -14,6 +14,7 @@
 namespace Madsoft\Library;
 
 use RuntimeException;
+use function count;
 
 /**
  * Database
@@ -202,6 +203,7 @@ class Database
         array $filterUnsafe = [],
         string $filterLogic = 'AND'
     ): int {
+        $this->mysql->setEscapeSql(true);
         $table = $this->mysql->escape($tableUnsafe);
         $query = $this->getSelectQuery(
             'COUNT(*) as count_results_of_select',
@@ -211,7 +213,7 @@ class Database
             $filterUnsafe,
             $filterLogic
         );
-        
+        $this->mysql->setEscapeSql(false);
         return (int)$this->mysql->selectOne($query)['count_results_of_select'];
     }
     
@@ -235,6 +237,7 @@ class Database
         array $filterUnsafe = [],
         string $filterLogic = 'AND'
     ): string {
+        $this->mysql->setEscapeSql(true);
         $table = $this->mysql->escape($tableUnsafe);
         $mysql = $this->mysql;
         $fields = implode(
@@ -246,6 +249,7 @@ class Database
                 $fieldsUnsafe
             )
         );
+        $this->mysql->setEscapeSql(false);
         return $this->getSelectQuery(
             $fields,
             $table,
@@ -298,6 +302,7 @@ class Database
         array $filterUnsafe = [],
         string $logic = 'AND'
     ): string {
+        $this->mysql->setEscapeSql(true);
         $filter = $this->safer->freez([$this->mysql, 'escape'], $filterUnsafe);
         if (!in_array($logic, self::LOGICS, true)) {
             throw new RuntimeException("Invalid logic: '$logic'");
@@ -311,6 +316,7 @@ class Database
                 $logic
             );
         }
+        $this->mysql->setEscapeSql(false);
         return $query;
     }
     
@@ -330,6 +336,7 @@ class Database
         array $filter = [],
         string $logic = 'AND'
     ): string {
+        $this->mysql->setEscapeSql(true);
         $conds = [];
         foreach ($filter as $key => $value) {
             if (is_int($key)) {
@@ -361,51 +368,47 @@ class Database
         if (trim($where)) {
             $ret = "($ret) $where";
         }
+        $this->mysql->setEscapeSql(false);
         return $ret;
     }
     
     /**
      * Method addRow
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param mixed[]  $valuesUnsafe valuesUnsafe
-     * @param string[] $noQuotes     noQuotes
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $valuesUnsafe valuesUnsafe
      *
      * @return int|string
      */
     public function addRow(
         string $tableUnsafe,
-        array $valuesUnsafe,
-        array $noQuotes = []
+        array $valuesUnsafe
     ) {
-        return $this->add($tableUnsafe, $valuesUnsafe, $noQuotes);
+        return $this->add($tableUnsafe, $valuesUnsafe);
     }
     
     /**
      * Method add
      *
-     * @param string   $tableUnsafe  tableUnsafe
-     * @param mixed[]  $valuesUnsafe valuesUnsafe
-     * @param string[] $noQuotes     noQuotes
+     * @param string  $tableUnsafe  tableUnsafe
+     * @param mixed[] $valuesUnsafe valuesUnsafe
      *
      * @return int|string
      */
     protected function add(
         string $tableUnsafe,
-        array $valuesUnsafe,
-        array $noQuotes = []
+        array $valuesUnsafe
     ) {
+        $this->mysql->setEscapeSql(true);
         $table = $this->mysql->escape($tableUnsafe);
         $fields = $this->safer->freez([$this->mysql, 'escape'], $valuesUnsafe);
         $keys = implode('`, `', array_keys($fields));
         foreach ($fields as $key => $field) {
-            if (in_array($key, $noQuotes, true)) {
-                continue;
-            }
             $fields[$key] = $this->mysql->value($field);
         }
         $values = implode(", ", $fields);
         $query = "INSERT INTO `$table` (`$keys`) VALUES ($values)";
+        $this->mysql->setEscapeSql(false);
         return $this->mysql->insert($query);
     }
     
@@ -494,6 +497,7 @@ class Database
         string $filterLogic = 'AND',
         int $limit = 1
     ): int {
+        $this->mysql->setEscapeSql(true);
         if ($limit < 0) {
             throw new RuntimeException('Invalid limit: ' . $limit);
         }
@@ -503,6 +507,7 @@ class Database
         if ($limit >= 1) {
             $query .= " LIMIT $limit";
         }
+        $this->mysql->setEscapeSql(false);
         return $this->mysql->delete($query);
     }
     
@@ -559,6 +564,7 @@ class Database
         string $filterLogic = 'AND',
         int $limit = 1
     ): int {
+        $this->mysql->setEscapeSql(true);
         $table = $this->mysql->escape($tableUnsafe);
         $fields = $this->safer->freez([$this->mysql, 'escape'], $valuesUnsafe);
         $sets = [];
@@ -571,6 +577,7 @@ class Database
         if ($limit >= 1) {
             $query .= " LIMIT $limit";
         }
+        $this->mysql->setEscapeSql(false);
         return $this->mysql->update($query);
     }
 }

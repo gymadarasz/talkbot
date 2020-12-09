@@ -209,7 +209,6 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
         return [
             $this->params->get('table'),
             $this->params->get('values', []),
-            $this->params->get('noQuotes', []),
         ];
     }
     

@@ -13,11 +13,11 @@
 
 namespace Madsoft\Library\App;
 
-use Madsoft\Library\Json;
 use Madsoft\Library\Router;
+use Madsoft\Library\Server;
 
 /**
- * Api
+ * WebApp
  *
  * @category  PHP
  * @package   Madsoft\Library\App
@@ -26,8 +26,28 @@ use Madsoft\Library\Router;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class ApiApp extends WebApp
+class WebApp extends App
 {
+    /**
+     * Variable $routes
+     *
+     * @var mixed[]
+     */
+    protected array $routes;
+    
+    /**
+     * Method setRoutes
+     *
+     * @param mixed[] $routes routes
+     *
+     * @return self
+     */
+    public function setRoutes(array $routes): self
+    {
+        $this->routes = $routes;
+        return $this;
+    }
+    
     /**
      * Method getOutput
      *
@@ -35,12 +55,14 @@ class ApiApp extends WebApp
      */
     public function getOutput(): string
     {
-        return $this->invoker->getInstance(Json::class)->encode(
-            ($this->invoker->getInstance(Router::class))
-                ->getArrayResponse($this->routes)
-        );
+        $router = $this->invoker->getInstance(Router::class);
+        $server = $this->invoker->getInstance(Server::class);
+        if ('GET' === $server->getMethod()) {
+            $router->setCsrfCheck(false);
+        }
+        return $router->getStringResponse($this->routes);
     }
-    
+
     /**
      * Method run
      *
@@ -48,7 +70,7 @@ class ApiApp extends WebApp
      */
     public function run(): App
     {
-        header('content-type: application/json');
+        header('content-type: text/html');
         echo $this->getOutput();
         return $this;
     }

@@ -153,6 +153,6 @@ abstract class ApiTest extends CleanTest
      */
     public function callApi(array $routes): string
     {
-        return (new ApiApp(new Invoker()))->setRoutes($routes)->getOutputJson();
+        return (new ApiApp(new Invoker()))->setRoutes($routes)->getOutput();
     }
 }

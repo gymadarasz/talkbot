@@ -68,7 +68,7 @@ class Replacer
                     $value = str_replace(
                         $matches[0][$key],
                         $this->getMysql()->escape(
-                            $assocs[$assocKey]->get($assocValue[0]),
+                            $assocs[$assocKey]->get($assocValue[0])
                         ),
                         $value
                     );

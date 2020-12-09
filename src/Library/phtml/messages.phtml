@@ -1,0 +1,17 @@
+<?php $this->restrict(); ?>
+
+<?php if (isset($messages)): ?>
+<div class="messages">
+    
+    <?php foreach (array_keys($messages) as $class): ?>
+    <ul class="<?=$class?>">
+        
+        <?php foreach($messages[$class] as $message): ?>        
+        <li><?=$message?></li>        
+        <?php endforeach ?>
+        
+    </ul>
+    <?php endforeach ?>
+    
+</div>
+<?php endif ?>

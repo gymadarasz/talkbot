@@ -29,9 +29,13 @@ use RuntimeException;
  */
 class Mysql
 {
+    const NO_ESC_REGEX = '/^\s*sql\s*:/';
+    
     protected mysqli $mysqli;
     protected bool $connected = false;
-    
+    protected bool $escapeSql = false;
+
+
     protected Config $config;
     protected Transaction $transaction;
     
@@ -45,6 +49,19 @@ class Mysql
     {
         $this->config = $config;
         $this->transaction = $transaction;
+    }
+    
+    /**
+     * Method setEscapeSql
+     *
+     * @param bool $escapeSql escapeSql
+     *
+     * @return self
+     */
+    public function setEscapeSql(bool $escapeSql): self
+    {
+        $this->escapeSql = $escapeSql;
+        return $this;
     }
     
     /**
@@ -116,15 +133,51 @@ class Mysql
         if (is_bool($value)) {
             return $value ? 1 : 0;
         }
+        return $this->escapeStringable($value);
+    }
+    
+    /**
+     * Method escapeStringable
+     *
+     * @param string|object $value value
+     *
+     * @return string
+     *
+     * @throws RuntimeException
+     */
+    protected function escapeStringable($value): string
+    {
         if (is_string($value)
             || (is_object($value) && method_exists($value, '__toString'))
         ) {
+            if ($this->escapeSql && preg_match(self::NO_ESC_REGEX, (string)$value)) {
+                return (string)$value;
+            }
             $this->connect();
             return $this->mysqli->escape_string((string)$value);
         }
         throw new RuntimeException(
             'Given value can not be converted to string.'
         );
+    }
+    
+    /**
+     * Method resolveSql
+     *
+     * @param string $value value
+     *
+     * @return string
+     * @throws RuntimeException
+     */
+    protected function resolveSql(string $value): string
+    {
+        $ret = preg_replace(Mysql::NO_ESC_REGEX, '', $value, 1);
+        if (null === $ret) {
+            throw new RuntimeException(
+                "Unable to resolve sql syntax, invalid value: '$value'"
+            );
+        }
+        return $ret;
     }
     
     /**
@@ -137,6 +190,9 @@ class Mysql
     public function value($value = null): string
     {
         if (is_string($value)) {
+            if ($this->escapeSql && preg_match(self::NO_ESC_REGEX, $value)) {
+                return $this->resolveSql($value);
+            }
             return "'$value'";
         }
         return null === $value ? 'NULL' : (string)$value;

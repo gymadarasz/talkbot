@@ -34,11 +34,18 @@ use RuntimeException;
  */
 class Router
 {
+    const OK = '';
     const ERR_INVALID = 'Invalid parameter(s)';
     const ERR_EXCEPTION = 'Hoops! Something went wrong..';
+    
             
     const ROUTE_QUERY_KEY = 'q';
     const ROUTE_CACHE_FILE = __DIR__ . '/../../routes.cache.php';
+    
+    const TPL_PATH = Template::TPL_PATH;
+    
+    protected bool $csrfCheck = true;
+    protected string $error = self::OK;
     
     protected Invoker $invoker;
     protected Server $server;
@@ -78,21 +85,68 @@ class Router
     }
     
     /**
+     * Method setCsrfCheck
+     *
+     * @param bool $csrfCheck csrfCheck
+     *
+     * @return self
+     */
+    public function setCsrfCheck(bool $csrfCheck): self
+    {
+        $this->csrfCheck = $csrfCheck;
+        return $this;
+    }
+    
+    /**
+     * Method getStringResponse
+     *
+     * @param mixed[] $routes routes
+     *
+     * @return string
+     */
+    public function getStringResponse(array $routes): string
+    {
+        $response = $this->getArrayResponse($routes);
+        unset($response['csrf']);
+        
+        $template = $this->invoker->getInstance(Template::class)
+            ->setHtmlViewTemplate(true);
+        
+        if ($this->error) {
+            return $template->process(
+                'error.phtml',
+                $response,
+                $this::TPL_PATH
+            );
+        }
+        return $template->process(
+            $this->params->get('tplfile'),
+            $response,
+            $this::TPL_PATH
+        );
+    }
+    
+    /**
      * Method routing
      *
      * @param mixed[] $routes routes
      *
      * @return mixed[]
      */
-    public function routing(array $routes): array
+    public function getArrayResponse(array $routes): array
     {
         try {
+            $this->params->sanitizeSql();
+            
             $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
 
-            if ($route === 'csrf') {
-                return $this->invoker->getInstance(Csrf::class)->getAsArray();
+            if ($this->csrfCheck) {
+                $csrf = $this->invoker->getInstance(Csrf::class);
+                if ($route === 'csrf') {
+                    return $csrf->getAsArray();
+                }
+                $csrf->check();
             }
-            $this->invoker->getInstance(Csrf::class)->check();
 
             $area = $this->getRoutingArea();
             $this->validateArea($routes, $area, $route);
@@ -123,9 +177,10 @@ class Router
             if (isset($target['validations'])) {
                 $errors = $this->getValidationErrors($target['validations']);
                 if ($errors) {
+                    $this->error = self::ERR_INVALID;
                     return $this->invoker
                         ->getInstance(ArrayResponder::class)
-                        ->getErrorResponse(self::ERR_INVALID, $errors);
+                        ->getErrorResponse($this->error, $errors);
                 }
                 unset($target['validations']);
             }
@@ -142,9 +197,10 @@ class Router
                 $this->invoker->getInstance(Throwier::class)->forward($exception);
             }
         }
+        $this->error = self::ERR_EXCEPTION;
         return $this->invoker
             ->getInstance(ArrayResponder::class)
-            ->getErrorResponse(self::ERR_EXCEPTION);
+            ->getErrorResponse($this->error);
     }
     
     /**
@@ -160,7 +216,6 @@ class Router
             $target['overrides'] = [
                     'join' => '',
                     'where' => '',
-                    'noQuotes' => [],
                 ];
         }
         if (!isset($target['overrides']['join'])) {
@@ -168,9 +223,6 @@ class Router
         }
         if (!isset($target['overrides']['where'])) {
             $target['overrides']['where'] = '';
-        }
-        if (!isset($target['overrides']['noQuotes'])) {
-            $target['overrides']['noQuotes'] = [];
         }
         return $target;
     }

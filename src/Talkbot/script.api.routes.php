@@ -60,12 +60,14 @@ $publicOverrides = $merger->merge(
 );
 
 $createOverrides = $overrides;
+
 $createOverrides['values'] = [
-    'content_id' => '('
-            . 'SELECT id FROM content '
-            . 'WHERE id = {{ params: values.content_id }} '
-            . 'AND owner_user_id = {{ session: user.id }} '
-        . ')'
+    'content_id' => <<<SQL
+        sql:
+            (SELECT id FROM content
+                WHERE id = '{{ params: values.content_id }}'
+                AND owner_user_id = '{{ session: user.id }}')
+    SQL,
 ];
 $createOverrides['noQuotes'] = ['content_id'];
 
