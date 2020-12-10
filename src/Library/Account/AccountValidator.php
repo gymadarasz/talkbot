@@ -139,50 +139,6 @@ class AccountValidator extends Validator
     }
     
     /**
-     * Method validateRegistry
-     *
-     * @param Params $params params
-     *
-     * @return string[][]
-     */
-    public function validateRegistry(Params $params): array
-    {
-        $email = $params->get('email', '');
-        
-        $errors = $this->getErrors(
-            [
-                'email' =>
-                [
-                    'value' => $email,
-                    'rules' =>
-                    [
-                        Mandatory::class => null,
-                        Email::class => null,
-                    ],
-                ],
-                'password' =>
-                [
-                    'value' => $params->get('password', ''),
-                    'rules' =>
-                    [
-                        Mandatory::class => null,
-                        Password::class => self::PASSWORD_VALIDATION,
-                    ],
-                ],
-                'email_retype' => [
-                    'value' => $params->get('email_retype', ''),
-                    'rules' => [
-                        Mandatory::class => null,
-                        Match::class => ['equalTo' => $email],
-                    ],
-                ],
-            ],
-        );
-        
-        return $errors;
-    }
-    
-    /**
      * Method validateActivate
      *
      * @param Params $params params

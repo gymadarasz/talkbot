@@ -170,7 +170,12 @@ class Router
             unset($target['overrides']);
                 
             if (isset($target['validations'])) {
-                $errors = $this->getValidationErrors($target['validations']);
+                $errors = $this->getValidationErrors(
+                    $this->replacer->replaceAll(
+                        $target['validations'],
+                        $this->getReplacerAssocs()
+                    )
+                );
                 if ($errors) {
                     $this->error = self::ERR_INVALID;
                     return $this->invoker

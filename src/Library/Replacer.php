@@ -125,9 +125,9 @@ class Replacer
     {
         $ret = [];
         foreach ($data as $key => $value) {
-            if (is_scalar($value)) {
+            if (is_string($value)) {
                 $ret[$this->replace((string)$key, $assocs)] = $this->replace(
-                    (string)$value,
+                    $value,
                     $assocs
                 );
                 continue;
@@ -137,6 +137,10 @@ class Replacer
                     (array)$value,
                     $assocs
                 );
+                continue;
+            }
+            if (is_null($value) || is_scalar($value)) {
+                $ret[$this->replace((string)$key, $assocs)] = $value;
                 continue;
             }
             throw new RuntimeException(

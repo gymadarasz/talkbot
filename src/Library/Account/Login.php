@@ -93,8 +93,6 @@ class Login extends ArrayResponder
             return $this->loginError([], $email, 'Not found');
         }
         
-        
-        
         $errors = $this->validator->validateUser(
             $user,
             $params->get('password', '')

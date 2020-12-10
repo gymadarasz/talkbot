@@ -37,19 +37,17 @@ class Registry extends ArrayResponder
     protected Token $token;
     protected Encrypter $encrypter;
     protected Database $database;
-    protected AccountValidator $validator;
     protected AccountMailer $mailer;
 
     /**
      * Method __construct
      *
-     * @param Messages         $messages  messages
-     * @param Csrf             $csrf      csrf
-     * @param Token            $token     token
-     * @param Encrypter        $encrypter encrypter
-     * @param Database         $database  database
-     * @param AccountValidator $validator validator
-     * @param AccountMailer    $mailer    mailer
+     * @param Messages      $messages  messages
+     * @param Csrf          $csrf      csrf
+     * @param Token         $token     token
+     * @param Encrypter     $encrypter encrypter
+     * @param Database      $database  database
+     * @param AccountMailer $mailer    mailer
      */
     public function __construct(
         Messages $messages,
@@ -57,14 +55,12 @@ class Registry extends ArrayResponder
         Token $token,
         Encrypter $encrypter,
         Database $database,
-        AccountValidator $validator,
         AccountMailer $mailer
     ) {
         parent::__construct($messages, $csrf);
         $this->token = $token;
         $this->encrypter = $encrypter;
         $this->database = $database;
-        $this->validator = $validator;
         $this->mailer = $mailer;
     }
 
@@ -80,14 +76,6 @@ class Registry extends ArrayResponder
      */
     public function getRegistryResponse(Params $params, Session $session): array
     {
-        $errors = $this->validator->validateRegistry($params);
-        if ($errors) {
-            return $this->getErrorResponse(
-                'Invalid registration data',
-                $errors
-            );
-        }
-        
         $email = $params->get('email');
         $token = $this->token->generate();
         

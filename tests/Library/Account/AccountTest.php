@@ -205,7 +205,7 @@ class AccountTest extends ApiTest
             //                'password' => '',
             ]
         );
-        $this->assertStringContains('Invalid registration data', $contents);
+        $this->assertStringContains('Invalid parameter(s)', $contents);
         $this->assertStringContains('Invalid email format', $contents);
         $this->assertStringContains('Invalid password', $contents);
         
@@ -218,7 +218,7 @@ class AccountTest extends ApiTest
                 'password' => '',
             ]
         );
-        $this->assertStringContains('Invalid registration data', $contents);
+        $this->assertStringContains('Invalid parameter(s)', $contents);
         $this->assertStringContains('Invalid email format', $contents);
         $this->assertStringContains('Invalid password', $contents);
         
@@ -231,7 +231,7 @@ class AccountTest extends ApiTest
                 'password' => '',
             ]
         );
-        $this->assertStringContains('Invalid registration data', $contents);
+        $this->assertStringContains('Invalid parameter(s)', $contents);
         $this->assertStringContains('Invalid email format', $contents);
         $this->assertStringContains('Invalid password', $contents);
         
@@ -244,7 +244,7 @@ class AccountTest extends ApiTest
                 'password' => '',
             ]
         );
-        $this->assertStringContains('Invalid registration data', $contents);
+        $this->assertStringContains('Invalid parameter(s)', $contents);
         $this->assertStringContains('Doesn\'t match', $contents);
         $this->assertStringContains('Invalid password', $contents);
         
@@ -257,7 +257,7 @@ class AccountTest extends ApiTest
                 'password' => 'short',
             ]
         );
-        $this->assertStringContains('Invalid registration data', $contents);
+        $this->assertStringContains('Invalid parameter(s)', $contents);
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
@@ -269,7 +269,7 @@ class AccountTest extends ApiTest
                 'password' => 'longbutdoesnothavenumber',
             ]
         );
-        $this->assertStringContains('Invalid registration data', $contents);
+        $this->assertStringContains('Invalid parameter(s)', $contents);
         $this->assertStringContains('Invalid password', $contents);
         
         $contents = $this->post(
@@ -281,7 +281,7 @@ class AccountTest extends ApiTest
                 'password' => 'nospecchar123',
             ]
         );
-        $this->assertStringContains('Invalid registration data', $contents);
+        $this->assertStringContains('Invalid parameter(s)', $contents);
         $this->assertStringContains('Invalid password', $contents);
     }
 
