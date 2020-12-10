@@ -34,12 +34,15 @@ class Template
         'vars',
         'safer',
         'filename',
-        'csrf',
-        'csrfgen',
+    //        'csrf',
+    //        'csrfgen',
         'base',
         'tplReservedVarKey',
         'tplReservedVarValue',
     ];
+    
+    const DEFAULT_HTML_VIEW_TEMPLATE = true;
+    const DEFAULT_ENCODER = 'htmlentities';
     
     /**
      * Variable $vars
@@ -48,26 +51,28 @@ class Template
      */
     public array $vars;
     
-    protected bool $htmlViewTemplate = true;
+    protected bool $htmlViewTemplate = self::DEFAULT_HTML_VIEW_TEMPLATE;
     
-    protected ?string $encoder = 'htmlentities';
+    protected ?string $encoder = self::DEFAULT_ENCODER;
 
     protected Config $config;
     protected Safer $safer;
-    protected Csrf $csrfgen;
+    //    protected Csrf $csrfgen;
     
     /**
      * Method __construct
      *
      * @param Config $config config
      * @param Safer  $safer  safer
-     * @param Csrf   $csrf   csrf
      */
-    public function __construct(Config $config, Safer $safer, Csrf $csrf)
-    {
+    public function __construct(
+        Config $config,
+        Safer $safer//,
+        //Csrf $csrf
+    ) {
         $this->config = $config;
         $this->safer = $safer;
-        $this->csrfgen = $csrf;
+        //        $this->csrfgen = $csrf;
     }
     
     /**
@@ -101,10 +106,10 @@ class Template
      *
      * @return mixed[]
      */
-    public function getVars(): array
-    {
-        return $this->vars;
-    }
+    //    public function getVars(): array
+    //    {
+    //        return $this->vars;
+    //    }
    
     /**
      * Method process
@@ -139,18 +144,22 @@ class Template
             $data
         ) as $key => $value) {
             if (is_numeric($key)) {
+                $this->setHtmlViewTemplate(self::DEFAULT_HTML_VIEW_TEMPLATE);
+                $this->setEncoder(self::DEFAULT_ENCODER);
                 throw new RuntimeException(
                     "Variable name can not be number: '$key'"
                 );
             }
             if (in_array($key, self::RESERVED_VARS, true)) {
+                $this->setHtmlViewTemplate(self::DEFAULT_HTML_VIEW_TEMPLATE);
+                $this->setEncoder(self::DEFAULT_ENCODER);
                 throw new RuntimeException(
                     "Variable name is reserved: '$key'"
                 );
             }
             $this->vars[$key] = $value;
         }
-        $this->vars['csrf'] = $this->csrfgen->get();
+        //        $this->vars['csrf'] = $this->csrfgen->get();
         if ($this->htmlViewTemplate) {
             $this->vars['base'] = $this->config->get('Site')->get('base');
         }
@@ -158,7 +167,8 @@ class Template
         $this->includeTemplateFile($filename, $path);
         $contents = (string)ob_get_contents();
         ob_end_clean();
-        $this->setHtmlViewTemplate(true);
+        $this->setHtmlViewTemplate(self::DEFAULT_HTML_VIEW_TEMPLATE);
+        $this->setEncoder(self::DEFAULT_ENCODER);
         return $contents;
     }
     

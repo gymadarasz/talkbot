@@ -1,0 +1,2 @@
+alert('[ACCOUNT JS HERE...]');
+

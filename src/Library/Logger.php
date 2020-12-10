@@ -13,7 +13,6 @@
 
 namespace Madsoft\Library;
 
-use Exception;
 use RuntimeException;
 use Throwable;
 
@@ -208,13 +207,13 @@ class Logger
     /**
      * Method exception
      *
-     * @param Exception $exception  exception
+     * @param Throwable $exception  exception
      * @param string    $infoPrefix infoPrefix
      *
      * @return void
      */
     public function exception(
-        Exception $exception,
+        Throwable $exception,
         string $infoPrefix = "Exception occured: "
     ): void {
         $this->log(
@@ -266,7 +265,7 @@ class Logger
                 $this->collection[] = $fullmsg;
                 return;
             }
-            if (false === file_put_contents(
+            if (!file_exists($this::LOG_FILE) || false === file_put_contents(
                 $this::LOG_FILE,
                 "$fullmsg\n",
                 FILE_APPEND

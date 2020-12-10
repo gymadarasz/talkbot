@@ -14,6 +14,7 @@
 namespace Madsoft\Library;
 
 use Exception;
+use Madsoft\Library\Layout\Layout;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Validator\Validator;
 use RuntimeException;
@@ -41,8 +42,6 @@ class Router
             
     const ROUTE_QUERY_KEY = 'q';
     const ROUTE_CACHE_FILE = __DIR__ . '/../../routes.cache.php';
-    
-    const TPL_PATH = Template::TPL_PATH;
     
     protected bool $csrfCheck = true;
     protected string $error = self::OK;
@@ -107,22 +106,9 @@ class Router
     public function getStringResponse(array $routes): string
     {
         $response = $this->getArrayResponse($routes);
-        unset($response['csrf']);
-        
-        $template = $this->invoker->getInstance(Template::class)
-            ->setHtmlViewTemplate(true);
-        
-        if ($this->error) {
-            return $template->process(
-                'error.phtml',
-                $response,
-                $this::TPL_PATH
-            );
-        }
-        return $template->process(
-            $this->params->get('tplfile'),
+        return $this->invoker->getInstance(Layout::class)->getHtmlPage(
             $response,
-            $this::TPL_PATH
+            $this->error
         );
     }
     
@@ -376,7 +362,7 @@ class Router
      *
      * @return string
      */
-    protected function getRoutingArea(): string
+    public function getRoutingArea(): string
     {
         $area = 'public';
         if (!$this->user->isVisitor()) {

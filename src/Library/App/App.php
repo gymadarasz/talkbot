@@ -13,7 +13,9 @@
 
 namespace Madsoft\Library\App;
 
+use Madsoft\Library\ErrorHandler;
 use Madsoft\Library\Invoker;
+use Madsoft\Library\Logger;
 
 /**
  * App
@@ -25,7 +27,7 @@ use Madsoft\Library\Invoker;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-abstract class App
+abstract class App extends ErrorHandler
 {
     /**
      * Variable $argv
@@ -44,9 +46,8 @@ abstract class App
      */
     public function __construct(Invoker $invoker)
     {
-        ini_set('display_errors', '1');
-        ini_set('display_startup_errors', '1');
-        error_reporting(E_ALL | E_STRICT);
+        parent::__construct($invoker->getInstance(Logger::class));
+        
         $this->invoker = $invoker;
     }
     

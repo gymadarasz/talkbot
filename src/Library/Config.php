@@ -65,8 +65,8 @@ class Config extends Section
         if (null === $this->template) {
             $this->template = new Template(
                 $this,
-                $this->invoker->getInstance(Safer::class),
-                $this->invoker->getInstance(Csrf::class)
+                $this->invoker->getInstance(Safer::class)//,
+                //                $this->invoker->getInstance(Csrf::class)
             );
         }
         return $this->template;
@@ -105,6 +105,7 @@ class Config extends Section
         $inistr = $this
             ->getTemplate()
             ->setHtmlViewTemplate(false)
+            ->setEncoder(null)
             ->process($filename, ['__DIR__' => __DIR__], '');
         $cfg = parse_ini_string($inistr, true);
         

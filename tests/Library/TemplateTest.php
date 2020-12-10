@@ -14,13 +14,9 @@
 namespace Madsoft\Tests\Library;
 
 use Madsoft\Library\Config;
-use Madsoft\Library\Csrf;
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Merger;
-use Madsoft\Library\Params;
 use Madsoft\Library\Safer;
-use Madsoft\Library\Server;
-use Madsoft\Library\Session;
 use Madsoft\Library\Template;
 use Madsoft\Library\Tester\Test;
 use RuntimeException;
@@ -42,18 +38,16 @@ class TemplateTest extends Test
     /**
      * Method testTemplate
      *
-     * @param Invoker $invoker invoker
-     *
      * @return void
      *
      * @suppress PhanUnreferencedPublicMethod
      */
-    public function testTemplate(Invoker $invoker): void
+    public function testTemplate(): void
     {
         $template = new Template(
             new Config(new Invoker(), new Merger()),
-            new Safer(),
-            $invoker->getInstance(Csrf::class)
+            new Safer()//,
+            //$invoker->getInstance(Csrf::class)
         );
         $msg = '';
         
@@ -84,13 +78,13 @@ class TemplateTest extends Test
             ''
         );
         $this->assertEquals('Hello Template foo!', $results);
-        $csrf = $template->getVars()['csrf'];
-        $this->assertTrue((bool)$csrf);
+        //        $csrf = $template->getVars()['csrf'];
+        //        $this->assertTrue((bool)$csrf);
         $merger = new Merger();
         $template = new Template(
             new Config(new Invoker(), $merger),
-            new Safer(),
-            new Csrf(new Session(), new Params(new Server(), $merger))
+            new Safer()//,
+            //new Csrf(new Session(), new Params(new Server(), $merger))
         );
         $results = $template->process(
             __DIR__ . '/test.phtml',
@@ -98,9 +92,9 @@ class TemplateTest extends Test
             ''
         );
         $this->assertEquals('Hello Template bazz!', $results);
-        $this->assertNotEquals($csrf, $template->getVars()['csrf']);
-        $csrf = $template->getVars()['csrf'];
-        $this->assertTrue((bool)$csrf);
+        //        $this->assertNotEquals($csrf, $template->getVars()['csrf']);
+        //        $csrf = $template->getVars()['csrf'];
+        //        $this->assertTrue((bool)$csrf);
         
         $template->restrict();
     }

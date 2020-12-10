@@ -4,61 +4,59 @@
  * PHP version 7.4
  *
  * @category  PHP
- * @package   Madsoft\Library\Account\View
+ * @package   Madsoft\Library\Layout\View
  * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
 
-namespace Madsoft\Library\Account\View;
+namespace Madsoft\Library\Layout\View;
 
-use Madsoft\Library\FileCollector;
+use Madsoft\Library\Params;
 use Madsoft\Library\Template;
 
 /**
- * PasswordResetForm
+ * Meta
  *
  * @category  PHP
- * @package   Madsoft\Library\Account\View
+ * @package   Madsoft\Library\Layout\View
  * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class PasswordResetForm
+class Meta
 {
     const TPL_PATH = __DIR__ . '/phtml/';
-    const JS_PATH = __DIR__ . '/js/';
+    
+    const DEFAULT_TITLE = 'Library page';
     
     protected Template $template;
-    protected FileCollector $fileCollector;
+    protected Params $params;
     
     /**
      * Method __construct
      *
-     * @param Template      $template      template
-     * @param FileCollector $fileCollector fileCollector
+     * @param Template $template template
+     * @param Params   $params   params
      */
-    public function __construct(Template $template, FileCollector $fileCollector)
+    public function __construct(Template $template, Params $params)
     {
         $this->template = $template;
-        $this->fileCollector = $fileCollector;
+        $this->params = $params;
     }
     
     /**
-     * Method getPasswordResetForm
+     * Method getMeta
      *
      * @return string
-     *
-     * @suppress PhanUnreferencedPublicMethod
      */
-    public function getPasswordResetForm(): string
+    public function getMeta(): string
     {
-        $this->fileCollector->addJsFile($this::JS_PATH . 'account.js');
         return $this->template->setEncoder(null)->process(
-            'password-reset.phtml',
-            [],
+            'meta.phtml',
+            ['title' => $this->params->get('title', self::DEFAULT_TITLE)],
             $this::TPL_PATH
         );
     }

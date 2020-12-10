@@ -20,6 +20,7 @@ use Madsoft\Library\Account\View\PasswordResetForm;
 use Madsoft\Library\Account\View\RegistryForm;
 use Madsoft\Library\Layout\Layout;
 use Madsoft\Library\Layout\View\Header;
+use Madsoft\Library\Layout\View\Meta;
 use Madsoft\Library\Layout\View\Navbar;
 use Madsoft\Library\Layout\View\WelcomePage;
 
@@ -32,9 +33,11 @@ return $routes = [
                 'overrides' => [
                     'tplfile' => 'index.phtml',
                     'title' => 'Welcome',
+                    'header' => 'Welcome',
                     'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
                         'header' => [Header::class, 'getHeader'],
-                        'navbar' => [Navbar::class, 'getPublicNavbar'],
                         'body' => [WelcomePage::class, 'getPublicArea'],
                     ],
                 ],
@@ -46,8 +49,9 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'title' => 'Login',
                     'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
                         'header' => [Header::class, 'getHeader'],
-                        'navbar' => [Navbar::class, 'getPublicNavbar'],
                         'body' => [LoginForm::class, 'getLoginForm'],
                     ],
                 ],
@@ -59,8 +63,9 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'title' => 'Registration',
                     'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
                         'header' => [Header::class, 'getHeader'],
-                        'navbar' => [Navbar::class, 'getPublicNavbar'],
                         'body' => [RegistryForm::class, 'getRegistryForm'],
                     ],
                 ],
@@ -72,8 +77,9 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'title' => 'Account activation',
                     'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
                         'header' => [Header::class, 'getHeader'],
-                        'navbar' => [Navbar::class, 'getPublicNavbar'],
                         'body' => [ActivatePage::class, 'getActivatePage'],
                     ],
                 ],
@@ -85,8 +91,9 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'title' => 'Password reset',
                     'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
                         'header' => [Header::class, 'getHeader'],
-                        'navbar' => [Navbar::class, 'getPublicNavbar'],
                         'body' => [PasswordResetForm::class, 'getPasswordResetForm'],
                     ],
                 ],
@@ -98,8 +105,9 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'title' => 'Change password',
                     'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
                         'header' => [Header::class, 'getHeader'],
-                        'navbar' => [Navbar::class, 'getPublicNavbar'],
                         'body' => [
                             PasswordChangeForm::class,
                             'getPasswordChangeForm'

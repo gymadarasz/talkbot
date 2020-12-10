@@ -13,6 +13,9 @@
 
 namespace Madsoft\Library\Account\View;
 
+use Madsoft\Library\FileCollector;
+use Madsoft\Library\Template;
+
 /**
  * LoginForm
  *
@@ -25,6 +28,24 @@ namespace Madsoft\Library\Account\View;
  */
 class LoginForm
 {
+    const TPL_PATH = __DIR__ . '/phtml/';
+    const JS_PATH = __DIR__ . '/js/';
+    
+    protected Template $template;
+    protected FileCollector $fileCollector;
+    
+    /**
+     * Method __construct
+     *
+     * @param Template      $template      template
+     * @param FileCollector $fileCollector fileCollector
+     */
+    public function __construct(Template $template, FileCollector $fileCollector)
+    {
+        $this->template = $template;
+        $this->fileCollector = $fileCollector;
+    }
+    
     /**
      * Method getLoginForm
      *
@@ -34,6 +55,11 @@ class LoginForm
      */
     public function getLoginForm(): string
     {
-        return '[LOGIN FORM HERE...]';
+        $this->fileCollector->addJsFile($this::JS_PATH . 'account.js');
+        return $this->template->setEncoder(null)->process(
+            'login.phtml',
+            [],
+            $this::TPL_PATH
+        );
     }
 }

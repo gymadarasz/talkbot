@@ -4,60 +4,52 @@
  * PHP version 7.4
  *
  * @category  PHP
- * @package   Madsoft\Library\Account\View
+ * @package   Madsoft\Library\Layout\View
  * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
 
-namespace Madsoft\Library\Account\View;
+namespace Madsoft\Library\Layout\View;
 
-use Madsoft\Library\FileCollector;
 use Madsoft\Library\Template;
 
 /**
- * PasswordResetForm
+ * Error
  *
  * @category  PHP
- * @package   Madsoft\Library\Account\View
+ * @package   Madsoft\Library\Layout\View
  * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class PasswordResetForm
+class ErrorPage
 {
     const TPL_PATH = __DIR__ . '/phtml/';
-    const JS_PATH = __DIR__ . '/js/';
     
     protected Template $template;
-    protected FileCollector $fileCollector;
     
     /**
      * Method __construct
      *
-     * @param Template      $template      template
-     * @param FileCollector $fileCollector fileCollector
+     * @param Template $template template
      */
-    public function __construct(Template $template, FileCollector $fileCollector)
+    public function __construct(Template $template)
     {
         $this->template = $template;
-        $this->fileCollector = $fileCollector;
     }
     
     /**
-     * Method getPasswordResetForm
+     * Method getErrorContent
      *
      * @return string
-     *
-     * @suppress PhanUnreferencedPublicMethod
      */
-    public function getPasswordResetForm(): string
+    public function getErrorContent(): string
     {
-        $this->fileCollector->addJsFile($this::JS_PATH . 'account.js');
         return $this->template->setEncoder(null)->process(
-            'password-reset.phtml',
+            'error.phtml',
             [],
             $this::TPL_PATH
         );

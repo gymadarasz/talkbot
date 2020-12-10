@@ -49,14 +49,12 @@ class Header
      * Method getHeader
      *
      * @return string
-     *
-     * @suppress PhanUnreferencedPublicMethod
      */
     public function getHeader(): string
     {
         return $this->template->setEncoder(null)->process(
             'header.phtml',
-            ['title' => $this->params->get('title')],
+            ['header' => $this->params->get('header', '')],
             $this::TPL_PATH
         );
     }
