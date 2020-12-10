@@ -62,16 +62,46 @@ class FileCollector
      */
     public function addJsFile(string $jsFile): self
     {
+        $url = $this->getJsFileUrl($jsFile);
+        if (!in_array($url, $this->jsFiles, true)) {
+            $this->jsFiles[] = $url;
+        }
+        return $this;
+    }
+
+    /**
+     * Method addJsFileTop
+     *
+     * @param string $jsFile jsFile
+     *
+     * @return self
+     * @throws RuntimeException
+     */
+    public function addJsFileTop(string $jsFile): self
+    {
+        $url = $this->getJsFileUrl($jsFile);
+        if (!in_array($url, $this->jsFiles, true)) {
+            array_unshift($this->jsFiles, $url);
+        }
+        return $this;
+    }
+    
+    /**
+     * Method getJsFileUrl
+     *
+     * @param string $jsFile jsFile
+     *
+     * @return string
+     * @throws RuntimeException
+     */
+    protected function getJsFileUrl(string $jsFile): string
+    {
         if (!preg_match('/.js$/', $jsFile)) {
             throw new RuntimeException(
                 "Invalid JavaScript file extension: '$jsFile'"
             );
         }
-        $url = $this->pathToUrl($jsFile);
-        if (!in_array($url, $this->jsFiles, true)) {
-            $this->jsFiles[] = $url;
-        }
-        return $this;
+        return $this->pathToUrl($jsFile);
     }
     
     /**

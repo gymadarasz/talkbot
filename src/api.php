@@ -31,7 +31,8 @@ $routes = $invoker->getInstance(Router::class)->loadRoutes(
             __DIR__ . '/Library/Crud/crud.api.routes.php',
         ],
         $routeset
-    )
+    ),
+    'api'
 );
 $api = new ApiApp($invoker);
 $api->setRoutes($routes);

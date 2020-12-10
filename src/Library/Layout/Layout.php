@@ -40,6 +40,7 @@ use Madsoft\Library\Template;
 class Layout extends ArrayResponder
 {
     const TPL_PATH = Template::TPL_PATH;
+    const JQUERY_JS_FILE = __DIR__ . '/View/js/jquery-3.5.1.min.js';
 
     protected Invoker $invoker;
     protected Template $template;
@@ -100,6 +101,8 @@ class Layout extends ArrayResponder
      */
     public function getHtmlPage(array $response, string $error): string
     {
+        $this->fileCollector->addJsFileTop(self::JQUERY_JS_FILE);
+        
         $response['jsFiles'] = $this->fileCollector->getJsFiles();
         $response['cssFiles'] = $this->fileCollector->getCssFiles();
 

@@ -174,8 +174,7 @@ class ErrorHandler
      */
     protected function isStringKind($value): bool
     {
-        return is_scalar($value)
-            || (!is_object($value) && $value == (string)$value)
+        return is_scalar($value) || is_null($value)
             || (is_object($value) && method_exists($value, '__toString'));
     }
 }

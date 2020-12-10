@@ -29,7 +29,8 @@ $routes = $invoker->getInstance(Router::class)->loadRoutes(
             __DIR__ . '/Library/App/web.app.routes.php',
         ],
         $routeset
-    )
+    ),
+    'web'
 );
 
 $app = new WebApp($invoker);

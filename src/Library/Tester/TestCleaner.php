@@ -32,6 +32,11 @@ use RuntimeException;
  */
 class TestCleaner
 {
+    const ROUTE_CACHE_FILES = [
+        Router::ROUTE_CACHE_FILEPATH . 'api.' . Router::ROUTE_CACHE_FILENAME,
+        Router::ROUTE_CACHE_FILEPATH . 'web.' . Router::ROUTE_CACHE_FILENAME,
+    ];
+    
     protected Database $database;
     protected Folders $folders;
     protected Config $config;
@@ -70,7 +75,9 @@ class TestCleaner
         
         $this->deleteMails();
         
-        $this->deleteRouteCache();
+        foreach (self::ROUTE_CACHE_FILES as $routeCacheFile) {
+            $this->deleteRouteCache($routeCacheFile);
+        }
     }
     
     /**
@@ -100,16 +107,19 @@ class TestCleaner
     /**
      * Method deleteRouteCache
      *
+     * @param string $routeCacheFile routeCacheFile
+     *
      * @return self
      * @throws RuntimeException
      */
-    public function deleteRouteCache(): self
-    {
-        if (file_exists(Router::ROUTE_CACHE_FILE)
-            && false === unlink(Router::ROUTE_CACHE_FILE)
+    public function deleteRouteCache(
+        string $routeCacheFile
+    ): self {
+        if (file_exists($routeCacheFile)
+            && false === unlink($routeCacheFile)
         ) {
             throw new RuntimeException(
-                'Unable to delete file: "' . Router::ROUTE_CACHE_FILE . '" '
+                'Unable to delete file: "' . $routeCacheFile . '" '
             );
         }
         clearstatcache(true);

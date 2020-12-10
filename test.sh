@@ -21,7 +21,7 @@ show_next() {
 trap error_exit 0 
 
 show_next "clean up.."
-rm routes.cache.php
+rm api.routes.cache.php
 
 show_next "php-cs-fixer"
 vendor/bin/php-cs-fixer fix src
@@ -38,7 +38,7 @@ vendor/bin/phpcbf tests
 set -e
 
 show_next "phpcs"
-vendor/bin/phpcs src
+vendor/bin/phpcs src --ignore=*.min.js
 vendor/bin/phpcs tests
 
 show_next "phpstan"

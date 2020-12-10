@@ -49,7 +49,8 @@ class TestApp extends CliApp
                 __DIR__ . "/../../src/Library/Tester/Test.php",
                 __DIR__ . "/../../src/Library/Tester/Tester.php",
                 __DIR__ . "/../../tests/",
-                Router::ROUTE_CACHE_FILE,
+                Router::ROUTE_CACHE_FILEPATH . 'api.' . Router::ROUTE_CACHE_FILENAME,
+                Router::ROUTE_CACHE_FILEPATH . 'web.' . Router::ROUTE_CACHE_FILENAME,
             ]
         );
 

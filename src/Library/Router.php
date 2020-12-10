@@ -41,7 +41,8 @@ class Router
     
             
     const ROUTE_QUERY_KEY = 'q';
-    const ROUTE_CACHE_FILE = __DIR__ . '/../../routes.cache.php';
+    const ROUTE_CACHE_FILEPATH = __DIR__ . '/../../';
+    const ROUTE_CACHE_FILENAME = 'routes.cache.php';
     
     protected bool $csrfCheck = true;
     protected string $error = self::OK;
@@ -99,13 +100,17 @@ class Router
     /**
      * Method getStringResponse
      *
-     * @param mixed[] $routes routes
+     * @param mixed[] $routes         routes
+     * @param string  $routeCacheFile routeCacheFile
      *
      * @return string
      */
-    public function getStringResponse(array $routes): string
-    {
-        $response = $this->getArrayResponse($routes);
+    public function getStringResponse(
+        array $routes,
+        string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
+        . self::ROUTE_CACHE_FILENAME
+    ): string {
+        $response = $this->getArrayResponse($routes, $routeCacheFile);
         return $this->invoker->getInstance(Layout::class)->getHtmlPage(
             $response,
             $this->error
@@ -115,12 +120,16 @@ class Router
     /**
      * Method routing
      *
-     * @param mixed[] $routes routes
+     * @param mixed[] $routes         routes
+     * @param string  $routeCacheFile routeCacheFile
      *
      * @return mixed[]
      */
-    public function getArrayResponse(array $routes): array
-    {
+    public function getArrayResponse(
+        array $routes,
+        string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
+        . self::ROUTE_CACHE_FILENAME
+    ): array {
         try {
             $this->params->sanitizeSql();
             
@@ -135,12 +144,12 @@ class Router
             }
 
             $area = $this->getRoutingArea();
-            $this->validateArea($routes, $area, $route);
+            $this->validateArea($routes, $area, $route, $routeCacheFile);
             $method = $this->server->getMethod();
-            $this->validateMethod($routes, $area, $method, $route);
-            $this->validateRoute($routes, $area, $method, $route);
+            $this->validateMethod($routes, $area, $method, $route, $routeCacheFile);
+            $this->validateRoute($routes, $area, $method, $route, $routeCacheFile);
             $target = $routes[$area][$method][$route];
-            $this->validateTarget($target, $area, $method, $route);
+            $this->validateTarget($target, $area, $method, $route, $routeCacheFile);
 
             if (isset($target['defaults'])) {
                 $this->params->setDefaults(
@@ -170,7 +179,13 @@ class Router
                 }
                 unset($target['validations']);
             }
-            $this->validateTargetKeys($target, $area, $method, $route);
+            $this->validateTargetKeys(
+                $target,
+                $area,
+                $method,
+                $route,
+                $routeCacheFile
+            );
             return $this->invoker->invoke(
                 [
                     'class' => $target['class'],
@@ -216,9 +231,10 @@ class Router
     /**
      * Method validateArea
      *
-     * @param mixed[] $routes routes
-     * @param string  $area   area
-     * @param string  $route  route
+     * @param mixed[] $routes         routes
+     * @param string  $area           area
+     * @param string  $route          route
+     * @param string  $routeCacheFile routeCacheFile
      *
      * @return void
      * @throws RuntimeException
@@ -226,13 +242,15 @@ class Router
     protected function validateArea(
         array $routes,
         string $area,
-        string $route
+        string $route,
+        string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
+        . self::ROUTE_CACHE_FILENAME
     ): void {
         if (!isset($routes[$area])) {
             throw new RuntimeException(
                 'Requested area has not any routing point: ' . $area . ' ?'
                     . self::ROUTE_QUERY_KEY . '=' . $route .
-                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
+                    ' (did you try to delete "' . $routeCacheFile . '"?)'
             );
         }
     }
@@ -240,10 +258,11 @@ class Router
     /**
      * Method validateMethod
      *
-     * @param mixed[] $routes routes
-     * @param string  $area   area
-     * @param string  $method method
-     * @param string  $route  route
+     * @param mixed[] $routes         routes
+     * @param string  $area           area
+     * @param string  $method         method
+     * @param string  $route          route
+     * @param string  $routeCacheFile routeCacheFile
      *
      * @return void
      * @throws RuntimeException
@@ -252,14 +271,16 @@ class Router
         array $routes,
         string $area,
         string $method,
-        string $route
+        string $route,
+        string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
+        . self::ROUTE_CACHE_FILENAME
     ): void {
         if (!isset($routes[$area][$method])) {
             throw new RuntimeException(
                 'Route is not defined for method on area: '
                     . 'routes[' . $area . '][' . $method . '] ?'
                     . self::ROUTE_QUERY_KEY . '=' . $route .
-                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
+                    ' (did you try to delete "' . $routeCacheFile . '"?)'
             );
         }
     }
@@ -267,10 +288,11 @@ class Router
     /**
      * Method validateRoute
      *
-     * @param mixed[] $routes routes
-     * @param string  $area   area
-     * @param string  $method method
-     * @param string  $route  route
+     * @param mixed[] $routes         routes
+     * @param string  $area           area
+     * @param string  $method         method
+     * @param string  $route          route
+     * @param string  $routeCacheFile routeCacheFile
      *
      * @return void
      * @throws RuntimeException
@@ -279,14 +301,16 @@ class Router
         array $routes,
         string $area,
         string $method,
-        string $route
+        string $route,
+        string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
+        . self::ROUTE_CACHE_FILENAME
     ): void {
         if (!isset($routes[$area][$method][$route])) {
             throw new RuntimeException(
                 'Route is not defined on area for query: '
                     . 'routes[' . $area . '][' . $method . '] ?'
                     . self::ROUTE_QUERY_KEY . '=' . $route .
-                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
+                    ' (did you try to delete "' . $routeCacheFile . '"?)'
             );
         }
     }
@@ -294,10 +318,11 @@ class Router
     /**
      * Method validateTarget
      *
-     * @param string[] $target target
-     * @param string   $area   area
-     * @param string   $method method
-     * @param string   $route  route
+     * @param string[] $target         target
+     * @param string   $area           area
+     * @param string   $method         method
+     * @param string   $route          route
+     * @param string   $routeCacheFile routeCacheFile
      *
      * @return void
      * @throws RuntimeException
@@ -306,14 +331,16 @@ class Router
         array $target,
         string $area,
         string $method,
-        string $route
+        string $route,
+        string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
+        . self::ROUTE_CACHE_FILENAME
     ): void {
         if (!isset($target['class'])) {
             throw new RuntimeException(
                 'Class is not defined at routing point: '
                     . "routes[$area][$method][$route][class] => ??? ?"
                     . self::ROUTE_QUERY_KEY . '=' . $route .
-                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
+                    ' (did you try to delete "' . $routeCacheFile . '"?)'
             );
         }
         if (!isset($target['method'])) {
@@ -322,7 +349,7 @@ class Router
                 "Method is not defined at routing point for class $class::???() "
                     . "routes[$area][$method][$route][method] => ??? ?"
                     . self::ROUTE_QUERY_KEY . '=' . $route .
-                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
+                    ' (did you try to delete "' . $routeCacheFile . '"?)'
             );
         }
     }
@@ -330,10 +357,11 @@ class Router
     /**
      * Method validateTargetKeys
      *
-     * @param string[] $target target
-     * @param string   $area   area
-     * @param string   $method method
-     * @param string   $route  route
+     * @param string[] $target         target
+     * @param string   $area           area
+     * @param string   $method         method
+     * @param string   $route          route
+     * @param string   $routeCacheFile routeCacheFile
      *
      * @return void
      * @throws RuntimeException
@@ -342,7 +370,9 @@ class Router
         array $target,
         string $area,
         string $method,
-        string $route
+        string $route,
+        string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
+        . self::ROUTE_CACHE_FILENAME
     ): void {
         if (['class', 'method'] !== array_keys($target)) {
             unset($target['class']);
@@ -352,7 +382,7 @@ class Router
                     . implode('", "', array_keys($target)) . '" at '
                     . "routes[$area][$method][$route][method] => ??? ?"
                     . self::ROUTE_QUERY_KEY . '=' . $route .
-                    ' (did you try to delete "' . self::ROUTE_CACHE_FILE . '"?)'
+                    ' (did you try to delete "' . $routeCacheFile . '"?)'
             );
         }
     }
@@ -441,13 +471,18 @@ class Router
     /**
      * Method loadRoutes
      *
-     * @param string[] $includes includes
+     * @param string[] $includes             includes
+     * @param string   $routeCacheFilePrefix routeCacheFilePrefix
      *
      * @return mixed[]
      */
-    public function loadRoutes(array $includes): array
-    {
-        if (!file_exists(self::ROUTE_CACHE_FILE)) {
+    public function loadRoutes(
+        array $includes,
+        string $routeCacheFilePrefix
+    ): array {
+        $routeCacheFile = self::ROUTE_CACHE_FILEPATH . "$routeCacheFilePrefix."
+            . self::ROUTE_CACHE_FILENAME;
+        if (!file_exists($routeCacheFile)) {
             $routes = [
                 'public' => [],
                 'protected' => [],
@@ -471,14 +506,14 @@ class Router
             if (!$exported) {
                 throw new RuntimeException('Unable to export routes');
             }
-            if (false === file_put_contents(self::ROUTE_CACHE_FILE, $exported)) {
+            if (false === file_put_contents($routeCacheFile, $exported)) {
                 throw new RuntimeException(
-                    'Unable to write route cache: ' . self::ROUTE_CACHE_FILE
+                    'Unable to write route cache: ' . $routeCacheFile
                 );
             }
-            clearstatcache(true, self::ROUTE_CACHE_FILE);
+            clearstatcache(true, $routeCacheFile);
         }
-        return $this->includeRoutes(self::ROUTE_CACHE_FILE);
+        return $this->includeRoutes($routeCacheFile);
     }
     
     /**

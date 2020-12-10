@@ -37,8 +37,18 @@ class ApiApp extends WebApp
     {
         return $this->invoker->getInstance(Json::class)->encode(
             ($this->invoker->getInstance(Router::class))
-                ->getArrayResponse($this->routes)
+                ->getArrayResponse($this->routes, $this->getRouteCacheFile())
         );
+    }
+    
+    /**
+     * Method getRouteCacheFile
+     *
+     * @return string
+     */
+    public function getRouteCacheFile(): string
+    {
+        return Router::ROUTE_CACHE_FILEPATH . 'api.' . Router::ROUTE_CACHE_FILENAME;
     }
     
     /**

@@ -60,7 +60,17 @@ class WebApp extends App
         if ('GET' === $server->getMethod()) {
             $router->setCsrfCheck(false);
         }
-        return $router->getStringResponse($this->routes);
+        return $router->getStringResponse($this->routes, $this->getRouteCacheFile());
+    }
+    
+    /**
+     * Method getRouteCacheFile
+     *
+     * @return string
+     */
+    public function getRouteCacheFile(): string
+    {
+        return Router::ROUTE_CACHE_FILEPATH . 'web.' . Router::ROUTE_CACHE_FILENAME;
     }
 
     /**

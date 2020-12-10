@@ -65,8 +65,8 @@ class Config extends Section
         if (null === $this->template) {
             $this->template = new Template(
                 $this,
-                $this->invoker->getInstance(Safer::class)//,
-                //                $this->invoker->getInstance(Csrf::class)
+                $this->invoker->getInstance(Safer::class),
+                $this->invoker->getInstance(Csrf::class)
             );
         }
         return $this->template;

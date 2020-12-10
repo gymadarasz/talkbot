@@ -61,11 +61,14 @@ abstract class ApiTest extends CleanTest
     /**
      * Method getRoutes
      *
+     * @param string $routeCacheFilePrefix routeCacheFilePrefix
+     *
      * @return mixed[]
      */
-    protected function getRoutes(): array
-    {
-        return $this->router->loadRoutes($this->routes);
+    protected function getRoutes(
+        string $routeCacheFilePrefix = 'api'
+    ): array {
+        return $this->router->loadRoutes($this->routes, $routeCacheFilePrefix);
     }
     
     /**
@@ -96,7 +99,10 @@ abstract class ApiTest extends CleanTest
         parse_str($params, $_GET);
         $_REQUEST = $_GET;
         unset($_POST);
-        $contents = $this->getContents([$this, 'callApi'], [$this->getRoutes()]);
+        $contents = $this->getContents(
+            [$this, 'callApi'],
+            [$this->getRoutes('api')]
+        );
         $this->popGlobals();
         return $contents;
     }
@@ -124,7 +130,10 @@ abstract class ApiTest extends CleanTest
         $_REQUEST = $_GET;
         $_POST = $data;
         $_REQUEST = array_merge($_REQUEST, $_POST);
-        $contents = $this->getContents([$this, 'callApi'], [$this->getRoutes()]);
+        $contents = $this->getContents(
+            [$this, 'callApi'],
+            [$this->getRoutes('api')]
+        );
         $this->popGlobals();
         return $contents;
     }

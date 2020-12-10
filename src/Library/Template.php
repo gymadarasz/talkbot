@@ -35,7 +35,7 @@ class Template
         'safer',
         'filename',
     //        'csrf',
-    //        'csrfgen',
+            'csrfgen',
         'base',
         'tplReservedVarKey',
         'tplReservedVarValue',
@@ -57,22 +57,23 @@ class Template
 
     protected Config $config;
     protected Safer $safer;
-    //    protected Csrf $csrfgen;
+    protected Csrf $csrfgen;
     
     /**
      * Method __construct
      *
      * @param Config $config config
      * @param Safer  $safer  safer
+     * @param Csrf   $csrf   csrf
      */
     public function __construct(
         Config $config,
-        Safer $safer//,
-        //Csrf $csrf
+        Safer $safer,
+        Csrf $csrf
     ) {
         $this->config = $config;
         $this->safer = $safer;
-        //        $this->csrfgen = $csrf;
+        $this->csrfgen = $csrf;
     }
     
     /**
@@ -106,10 +107,10 @@ class Template
      *
      * @return mixed[]
      */
-    //    public function getVars(): array
-    //    {
-    //        return $this->vars;
-    //    }
+    public function getVars(): array
+    {
+        return $this->vars;
+    }
    
     /**
      * Method process
@@ -159,7 +160,7 @@ class Template
             }
             $this->vars[$key] = $value;
         }
-        //        $this->vars['csrf'] = $this->csrfgen->get();
+        $this->vars['csrf'] = $this->csrfgen->get();
         if ($this->htmlViewTemplate) {
             $this->vars['base'] = $this->config->get('Site')->get('base');
         }
