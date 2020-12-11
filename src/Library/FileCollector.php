@@ -32,6 +32,13 @@ class FileCollector
      *
      * @var string[]
      */
+    protected array $jsFilesTop = [];
+
+    /**
+     * Variable $jsFiles
+     *
+     * @var string[]
+     */
     protected array $jsFiles = [];
     
     /**
@@ -54,6 +61,24 @@ class FileCollector
     }
     
     /**
+     * Method addJsFileTop
+     *
+     * @param string $jsFile jsFile
+     *
+     * @return self
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function addJsFileTop(string $jsFile): self
+    {
+        $url = $this->getJsFileUrl($jsFile);
+        if (!in_array($url, $this->jsFiles, true)) {
+            $this->jsFilesTop[] = $url;
+        }
+        return $this;
+    }
+    
+    /**
      * Method addJsFile
      *
      * @param string $jsFile jsFile
@@ -70,14 +95,31 @@ class FileCollector
     }
 
     /**
-     * Method addJsFileTop
+     * Method addJsFileTopFirst
      *
      * @param string $jsFile jsFile
      *
      * @return self
      * @throws RuntimeException
      */
-    public function addJsFileTop(string $jsFile): self
+    public function addJsFileTopFirst(string $jsFile): self
+    {
+        $url = $this->getJsFileUrl($jsFile);
+        if (!in_array($url, $this->jsFiles, true)) {
+            array_unshift($this->jsFilesTop, $url);
+        }
+        return $this;
+    }
+
+    /**
+     * Method addJsFileFirst
+     *
+     * @param string $jsFile jsFile
+     *
+     * @return self
+     * @throws RuntimeException
+     */
+    public function addJsFileFirst(string $jsFile): self
     {
         $url = $this->getJsFileUrl($jsFile);
         if (!in_array($url, $this->jsFiles, true)) {
@@ -102,6 +144,16 @@ class FileCollector
             );
         }
         return $this->pathToUrl($jsFile);
+    }
+    
+    /**
+     * Method getJsFilesTop
+     *
+     * @return string[]
+     */
+    public function getJsFilesTop(): array
+    {
+        return $this->jsFilesTop;
     }
     
     /**

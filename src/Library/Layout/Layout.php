@@ -39,7 +39,8 @@ use Madsoft\Library\Template;
  */
 class Layout extends ArrayResponder
 {
-    const TPL_PATH = Template::TPL_PATH;
+    const TPL_PATH = __DIR__ . '/View/phtml/';
+    const API_JS_FILE = __DIR__ . '/View/js/api.js';
     const JQUERY_JS_FILE = __DIR__ . '/View/js/jquery-3.5.1.min.js';
 
     protected Invoker $invoker;
@@ -101,10 +102,12 @@ class Layout extends ArrayResponder
      */
     public function getHtmlPage(array $response, string $error): string
     {
-        $this->fileCollector->addJsFileTop(self::JQUERY_JS_FILE);
+        $this->fileCollector->addJsFileTopFirst(self::API_JS_FILE);
+        $this->fileCollector->addJsFileFirst(self::JQUERY_JS_FILE);
         
-        $response['jsFiles'] = $this->fileCollector->getJsFiles();
         $response['cssFiles'] = $this->fileCollector->getCssFiles();
+        $response['jsFilesTop'] = $this->fileCollector->getJsFilesTop();
+        $response['jsFiles'] = $this->fileCollector->getJsFiles();
 
         if ($error) {
             $this->params->setOverrides(

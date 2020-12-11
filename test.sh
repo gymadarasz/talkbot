@@ -22,6 +22,7 @@ trap error_exit 0
 
 show_next "clean up.."
 rm api.routes.cache.php
+rm web.routes.cache.php
 
 show_next "php-cs-fixer"
 vendor/bin/php-cs-fixer fix src
@@ -32,13 +33,13 @@ php csfix/csfix.php src
 php csfix/csfix.php tests
 
 show_next "phpcbf"
-vendor/bin/phpcbf src
+vendor/bin/phpcbf src --ignore=*.js
 vendor/bin/phpcbf tests
 
 set -e
 
 show_next "phpcs"
-vendor/bin/phpcs src --ignore=*.min.js
+vendor/bin/phpcs src --ignore=*.js
 vendor/bin/phpcs tests
 
 show_next "phpstan"

@@ -113,7 +113,7 @@ class ErrorHandler
         int $deep = 1
     ): string {
         if ($deep <= 0) {
-            return '[too deep]';
+            return "[too deep]\n";
         }
         foreach ($errcontext as $key => $value) {
             $output = $this->dumpOutputConcat(
