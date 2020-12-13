@@ -19,8 +19,8 @@ use Madsoft\Library\Router;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$routeset = [];
-require 'routeset.php';
+$routesExt = [];
+require 'routes.app.php';
  
 $invoker = new Invoker();
 $routes = $invoker->getInstance(Router::class)->loadRoutes(
@@ -29,7 +29,7 @@ $routes = $invoker->getInstance(Router::class)->loadRoutes(
             __DIR__ . '/Library/App/web.app.routes.php',
             __DIR__ . '/Library/Testing/testing.app.routes.php',
         ],
-        $routeset
+        $routesExt
     ),
     'web'
 );

@@ -89,6 +89,17 @@ return $routes = [
     ],
     'protected' => [
         'GET' => [
+            'script/list' => [
+                'class' => Crud::class,
+                'method' => 'getListResponse',
+                'overrides' => $overrides,
+            ],
+            'script/view' => [
+                'class' => Crud::class,
+                'method' => 'getViewResponse',
+                'validations' => $validations,
+                'overrides' => $overrides,
+            ],
             'script/delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',

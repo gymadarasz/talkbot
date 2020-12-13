@@ -1,7 +1,7 @@
 <li class="nav-item<?= $link['active'] ? ' active' : '' ?><?= $link['dropdown'] ? ' dropdown' : '' ?>">
     <a 
         class="nav-link<?= $link['dropdown'] ? ' dropdown-toggle' : '' ?><?= $link['disabled'] ? ' disabled' : '' ?>" 
-        href="<?= $link['href'] ?>"
+        href="?<?= $link['href'] ?>"
         <?php if ($link['dropdown']): ?> 
             id="navbarDropdown" role="button" data-toggle="dropdown" 
             aria-haspopup="true" aria-expanded="false"
@@ -12,7 +12,7 @@
                 <?php if ($dropdown === 'divider'): ?>
                     <div class="dropdown-divider"></div>
                 <?php else: ?>
-                    <a class="dropdown-item" href="<?= $dropdown['href'] ?>"><?= $dropdown['text'] ?></a>
+                    <a class="dropdown-item" href="?<?= $dropdown['href'] ?>"><?= $dropdown['text'] ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>

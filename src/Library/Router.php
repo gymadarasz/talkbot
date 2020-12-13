@@ -507,6 +507,12 @@ class Router
                 $routes['private'],
                 $routes['protected']
             );
+            foreach ($includes as $include) {
+                $routes = $this->merger->merge(
+                    $routes,
+                    $this->includeRoutes($include)
+                );
+            }
             $exported = '<?php $routes = ' . var_export($routes, true) . ';';
             if (!$exported) {
                 throw new RuntimeException('Unable to export routes');

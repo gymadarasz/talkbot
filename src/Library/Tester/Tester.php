@@ -14,6 +14,7 @@
 namespace Madsoft\Library\Tester;
 
 use Exception;
+use Throwable;
 use Madsoft\Library\Config;
 use Madsoft\Library\Coverage\Coverage;
 use Madsoft\Library\Folders;
@@ -288,6 +289,13 @@ class Tester extends Test
                     $test->assertFalse(
                         true,
                         "Tests should not throws exception but it's happened at "
+                            . "$class::$method(), exception details:\n"
+                            . (new Logger())->exceptionToString($exception)
+                    );
+                } catch (Throwable $exception) {
+                    $test->assertFalse(
+                        true,
+                        "Tests should not throws throwable but it's happened at "
                             . "$class::$method(), exception details:\n"
                             . (new Logger())->exceptionToString($exception)
                     );

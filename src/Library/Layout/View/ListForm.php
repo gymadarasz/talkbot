@@ -13,10 +13,10 @@
 
 namespace Madsoft\Library\Layout\View;
 
-use Madsoft\Library\Router;
+use Madsoft\Library\Params;
 
 /**
- * WelcomePage
+ * ListForm
  *
  * @category  PHP
  * @package   Madsoft\Library\Layout\View
@@ -25,29 +25,28 @@ use Madsoft\Library\Router;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class WelcomePage
+class ListForm
 {
-    protected Router $router;
+    protected Params $params;
     
     /**
      * Method __construct
      *
-     * @param Router $router router
+     * @param Params $params params
      */
-    public function __construct(Router $router)
+    public function __construct(Params $params)
     {
-        $this->router = $router;
+        $this->params = $params;
     }
+    
     /**
-     * Method getPublicArea
+     * Method getList
      *
      * @return string
-     *
-     * @suppress PhanUnreferencedPublicMethod
      */
-    public function getPublicArea(): string
+    public function getList(): string
     {
-        $area = $this->router->getRoutingArea();
-        return '[WELCOME PAGE HERE... (routing area is "' . $area . '")]';
+        $api = $this->params->get('list-form')['api'];
+        return '[LIST FORM HERE, api parameter: "' . $api . '"]';
     }
 }

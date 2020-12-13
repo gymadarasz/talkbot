@@ -19,8 +19,8 @@ use Madsoft\Library\Router;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$routeset = [];
-require 'routeset.php';
+$routesExt = [];
+require 'routes.api.php';
 
 $invoker = new Invoker();
 $routes = $invoker->getInstance(Router::class)->loadRoutes(
@@ -30,7 +30,7 @@ $routes = $invoker->getInstance(Router::class)->loadRoutes(
             __DIR__ . '/Library/Crud/content.api.routes.php',
             __DIR__ . '/Library/Crud/crud.api.routes.php',
         ],
-        $routeset
+        $routesExt
     ),
     'api'
 );

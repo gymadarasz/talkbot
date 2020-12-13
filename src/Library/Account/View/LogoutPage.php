@@ -14,6 +14,7 @@
 namespace Madsoft\Library\Account\View;
 
 use Madsoft\Library\Config;
+use Madsoft\Library\Session;
 use Madsoft\Library\User;
 
 /**
@@ -30,17 +31,20 @@ class LogoutPage
 {
     protected Config $config;
     protected User $user;
+    protected Session $session;
     
     /**
      * Method __construct
      *
-     * @param Config $config config
-     * @param User   $user   user
+     * @param Config  $config  config
+     * @param User    $user    user
+     * @param Session $session session
      */
-    public function __construct(Config $config, User $user)
+    public function __construct(Config $config, User $user, Session $session)
     {
         $this->config = $config;
         $this->user = $user;
+        $this->session = $session;
     }
     
     /**
@@ -50,11 +54,19 @@ class LogoutPage
      *
      * @suppress PhanUnreferencedPublicMethod
      */
-    public function getLogout()
+    public function getLogout(): string
     {
         $this->user->logout();
         // todo: session mesage when redirects
         $redirect = $this->config->get('Site')->get('base') . '/?q=login';
+        // TODO add redirector
+        $this->session->set(
+            'message',
+            [
+                'type' => 'success',
+                'text' => 'Logout sucess',
+            ]
+        );
         header("Location: $redirect");
         return "<script>document.location.href = '$redirect';</script>";
     }

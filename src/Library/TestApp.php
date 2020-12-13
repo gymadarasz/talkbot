@@ -65,7 +65,7 @@ class TestApp extends CliApp
         }
         if (!$runAll) {
             foreach ($argv as $arg) {
-                $tester->runTestFile($arg, '');
+                $tester->runTestFile($arg, __DIR__ . "/../../");
             }
         }
 
