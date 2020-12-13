@@ -18,6 +18,7 @@ use Madsoft\Library\Database;
 use Madsoft\Library\Messages;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
+use Madsoft\Library\Session;
 
 /**
  * Crud
@@ -44,16 +45,18 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
      *
      * @param Messages $messages messages
      * @param Csrf     $csrf     csrf
+     * @param Session  $session  session
      * @param Database $database database
      * @param Params   $params   params
      */
     public function __construct(
         Messages $messages,
         Csrf $csrf,
+        Session $session,
         Database $database,
         Params $params
     ) {
-        parent::__construct($messages, $csrf);
+        parent::__construct($messages, $csrf, $session);
         $this->database = $database;
         $this->params = $params;
     }

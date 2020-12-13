@@ -115,6 +115,10 @@ class Api {
         var data = new FormData(form);
         this.ajax.post(this.base + route, data, (xhttp) => {
             var resp = JSON.parse(xhttp.responseText);
+            if (typeof resp.redirect !== 'undefined') {
+                document.location.href = resp.redirect;
+                return;
+            }
             document.querySelectorAll('input[name=csrf]').forEach((elem) => {
                 elem.value = resp.csrf;
             });

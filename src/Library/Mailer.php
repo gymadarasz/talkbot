@@ -146,7 +146,7 @@ class Mailer
         } catch (Exception $e) {
             $this->logger->error(
                 "Message could not be sent. Mailer Error: {$mail->ErrorInfo}\n"
-                    . "Exception message:" . $e->getMessage() . "\n"
+                    . "Exception message: " . $e->getMessage() . "\n"
                     . "Trace:\n" . $e->getTraceAsString()
             );
             return false;
@@ -184,6 +184,11 @@ class Mailer
                         date("Y-m-d H-i-s") . " to $addressTo ($subject).html";
         if (file_put_contents($fname, $body)) {
             $this->logger->info("Email saved to: $fname");
+            if (!chmod($fname, 0777)) {
+                throw new RuntimeException(
+                    "File permission is not set for file '$fname'"
+                );
+            }
             return true;
         }
         $this->logger->error("Message could not be saved to: $fname");

@@ -25,6 +25,7 @@ use Madsoft\Library\Layout\View\Navbar;
 use Madsoft\Library\Messages;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
+use Madsoft\Library\Session;
 use Madsoft\Library\Template;
 
 /**
@@ -53,6 +54,7 @@ class Layout extends ArrayResponder
      *
      * @param Messages      $messages      messages
      * @param Csrf          $csrf          csrf
+     * @param Session       $session       session
      * @param Invoker       $invoker       invoker
      * @param Template      $template      template
      * @param Params        $params        params
@@ -61,12 +63,13 @@ class Layout extends ArrayResponder
     public function __construct(
         Messages $messages,
         Csrf $csrf,
+        Session $session,
         Invoker $invoker,
         Template $template,
         Params $params,
         FileCollector $fileCollector
     ) {
-        parent::__construct($messages, $csrf);
+        parent::__construct($messages, $csrf, $session);
         $this->invoker = $invoker;
         $this->template = $template;
         $this->params = $params;

@@ -13,6 +13,9 @@
 
 namespace Madsoft\Library\Account\View;
 
+use Madsoft\Library\Params;
+use Madsoft\Library\Template;
+
 /**
  * PasswordChangeForm
  *
@@ -25,6 +28,23 @@ namespace Madsoft\Library\Account\View;
  */
 class PasswordChangeForm
 {
+    const TPL_PATH = __DIR__ . '/phtml/';
+    
+    protected Template $template;
+    protected Params $params;
+    
+    /**
+     * Method __construct
+     *
+     * @param Template $template template
+     * @param Params   $params   params
+     */
+    public function __construct(Template $template, Params $params)
+    {
+        $this->template = $template;
+        $this->params = $params;
+    }
+    
     /**
      * Method getPasswordChangeForm
      *
@@ -34,6 +54,10 @@ class PasswordChangeForm
      */
     public function getPasswordChangeForm(): string
     {
-        return '[PASSWORD RESET FORM HERE...]';
+        return $this->template->setEncoder(null)->process(
+            'password-change.phtml',
+            ['token' => $this->params->get('token')],
+            $this::TPL_PATH
+        );
     }
 }

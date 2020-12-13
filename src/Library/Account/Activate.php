@@ -35,22 +35,23 @@ class Activate extends ArrayResponder
     protected Database $database;
     protected AccountValidator $validator;
 
-
     /**
      * Method __construct
      *
-     * @param Messages         $messages  messages
-     * @param Csrf             $csrf      csrf
-     * @param Database         $database  database
-     * @param AccountValidator $validator validator
+     * @param Messages                                  $messages  messages
+     * @param Csrf                                      $csrf      csrf
+     * @param Session                                   $session   session
+     * @param Database                                  $database  database
+     * @param \Madsoft\Library\Account\AccountValidator $validator validator
      */
     public function __construct(
         Messages $messages,
         Csrf $csrf,
+        Session $session,
         Database $database,
         AccountValidator $validator
     ) {
-        parent::__construct($messages, $csrf);
+        parent::__construct($messages, $csrf, $session);
         $this->database = $database;
         $this->validator = $validator;
     }

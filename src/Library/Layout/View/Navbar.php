@@ -17,7 +17,9 @@ namespace Madsoft\Library\Layout\View;
 
 use Madsoft\Library\Config;
 use Madsoft\Library\Params;
+use Madsoft\Library\Router;
 use Madsoft\Library\Template;
+use RuntimeException;
 
 /**
  * Navbar
@@ -36,6 +38,7 @@ class Navbar
     protected Template $template;
     protected Params $params;
     protected Config $config;
+    protected Router $router;
 
     /**
      * Method __construct
@@ -43,15 +46,18 @@ class Navbar
      * @param Template $template template
      * @param Params   $params   params
      * @param Config   $config   config
+     * @param Router   $router   router
      */
     public function __construct(
         Template $template,
         Params $params,
-        Config $config
+        Config $config,
+        Router $router
     ) {
         $this->template = $template;
         $this->params = $params;
         $this->config = $config;
+        $this->router = $router;
     }
 
     /**
@@ -63,11 +69,12 @@ class Navbar
      */
     public function getNavbar(): string
     {
+        $area = $this->router->getRoutingArea();
         return $this->template->setEncoder(null)->process(
             'navbar.phtml',
             [
                             'brand' => $this->config->get('Site')->get('brand'),
-                            'links' => $this->getLinks(),
+                            'links' => $this->getLinks($area),
                         ],
             $this::TPL_PATH
         );
@@ -76,12 +83,85 @@ class Navbar
     /**
      * Method getLinks
      *
+     * @param string $area area
+     *
      * @return mixed[]
      */
-    protected function getLinks(): array
+    protected function getLinks(string $area): array
     {
         $base = $this->config->get('Site')->get('base');
         $query = $this->params->get('q', '');
+        switch ($area) {
+        case 'public':
+            $right = [
+            [
+            'active' => $query ==='login' || $query ==='registry',
+            'dropdown' => [
+                'right' => true,
+                'items' => [
+                    [
+                        'divider' => false,
+                        'href' => "$base?q=login",
+                        'text' => 'Login'
+                    ],
+                    [
+                        'divider' => false,
+                        'href' => "$base?q=registry",
+                        'text' => 'Register'
+                    ],
+                ],
+            ],
+            'disabled' => false,
+            'href' => '#',
+            'text' => 'Login',
+            ]
+            ];
+            break;
+        case 'protected':
+            $right = [
+            [
+            'active' => $query ==='profile',
+            'dropdown' => [
+                'right' => true,
+                'items' => [
+                    [
+                        'divider' => false,
+                        'href' => "$base?q=logout",
+                        'text' => 'logout'
+                    ],
+                ],
+            ],
+            'disabled' => false,
+            'href' => '#',
+            'text' => 'Profile',
+            ]
+            ];
+            break;
+        case 'private':
+            $right = [
+            [
+            'active' => $query ==='profile',
+            'dropdown' => [
+                'right' => true,
+                'items' => [
+                    [
+                        'divider' => false,
+                        'href' => "$base?q=logout",
+                        'text' => 'logout'
+                    ],
+                ],
+            ],
+            'disabled' => false,
+            'href' => '#',
+            'text' => 'Profile',
+            ]
+            ];
+            break;
+        default:
+            throw new RuntimeException(
+                "Invalid routing area for navigation: '$area'"
+            );
+        }
         return [
             'left' => [
                 [
@@ -92,29 +172,7 @@ class Navbar
                     'text' => 'Home',
                 ]
             ],
-            'right' => [
-                [
-                    'active' => $query ==='login' || $query ==='registry',
-                    'dropdown' => [
-                        'right' => true,
-                        'items' => [
-                            [
-                                'divider' => false,
-                                'href' => "$base?q=login",
-                                'text' => 'Login'
-                            ],
-                            [
-                                'divider' => false,
-                                'href' => "$base?q=registry",
-                                'text' => 'Register'
-                            ],
-                        ],
-                    ],
-                    'disabled' => false,
-                    'href' => '#',
-                    'text' => 'Login',
-                ]
-            ],
+            'right' => $right
         ];
     }
 }

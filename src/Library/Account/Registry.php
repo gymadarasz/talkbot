@@ -44,6 +44,7 @@ class Registry extends ArrayResponder
      *
      * @param Messages      $messages  messages
      * @param Csrf          $csrf      csrf
+     * @param Session       $session   session
      * @param Token         $token     token
      * @param Encrypter     $encrypter encrypter
      * @param Database      $database  database
@@ -52,12 +53,13 @@ class Registry extends ArrayResponder
     public function __construct(
         Messages $messages,
         Csrf $csrf,
+        Session $session,
         Token $token,
         Encrypter $encrypter,
         Database $database,
         AccountMailer $mailer
     ) {
-        parent::__construct($messages, $csrf);
+        parent::__construct($messages, $csrf, $session);
         $this->token = $token;
         $this->encrypter = $encrypter;
         $this->database = $database;

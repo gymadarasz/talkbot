@@ -16,6 +16,7 @@ namespace Madsoft\Library\Account;
 use Madsoft\Library\Csrf;
 use Madsoft\Library\Messages;
 use Madsoft\Library\Responder\ArrayResponder;
+use Madsoft\Library\Session;
 use Madsoft\Library\User;
 
 /**
@@ -37,14 +38,16 @@ class Logout extends ArrayResponder
      *
      * @param Messages $messages messages
      * @param Csrf     $csrf     csrf
+     * @param Session  $session  session
      * @param User     $user     user
      */
     public function __construct(
         Messages $messages,
         Csrf $csrf,
+        Session $session,
         User $user
     ) {
-        parent::__construct($messages, $csrf);
+        parent::__construct($messages, $csrf, $session);
         $this->user = $user;
     }
 

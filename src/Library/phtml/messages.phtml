@@ -1,17 +1,20 @@
 <?php $this->restrict(); ?>
 
+<?php
+$bsalerts = [
+    'error' => 'danger',
+];
+?>
+
 <?php if (isset($messages)): ?>
-    <div class="messages">
-
-        <?php foreach (array_keys($messages) as $class): ?>
-            <ul class="<?= $class ?>">
-
-                <?php foreach ($messages[$class] as $message): ?>        
-                    <li><?= $message ?></li>        
-                <?php endforeach ?>
-
-            </ul>
+    <?php foreach (array_keys($messages) as $class): ?>
+        <?php foreach ($messages[$class] as $message): ?>
+            <div class="alert alert-<?= $bsalerts[$class] ?? $class ?>" role="alert">
+                <?= $message ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
         <?php endforeach ?>
-
-    </div>
+    <?php endforeach ?>
 <?php endif; ?>

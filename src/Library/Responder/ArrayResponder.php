@@ -15,6 +15,7 @@ namespace Madsoft\Library\Responder;
 
 use Madsoft\Library\Csrf;
 use Madsoft\Library\Messages;
+use Madsoft\Library\Session;
 
 /**
  * ArrayResponder
@@ -34,17 +35,20 @@ class ArrayResponder
     
     protected Messages $messages;
     protected Csrf $csrf;
+    protected Session $session;
 
     /**
      * Method __construct
      *
      * @param Messages $messages messages
      * @param Csrf     $csrf     csrf
+     * @param Session  $session  session
      */
-    public function __construct(Messages $messages, Csrf $csrf)
+    public function __construct(Messages $messages, Csrf $csrf, Session $session)
     {
         $this->messages = $messages;
         $this->csrf = $csrf;
+        $this->session = $session;
     }
     /**
      * Method getErrorResponse
@@ -76,7 +80,7 @@ class ArrayResponder
         string $message = self::LBL_WARNING,
         array $data = []
     ): array {
-        $this->messages->add('success', $message);
+        $this->messages->add('warning', $message);
         return $this->getResponse($data);
     }
 
@@ -127,6 +131,32 @@ class ArrayResponder
     }
     
     /**
+     * Method getSuccessRedirectResponse
+     *
+     * @param string  $target  target
+     * @param string  $message message
+     * @param mixed[] $data    data
+     *
+     * @return mixed[]
+     */
+    public function getSuccessRedirectResponse(
+        string $target,
+        string $message = self::LBL_SUCCESS,
+        array $data = []
+    ): array {
+        $ret = $this->getSuccessResponse($message, $data);
+        $this->session->set(
+            'message',
+            [
+                'type' => 'success',
+                'text' => $message,
+            ]
+        );
+        $ret['redirect'] = $target;
+        return $ret;
+    }
+    
+    /**
      * Method getResponse
      *
      * @param mixed[]    $data   data
@@ -136,6 +166,11 @@ class ArrayResponder
      */
     public function getResponse(array $data = [], array $errors = []): array
     {
+        if ($this->session->has('message')) {
+            $message = $this->session->get('message');
+            $this->session->unset('message');
+            $this->messages->add($message['type'], $message['text']);
+        }
         $data['csrf'] = $this->csrf->get();
         $messages = $this->messages->get();
         if ($messages) {

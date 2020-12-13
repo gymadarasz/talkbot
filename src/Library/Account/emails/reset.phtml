@@ -1,5 +1,7 @@
 <?php $this->restrict(); ?>
 Password reset requested in our system,<br>
 To reset your password please click the following link or copy it to your browser.<br>
-<a href="<?= $base ?>?q=password-change&token=<?=$token?>"><?=$base?>?q=password-change&token=<?=$token?></a><br>
+<a href="<?= $base ?>?q=password-change&token=<?=$token?>">Click here to reset your password...</a><br>
+Pasword reset link:<br>
+<pre><?=$base?>?q=password-change&token=<?=$token?></pre>
 If you did not request to reset your password please ignore this message.

@@ -530,6 +530,9 @@ class Router
      */
     protected function includeRoutes(string $include)
     {
+        if (!file_exists($include)) {
+            throw new RuntimeException("File not found: '$include'");
+        }
         $routes = [];
         include $include;
         return $routes;

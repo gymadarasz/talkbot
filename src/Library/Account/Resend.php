@@ -37,14 +37,16 @@ class Resend extends ArrayResponder
      *
      * @param Messages      $messages messages
      * @param Csrf          $csrf     csrf
+     * @param Session       $session  session
      * @param AccountMailer $mailer   mailer
      */
     public function __construct(
         Messages $messages,
         Csrf $csrf,
+        Session $session,
         AccountMailer $mailer
     ) {
-        parent::__construct($messages, $csrf);
+        parent::__construct($messages, $csrf, $session);
         $this->mailer = $mailer;
     }
     /**

@@ -84,6 +84,8 @@ class FileCollector
      * @param string $jsFile jsFile
      *
      * @return self
+     *
+     * @suppress PhanUnreferencedPublicMethod
      */
     public function addJsFile(string $jsFile): self
     {
@@ -206,7 +208,7 @@ class FileCollector
      *
      * @return string
      */
-    protected function pathToUrl(string $filename): string
+    public function pathToUrl(string $filename): string
     {
         $realpath = realpath($filename);
         if (!$realpath) {

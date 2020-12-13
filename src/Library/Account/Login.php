@@ -20,6 +20,7 @@ use Madsoft\Library\Logger;
 use Madsoft\Library\Messages;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
+use Madsoft\Library\Session;
 use Madsoft\Library\User;
 
 /**
@@ -44,6 +45,7 @@ class Login extends ArrayResponder
      *
      * @param Messages         $messages  messages
      * @param Csrf             $csrf      csrf
+     * @param Session          $session   session
      * @param Database         $database  database
      * @param Logger           $logger    logger
      * @param User             $user      user
@@ -52,12 +54,13 @@ class Login extends ArrayResponder
     public function __construct(
         Messages $messages,
         Csrf $csrf,
+        Session $session,
         Database $database,
         Logger $logger,
         User $user,
         AccountValidator $validator
     ) {
-        parent::__construct($messages, $csrf);
+        parent::__construct($messages, $csrf, $session);
         $this->database = $database;
         $this->logger = $logger;
         $this->user = $user;
@@ -103,7 +106,8 @@ class Login extends ArrayResponder
         
         $this->user->login($user['id'], $user['group']);
         
-        return $this->getSuccessResponse(
+        return $this->getSuccessRedirectResponse(
+            '',
             'Login success'
         );
     }

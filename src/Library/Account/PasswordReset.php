@@ -18,6 +18,7 @@ use Madsoft\Library\Database;
 use Madsoft\Library\Messages;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
+use Madsoft\Library\Session;
 use Madsoft\Library\Token;
 
 /**
@@ -45,6 +46,7 @@ class PasswordReset extends ArrayResponder
      *
      * @param Messages         $messages  messages
      * @param Csrf             $csrf      csrf
+     * @param Session          $session   session
      * @param Token            $token     token
      * @param Database         $database  database
      * @param AccountValidator $validator validator
@@ -53,12 +55,13 @@ class PasswordReset extends ArrayResponder
     public function __construct(
         Messages $messages,
         Csrf $csrf,
+        Session $session,
         Token $token,
         Database $database,
         AccountValidator $validator,
         AccountMailer $mailer
     ) {
-        parent::__construct($messages, $csrf);
+        parent::__construct($messages, $csrf, $session);
         $this->token = $token;
         $this->database = $database;
         $this->validator = $validator;

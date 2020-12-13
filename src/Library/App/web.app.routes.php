@@ -15,6 +15,7 @@ namespace Madsoft\Library\App;
 
 use Madsoft\Library\Account\View\ActivatePage;
 use Madsoft\Library\Account\View\LoginForm;
+use Madsoft\Library\Account\View\LogoutPage;
 use Madsoft\Library\Account\View\PasswordChangeForm;
 use Madsoft\Library\Account\View\PasswordResetForm;
 use Madsoft\Library\Account\View\RegistryForm;
@@ -71,7 +72,7 @@ return $routes = [
                 ],
             ],
             'activate' => [
-                'class' => ActivatePage::class,
+                'class' => Layout::class,
                 'method' => 'getOutput',
                 'overrides' => [
                     'tplfile' => 'index.phtml',
@@ -118,6 +119,21 @@ return $routes = [
         ],
     ],
     'protected' => [
-        
+        'GET' => [
+            'logout' => [
+                'class' => Layout::class,
+                'method' => 'getOutput',
+                'overrides' => [
+                    'tplfile' => 'index.phtml',
+                    'title' => 'Logging out...',
+                    'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
+                        'header' => [Header::class, 'getHeader'],
+                        'body' => [LogoutPage::class, 'getLogout'],
+                    ],
+                ],
+            ],
+        ],
     ],
 ];

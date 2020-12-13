@@ -13,7 +13,6 @@
 
 namespace Madsoft\Library\Account\View;
 
-use Madsoft\Library\FileCollector;
 use Madsoft\Library\Template;
 
 /**
@@ -29,21 +28,17 @@ use Madsoft\Library\Template;
 class RegistryForm
 {
     const TPL_PATH = __DIR__ . '/phtml/';
-    const JS_PATH = __DIR__ . '/js/';
     
     protected Template $template;
-    protected FileCollector $fileCollector;
     
     /**
      * Method __construct
      *
-     * @param Template      $template      template
-     * @param FileCollector $fileCollector fileCollector
+     * @param Template $template template
      */
-    public function __construct(Template $template, FileCollector $fileCollector)
+    public function __construct(Template $template)
     {
         $this->template = $template;
-        $this->fileCollector = $fileCollector;
     }
     
     /**
@@ -55,7 +50,6 @@ class RegistryForm
      */
     public function getRegistryForm(): string
     {
-        $this->fileCollector->addJsFile($this::JS_PATH . 'account.js');
         return $this->template->setEncoder(null)->process(
             'registry.phtml',
             [],

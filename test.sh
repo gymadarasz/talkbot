@@ -21,8 +21,7 @@ show_next() {
 trap error_exit 0 
 
 show_next "clean up.."
-rm api.routes.cache.php
-rm web.routes.cache.php
+./cleanup.sh
 
 show_next "php-cs-fixer"
 vendor/bin/php-cs-fixer fix src

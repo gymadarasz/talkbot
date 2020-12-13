@@ -13,6 +13,11 @@
 
 namespace Madsoft\Library\Account\View;
 
+use Madsoft\Library\Account\Activate;
+use Madsoft\Library\Params;
+use Madsoft\Library\Session;
+use Madsoft\Library\Template;
+
 /**
  * ActivatePage
  *
@@ -25,6 +30,33 @@ namespace Madsoft\Library\Account\View;
  */
 class ActivatePage
 {
+    const TPL_PATH = __DIR__ . '/phtml/';
+    
+    protected Template $template;
+    protected Activate $activate;
+    protected Params $params;
+    protected Session $session;
+    
+    /**
+     * Method __construct
+     *
+     * @param Template $template template
+     * @param Activate $activate activate
+     * @param Params   $params   params
+     * @param Session  $session  session
+     */
+    public function __construct(
+        Template $template,
+        Activate $activate,
+        Params $params,
+        Session $session
+    ) {
+        $this->template = $template;
+        $this->activate = $activate;
+        $this->params = $params;
+        $this->session = $session;
+    }
+    
     /**
      * Method getActivatePage
      *
@@ -34,6 +66,15 @@ class ActivatePage
      */
     public function getActivatePage(): string
     {
-        return '[ACTIVATE PAGE HERE...]';
+        $response = $this->activate->getActivateResponse(
+            $this->params,
+            $this->session
+        );
+        
+        return $this->template->setEncoder(null)->process(
+            'login.phtml',
+            $response,
+            $this::TPL_PATH
+        );
     }
 }

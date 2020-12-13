@@ -149,12 +149,12 @@ class AccountValidator extends Validator
     {
         $errors = $this->getErrors(
             [
-            'token' => [
-                'value' => $params->get('token', ''),
-                'rules' => [
-                    Mandatory::class => null
+                'token' => [
+                    'value' => $params->get('token', ''),
+                    'rules' => [
+                        Mandatory::class => null
+                    ],
                 ],
-            ],
             ]
         );
         return $errors;

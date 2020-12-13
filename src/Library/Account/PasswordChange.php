@@ -19,6 +19,7 @@ use Madsoft\Library\Encrypter;
 use Madsoft\Library\Messages;
 use Madsoft\Library\Params;
 use Madsoft\Library\Responder\ArrayResponder;
+use Madsoft\Library\Session;
 
 /**
  * PasswordChange
@@ -41,6 +42,7 @@ class PasswordChange extends ArrayResponder
      *
      * @param Messages         $messages  messages
      * @param Csrf             $csrf      csrf
+     * @param Session          $session   session
      * @param Database         $database  database
      * @param AccountValidator $validator validator
      * @param Encrypter        $encrypter encrypter
@@ -48,11 +50,12 @@ class PasswordChange extends ArrayResponder
     public function __construct(
         Messages $messages,
         Csrf $csrf,
+        Session $session,
         Database $database,
         AccountValidator $validator,
         Encrypter $encrypter
     ) {
-        parent::__construct($messages, $csrf);
+        parent::__construct($messages, $csrf, $session);
         $this->database = $database;
         $this->validator = $validator;
         $this->encrypter = $encrypter;
@@ -117,7 +120,8 @@ class PasswordChange extends ArrayResponder
             return $this->getErrorResponse('Password is not saved');
         }
         
-        return $this->getSuccessResponse(
+        return $this->getSuccessRedirectResponse(
+            '?q=login',
             'Password is changed'
         );
     }

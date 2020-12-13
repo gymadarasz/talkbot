@@ -13,11 +13,11 @@
 
 namespace Madsoft\Library\Account\View;
 
-use Madsoft\Library\Template;
+use Madsoft\Library\Config;
 use Madsoft\Library\User;
 
 /**
- * LoginForm
+ * LogoutPage
  *
  * @category  PHP
  * @package   Madsoft\Library\Account\View
@@ -26,41 +26,36 @@ use Madsoft\Library\User;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class LoginForm
+class LogoutPage
 {
-    const TPL_PATH = __DIR__ . '/phtml/';
-    
-    protected Template $template;
+    protected Config $config;
+    protected User $user;
     
     /**
      * Method __construct
      *
-     * @param Template $template template
-     * @param User     $user     user
+     * @param Config $config config
+     * @param User   $user   user
      */
-    public function __construct(
-        Template $template,
-        User $user
-    ) {
-        $this->template = $template;
-        
-        $user->logout();
+    public function __construct(Config $config, User $user)
+    {
+        $this->config = $config;
+        $this->user = $user;
     }
     
     /**
-     * Method getLoginForm
+     * Method getLogout
      *
      * @return string
      *
      * @suppress PhanUnreferencedPublicMethod
      */
-    public function getLoginForm(): string
+    public function getLogout()
     {
-        //        $this->fileCollector->addJsFile($this::JS_PATH . 'login.js');
-        return $this->template->setEncoder(null)->process(
-            'login.phtml',
-            [],
-            $this::TPL_PATH
-        );
+        $this->user->logout();
+        // todo: session mesage when redirects
+        $redirect = $this->config->get('Site')->get('base') . '/?q=login';
+        header("Location: $redirect");
+        return "<script>document.location.href = '$redirect';</script>";
     }
 }

@@ -82,6 +82,12 @@ class Invoker
                 'Missing route controller: ' . $route['class'] . '::???'
             );
         }
+        //        if (!method_exists($ctrlr[1], $route['method'])) {
+        //            throw new RuntimeException(
+        //                "Method does not exists: "
+        //                . "{$route['class']}::{$route['method']}()"
+        //            );
+        //        }
         $method = $ctrlr[1]->getMethod($route['method']);
         $args = $this->argsMerge(
             $method,
