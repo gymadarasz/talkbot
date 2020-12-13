@@ -4,20 +4,31 @@ if (php_sapi_name() !== 'cli') {
     throw new RuntimeException('Test can run only from command line.');
 }
 
+function is_php(string $phpfile): bool {
+    return (bool)preg_match('/.php$/', $phpfile);
+}
+
+function is_phtml(string $phpfile): bool {
+    return (bool)preg_match('/.phtml$/', $phpfile);
+}
+
 function fixit(string $phpfile): string
 {
-    $replaces = [
-        '/\*\s*\@param\s+(.+)\s+\$([a-zA-Z0-9_]+)\s*\n/' => '* @param $1 \$$2 $2\n',
-        '/\barray<([a-zA-Z0-9_\[\]]+)>/' => '$1[]',
-        '/\/\*\*[\s*\*]*\@([.\s\*\@\w\d_\-\[\]\$\|\<\>\\\\]*\/\s*)(public|protected|protected)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\$([a-zA-Z_][a-zA-Z0-9_]+);/' => '/**\n     * Variable \$$4\n     * @$1$2 $3 \$$4;',
-        '/\/\*\*[\s*\*]*\@([.\s\*\@\w\d_\-\[\]\$\|\<\>\\\\]*\/\s*)(public|protected|protected) function ([\w\d_]+)\(/' => '/**\n     * Method $3\n     * @$1$2 function $3(',
-        '/([\w\d_])\n     \* @return/' => '$1\n     *\n     * @return',
-        '/(\n\s*)\bprivate\b/' => '$1protected',
-        '/<\?php declare\(strict_types = 1\);\s*namespace ([a-zA-Z0-9_\\\\]+);/' => '<?php declare(strict_types = 1);\n\n/**\n *\n *\n * PHP version 7.4\n *\n * @category  PHP\n * @package   $1\n * @author    Gyula Madarasz <gyula.madarasz@gmail.com>\n * @copyright 2020 Gyula Madarasz\n * @license   Copyright (c) All rights reserved.\n * @link      this\n */\n\nnamespace $1;',
-        '/;\s*class\s+([\w\d_]+)\b/' => ';\n\n/**\n * $1\n *\n * @category  PHP\n * @package   \n * @author    Gyula Madarasz <gyula.madarasz@gmail.com>\n * @copyright 2020 Gyula Madarasz\n * @license   Copyright (c) All rights reserved.\n * @link      this\n */\nclass $1 ',
-        '/;\s*interface\s+([\w\d_]+)\b/' => ';\n\n/**\n * $1\n *\n * @category  PHP\n * @package   \n * @author    Gyula Madarasz <gyula.madarasz@gmail.com>\n * @copyright 2020 Gyula Madarasz\n * @license   Copyright (c) All rights reserved.\n * @link      this\n */\ninterface $1 ',
-        '/\bnamespace ([a-zA-Z_][a-zA-Z_0-9\\\]*);(.*@package)\s+\*/s' => 'namespace $1;$2 $1\n *',
-    ];
+    $replaces = [];
+    if (is_php($phpfile)) {
+        $replaces = [
+            '/\*\s*\@param\s+(.+)\s+\$([a-zA-Z0-9_]+)\s*\n/' => '* @param $1 \$$2 $2\n',
+            '/\barray<([a-zA-Z0-9_\[\]]+)>/' => '$1[]',
+            '/\/\*\*[\s*\*]*\@([.\s\*\@\w\d_\-\[\]\$\|\<\>\\\\]*\/\s*)(public|protected|protected)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\$([a-zA-Z_][a-zA-Z0-9_]+);/' => '/**\n     * Variable \$$4\n     * @$1$2 $3 \$$4;',
+            '/\/\*\*[\s*\*]*\@([.\s\*\@\w\d_\-\[\]\$\|\<\>\\\\]*\/\s*)(public|protected|protected) function ([\w\d_]+)\(/' => '/**\n     * Method $3\n     * @$1$2 function $3(',
+            '/([\w\d_])\n     \* @return/' => '$1\n     *\n     * @return',
+            '/(\n\s*)\bprivate\b/' => '$1protected',
+            '/<\?php declare\(strict_types = 1\);\s*namespace ([a-zA-Z0-9_\\\\]+);/' => '<?php declare(strict_types = 1);\n\n/**\n *\n *\n * PHP version 7.4\n *\n * @category  PHP\n * @package   $1\n * @author    Gyula Madarasz <gyula.madarasz@gmail.com>\n * @copyright 2020 Gyula Madarasz\n * @license   Copyright (c) All rights reserved.\n * @link      this\n */\n\nnamespace $1;',
+            '/;\s*class\s+([\w\d_]+)\b/' => ';\n\n/**\n * $1\n *\n * @category  PHP\n * @package   \n * @author    Gyula Madarasz <gyula.madarasz@gmail.com>\n * @copyright 2020 Gyula Madarasz\n * @license   Copyright (c) All rights reserved.\n * @link      this\n */\nclass $1 ',
+            '/;\s*interface\s+([\w\d_]+)\b/' => ';\n\n/**\n * $1\n *\n * @category  PHP\n * @package   \n * @author    Gyula Madarasz <gyula.madarasz@gmail.com>\n * @copyright 2020 Gyula Madarasz\n * @license   Copyright (c) All rights reserved.\n * @link      this\n */\ninterface $1 ',
+            '/\bnamespace ([a-zA-Z_][a-zA-Z_0-9\\\]*);(.*@package)\s+\*/s' => 'namespace $1;$2 $1\n *',
+        ];
+    }
     
     
     if (false === ($phpcode = file_get_contents($phpfile))) {
@@ -25,8 +36,12 @@ function fixit(string $phpfile): string
     }
     
     
-    if (!preg_match('/^<\?php\s+declare\s*\(\s*strict_types\s*=\s*1\s*\)\s*;/', $phpcode)) {
+    if (is_php($phpfile) && !preg_match('/^<\?php\s+declare\s*\(\s*strict_types\s*=\s*1\s*\)\s*;/', $phpcode)) {
         $phpcode = preg_replace('/^<\?php\s*/', "<?php declare(strict_types = 1);\n\n", $phpcode);
+    }
+    
+    if (is_phtml($phpfile) && !preg_match('/^<\?php/', $phpcode)) {
+        $phpcode = "<?php \$this->restrict(); ?>\n" . $phpcode;
     }
     
     //    $phpcode = preg_replace(
@@ -106,8 +121,8 @@ function csfix($path, $ignores, $includes)
     return 0;
 }
 
-$ignores = ['/\bconfig\b/', '/\.phtml$/'];
-$includes = ['/\.php$/'];
+$ignores = ['/\bconfig\b/'];
+$includes = ['/\.php$/', '/\.phtml$/'];
 $path = $argv[1] ?? '';
 if (!$path) {
     echo "Add folder in argument\n";

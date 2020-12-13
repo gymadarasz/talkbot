@@ -13,6 +13,8 @@
 
 namespace Madsoft\Library\Testing;
 
+// TODO: install Nightwatch for SnapTest
+
 use Madsoft\Library\Config;
 use Madsoft\Library\Folders;
 use Madsoft\Library\Mailer;
