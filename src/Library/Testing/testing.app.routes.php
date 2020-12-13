@@ -55,6 +55,23 @@ return $routes = [
                     ],
                 ],
             ],
+            'testing/mails/view' => [
+                'class' => 'Madsoft\\Library\\Layout\\Layout',
+                'method' => 'getOutput',
+                'overrides' => [
+                    'tplfile' => 'index.phtml',
+                    'title' => 'Mails testing',
+                    'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
+                        'header' => [Header::class, 'getHeader'],
+                        'body' => [
+                            Testing::class,
+                            'getMailStringResponse',
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
 ];

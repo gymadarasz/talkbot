@@ -43,6 +43,8 @@ class ListForm
      * Method getList
      *
      * @return string
+     *
+     * @suppress PhanUnreferencedPublicMethod
      */
     public function getList(): string
     {

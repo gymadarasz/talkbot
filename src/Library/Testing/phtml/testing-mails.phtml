@@ -1,6 +1,6 @@
 <a href="?q=testing/mails/delete-all">Delete all mails</a>
 <ul>
 <?php foreach($mails as $key => $mail): ?>
-<li><a href="<?=$mail?>"><?=$key?></a>: <?=$mail?></li>
+<li><a href="?q=testing/mails/view&mail=<?=$mail?>"><?=$key?></a>: <?=$mail?></li>
 <?php endforeach; ?>
 </ul>

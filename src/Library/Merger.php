@@ -45,25 +45,15 @@ class Merger
 
         foreach ($arr2 as $key => $value) {
             if ($key === $joker) {
-                foreach ($merg as $mkey => $mval) {
-                    if (is_numeric($mkey)) {
-                        $merg[] = $value;
-                        break;
-                    }
-                    if (is_array($mval) && is_array($value)) {
-                        $merg[$mkey] = $this->merge($mval, $value, $joker);
-                        continue;
-                    }
-                    $merg[$mkey] = $value;
-                }
+                $merg = $this->mergeJoker($merg, $value, $joker);
                 continue;
             }
-
+            
             if (is_numeric($key) && !in_array($value, $merg, true)) {
                 $merg[] = $value;
                 continue;
             }
-
+            
             if (isset($merg[$key]) && is_array($merg[$key]) && is_array($value)) {
                 $merg[$key] = $this->merge($merg[$key], $value, $joker);
                 continue;
@@ -78,6 +68,31 @@ class Merger
             }
         }
 
+        return $merg;
+    }
+    
+    /**
+     * Method mergeJoker
+     *
+     * @param mixed[] $merg  merg
+     * @param mixed   $value value
+     * @param string  $joker joker
+     *
+     * @return mixed[]
+     */
+    protected function mergeJoker(array $merg, $value, string $joker = '*'): array
+    {
+        foreach ($merg as $mkey => $mval) {
+            if (is_numeric($mkey)) {
+                $merg[] = $value;
+                break;
+            }
+            if (is_array($mval) && is_array($value)) {
+                $merg[$mkey] = $this->merge($mval, $value, $joker);
+                continue;
+            }
+            $merg[$mkey] = $value;
+        }
         return $merg;
     }
 }

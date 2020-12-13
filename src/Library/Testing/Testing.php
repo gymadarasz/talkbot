@@ -14,9 +14,9 @@
 namespace Madsoft\Library\Testing;
 
 use Madsoft\Library\Config;
-use Madsoft\Library\FileCollector;
 use Madsoft\Library\Folders;
 use Madsoft\Library\Mailer;
+use Madsoft\Library\Params;
 use Madsoft\Library\Template;
 use RuntimeException;
 use SplFileInfo;
@@ -38,15 +38,15 @@ class Testing
     protected Template $template;
     protected Config $config;
     protected Folders $folders;
-    protected FileCollector $fileCollector;
+    protected Params $params;
 
     /**
      * Method __construct
      *
-     * @param Template      $template      template
-     * @param Config        $config        config
-     * @param Folders       $folders       folders
-     * @param FileCollector $fileCollector fileCollector
+     * @param Template $template template
+     * @param Config   $config   config
+     * @param Folders  $folders  folders
+     * @param Params   $params   params
      *
      * @throws RuntimeException
      */
@@ -54,12 +54,12 @@ class Testing
         Template $template,
         Config $config,
         Folders $folders,
-        FileCollector $fileCollector
+        Params $params
     ) {
         $this->template = $template;
         $this->config = $config;
         $this->folders = $folders;
-        $this->fileCollector = $fileCollector;
+        $this->params = $params;
         
         if ($config->getEnv() !== 'test') {
             throw new RuntimeException(
@@ -101,6 +101,22 @@ class Testing
     }
     
     /**
+     * Method getMailStringResponse
+     *
+     * @return string
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function getMailStringResponse(): string
+    {
+        return $this->template->setEncoder(null)->process(
+            'testing-mail.phtml',
+            $this->getMail($this->params->get('mail')),
+            $this::TPL_PATH
+        );
+    }
+    
+    /**
      * Method getMailFileInfos
      *
      * @return SplFileInfo[]
@@ -125,9 +141,9 @@ class Testing
         $mailFileInfos = $this->getMailFileInfos();
         $results = [];
         foreach ($mailFileInfos as $mailFileInfo) {
-            $results[] = $this->fileCollector->pathToUrl(
-                $mailFileInfo->getPath() . '/' . $mailFileInfo->getFilename()
-            );
+            $results[] = //$this->fileCollector->pathToUrl(
+                $mailFileInfo->getPath() . '/' . $mailFileInfo->getFilename();
+            //);
         }
         return ['mails' => $results];
     }
@@ -155,5 +171,24 @@ class Testing
             $mails['error'] = $error;
         }
         return $mails;
+    }
+    
+    /**
+     * Method getMail
+     *
+     * @param string $mailfile mailfile
+     *
+     * @return string[]
+     */
+    protected function getMail(string $mailfile): array
+    {
+        $mailcontents = file_get_contents($mailfile);
+        if (false === $mailcontents) {
+            $mailcontents = '<p>Mail file error</p>';
+        }
+        if (!$mailcontents) {
+            $mailcontents = '<p>Mail file is empty</p>';
+        }
+        return ['mail' => $mailcontents];
     }
 }

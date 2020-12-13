@@ -14,7 +14,6 @@
 namespace Madsoft\Library\Tester;
 
 use Exception;
-use Throwable;
 use Madsoft\Library\Config;
 use Madsoft\Library\Coverage\Coverage;
 use Madsoft\Library\Folders;
@@ -22,6 +21,7 @@ use Madsoft\Library\Invoker;
 use Madsoft\Library\Logger;
 use ReflectionClass;
 use RuntimeException;
+use Throwable;
 
 /**
  * Tester
@@ -273,18 +273,7 @@ class Tester extends Test
         foreach ($methods as $method) {
             if (preg_match('/^test/', $method)) {
                 try {
-                    if (method_exists($test, 'before')) {
-                        $this->invoker->invoke(
-                            ['class' => $class, 'method' => 'before']
-                        );
-                    }
-                    $this->show("\n[$class::$method]:");
-                    $this->invoker->invoke(['class' => $class, 'method' => $method]);
-                    if (method_exists($test, 'after')) {
-                        $this->invoker->invoke(
-                            ['class' => $class, 'method' => 'after']
-                        );
-                    }
+                    $this->runTestClass($test, $class, $method);
                 } catch (Exception $exception) {
                     $test->assertFalse(
                         true,
@@ -315,6 +304,34 @@ class Tester extends Test
             $this->invoker->invoke(['class' => $class, 'method' => 'afterAll']);
         }
         $this->invoker->free($class);
+    }
+    
+    /**
+     * Method runTestClass
+     *
+     * @param Test   $test   test
+     * @param string $class  class
+     * @param string $method method
+     *
+     * @return void
+     */
+    protected function runTestClass(
+        Test $test,
+        string $class,
+        string $method
+    ): void {
+        if (method_exists($test, 'before')) {
+            $this->invoker->invoke(
+                ['class' => $class, 'method' => 'before']
+            );
+        }
+        $this->show("\n[$class::$method]:");
+        $this->invoker->invoke(['class' => $class, 'method' => $method]);
+        if (method_exists($test, 'after')) {
+            $this->invoker->invoke(
+                ['class' => $class, 'method' => 'after']
+            );
+        }
     }
     
     /**

@@ -25,6 +25,8 @@ use Madsoft\Library\Tester\Test;
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
+ *
+ * @suppress PhanUnreferencedClass
  */
 class MergerTest extends Test
 {
@@ -41,10 +43,21 @@ class MergerTest extends Test
     {
         $results = $merger->merge([[['a']]], [[['a']]]);
         $this->assertEquals([[['a']]], $results);
-        $results = $merger->merge([[['a', 'b']]], [[['b', 'c']]]);
-        $this->assertEquals([[['a', 'b', 'c']]], $results);
-        $results = $merger->merge([[['a', 'b']]], [[['b', ['c']]]]);
-        $this->assertEquals([[['a', 'b', ['c']]]], $results);
+        $results = $merger->merge(
+            ['bar' => ['foo' => ['a', 'b']]],
+            ['bar' => ['foo' => ['b', 'c']]]
+        );
+        $this->assertEquals(['bar' => ['foo' => ['a', 'b', 'c']]], $results);
+        $results = $merger->merge(
+            ['bar' => ['foo' => ['a', 'b']]],
+            ['bar' => ['foo' => ['a', 'b']]]
+        );
+        $this->assertEquals(['bar' => ['foo' => ['a', 'b']]], $results);
+        $results = $merger->merge(
+            ['bar' => ['foo' => ['a', 'b']]],
+            ['bar' => ['foo' => ['b', ['c']]]]
+        );
+        $this->assertEquals(['bar' => ['foo' => ['a', 'b', ['c']]]], $results);
     }
     
     /**

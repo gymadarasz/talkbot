@@ -216,7 +216,7 @@
         },
         {
           "type": "MOUSEDOWN",
-          "selector": "a",
+          "selector": "body > div > a:nth-of-type(2)",
           "selectorType": "CSS",
           "nodeName": null,
           "description": null,
@@ -369,23 +369,6 @@
           "textAsserted": false,
           "x": 56,
           "y": 264
-        },
-        {
-          "type": "FULL_PAGELOAD",
-          "selector": "",
-          "selectorType": "CSS",
-          "nodeName": null,
-          "description": null,
-          "timeout": 15000,
-          "warnings": [],
-          "suggestions": [],
-          "continueOnFail": false,
-          "id": "SkhKm6G2D",
-          "value": "${baseUrl}/?q=login",
-          "width": 500,
-          "height": 500,
-          "resize": false,
-          "complete": true
         },
         {
           "type": "TEXT_ASSERT",
@@ -615,7 +598,7 @@
         },
         {
           "type": "MOUSEDOWN",
-          "selector": "a",
+          "selector": "body > div > a:nth-of-type(2)",
           "selectorType": "CSS",
           "nodeName": null,
           "description": null,

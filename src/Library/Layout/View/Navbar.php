@@ -96,69 +96,13 @@ class Navbar
     {
         switch ($area) {
         case 'public':
-            $right = [
-                [
-                    //'active' => $query ==='login' || $query ==='registry',
-                    'dropdown' => [
-                        'right' => true,
-                        'items' => [
-                            [
-                                'divider' => false,
-                                'href' => "q=login",
-                                'text' => 'Login'
-                            ],
-                            [
-                                'divider' => false,
-                                'href' => "q=registry",
-                                'text' => 'Register'
-                            ],
-                        ],
-                    ],
-                    'disabled' => false,
-                    'href' => '#',
-                    'text' => 'Login',
-                ]
-            ];
+            $right = $this->getLinksRightPublic();
             break;
         case 'protected':
-            $right = [
-                [
-                    //'active' => $query ==='profile',
-                    'dropdown' => [
-                        'right' => true,
-                        'items' => [
-                            [
-                                'divider' => false,
-                                'href' => "q=logout",
-                                'text' => 'logout'
-                            ],
-                        ],
-                    ],
-                    'disabled' => false,
-                    'href' => '#',
-                    'text' => 'Profile',
-                ]
-            ];
+            $right = $this->getLinksRightProtected();
             break;
         case 'private':
-            $right = [
-                [
-                    //'active' => $query ==='profile',
-                    'dropdown' => [
-                        'right' => true,
-                        'items' => [
-                            [
-                                'divider' => false,
-                                'href' => "q=logout",
-                                'text' => 'logout'
-                            ],
-                        ],
-                    ],
-                    'disabled' => false,
-                    'href' => '#',
-                    'text' => 'Profile',
-                ]
-            ];
+            $right = $this->getLinksRightPrivate();
             break;
         default:
             throw new RuntimeException(
@@ -199,44 +143,149 @@ class Navbar
     }
     
     /**
-     * 
-     * @param mixed[] $navbar
+     * Method getLinksRightPublic
+     *
      * @return mixed[]
      */
-    protected function setActiveLink(array $navbar): array {
+    protected function getLinksRightPublic(): array
+    {
+        return [
+                [
+                    //'active' => $query ==='login' || $query ==='registry',
+                    'dropdown' => [
+                        'right' => true,
+                        'items' => [
+                            [
+                                'divider' => false,
+                                'href' => "q=login",
+                                'text' => 'Login'
+                            ],
+                            [
+                                'divider' => false,
+                                'href' => "q=registry",
+                                'text' => 'Register'
+                            ],
+                        ],
+                    ],
+                    'disabled' => false,
+                    'href' => '#',
+                    'text' => 'Login',
+                ]
+            ];
+    }
+    
+    /**
+     * Method getLinksRightProtected
+     *
+     * @return mixed[]
+     */
+    protected function getLinksRightProtected(): array
+    {
+        return [
+                [
+                    //'active' => $query ==='profile',
+                    'dropdown' => [
+                        'right' => true,
+                        'items' => [
+                            [
+                                'divider' => false,
+                                'href' => "q=logout",
+                                'text' => 'logout'
+                            ],
+                        ],
+                    ],
+                    'disabled' => false,
+                    'href' => '#',
+                    'text' => 'Profile',
+                ]
+            ];
+    }
+    
+    /**
+     * Method getLinksRightPrivate
+     *
+     * @return mixed[]
+     */
+    protected function getLinksRightPrivate(): array
+    {
+        return [
+                [
+                    //'active' => $query ==='profile',
+                    'dropdown' => [
+                        'right' => true,
+                        'items' => [
+                            [
+                                'divider' => false,
+                                'href' => "q=logout",
+                                'text' => 'logout'
+                            ],
+                        ],
+                    ],
+                    'disabled' => false,
+                    'href' => '#',
+                    'text' => 'Profile',
+                ]
+            ];
+    }
+    
+    /**
+     * Method setActiveLink
+     *
+     * @param mixed[] $navbar navbar
+     *
+     * @return mixed[]
+     */
+    protected function setActiveLink(array $navbar): array
+    {
         $query = $this->params->get('q', '');
         foreach ($navbar as &$items) {
             foreach ($items as &$item) {
-                $item = $this->isActiveItem($item);
+                $item = $this->isActiveItem($item, $query);
             }
         }
         return $navbar;
     }
     
     /**
-     * 
-     * @param mixed[] $item
+     * Method isActiveItem
+     *
+     * @param mixed[] $item  item
+     * @param string  $query query
+     *
      * @return mixed[]
      */
-    protected function isActiveItem(array $item): array {
+    protected function isActiveItem(array $item, string $query): array
+    {
         $item['active'] = false;
-        $results = null;
-        $key = Router::ROUTE_QUERY_KEY;
-        $query = $this->params->get($key, '');
         if ($item['dropdown']) {
             foreach ($item['dropdown']['items'] as &$subitem) {
-                parse_str($subitem['href'], $results);
-                if (!isset($results[$key])) {
-                    $results[$key] = '';
-                }
-                $item['active'] = $item['active'] || $results[$key] === $query;
+                $item = $this->parseString($item, (string)$subitem['href'], $query);
                 if ($item['active']) {
                     break;
                 }
             }
             return $item;
         }
-        parse_str($item['href'], $results);
+        return $this->parseString($item, (string)$item['href'], $query);
+    }
+    
+    /**
+     * Method parseString
+     *
+     * @param mixed[] $item  item
+     * @param string  $href  href
+     * @param string  $query query
+     *
+     * @return mixed[]
+     */
+    protected function parseString(
+        array $item,
+        string $href,
+        string $query
+    ): array {
+        $results = null;
+        $key = Router::ROUTE_QUERY_KEY;
+        parse_str($href, $results);
         if (!isset($results[$key])) {
             $results[$key] = '';
         }
