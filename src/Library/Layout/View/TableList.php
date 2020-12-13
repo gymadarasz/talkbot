@@ -14,9 +14,10 @@
 namespace Madsoft\Library\Layout\View;
 
 use Madsoft\Library\Params;
+use Madsoft\Library\Template;
 
 /**
- * ListForm
+ * TableList
  *
  * @category  PHP
  * @package   Madsoft\Library\Layout\View
@@ -25,18 +26,23 @@ use Madsoft\Library\Params;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class ListForm
+class TableList
 {
+    const TPL_PATH = __DIR__ . '/phtml/';
+    
     protected Params $params;
+    protected Template $template;
     
     /**
      * Method __construct
      *
-     * @param Params $params params
+     * @param Params   $params   params
+     * @param Template $template template
      */
-    public function __construct(Params $params)
+    public function __construct(Params $params, Template $template)
     {
         $this->params = $params;
+        $this->template = $template;
     }
     
     /**
@@ -48,7 +54,16 @@ class ListForm
      */
     public function getList(): string
     {
-        $api = $this->params->get('list-form')['api'];
-        return '[LIST FORM HERE, api parameter: "' . $api . '"]';
+        $listViewParams = $this->params->get('list-view');
+        return $this->template->setEncoder(null)->process(
+            'table-list.phtml',
+            [
+                'title' => $listViewParams['title'],
+                'listId' => $listViewParams['list-id'],
+                'apiEndPoint' => $listViewParams['api-end-point'],
+                'columns' => $listViewParams['columns'],
+            ],
+            $this::TPL_PATH
+        );
     }
 }

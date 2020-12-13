@@ -1,6 +1,53 @@
 "use strict";
 
+class Tpls {
+    getMessage(clazz, message) {        
+        return `
+                <div class="alert alert-{{ class }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            `
+            .replaceAll('{{ class }}', clazz)
+            .replaceAll('{{ message }}', message);
+    }
+      
+    getSpinner(size = 1) {
+        return `
+                <div class="text-center">
+                    <div class="spinner-border" style="width: {{ size }}rem; height: {{ size }}rem;" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            `
+            .replaceAll('{{ size }}', size);
+    }
+    
+    getTableCell(colspan, content) {
+        return `
+                <td colspan="{{ colspan }}">{{ content }}</td>
+            `
+            .replaceAll('{{ colspan }}', colspan)
+            .replaceAll('{{ content }}', content);
+    }
+    
+    getTableRow(cells) {
+        return `
+                <tr>
+                    {{ cells }}
+                </tr>
+            `
+            .replaceAll('{{ cells }}', cells);
+    }
+}
+
 class Ajax {
+    constructor() {
+        this.base = document.querySelector('base').getAttribute('href') + '/src/api.php?q=';
+    }
+    
     getXMlHttpRequest(onSuccess, onError)
     {
         if (window.XMLHttpRequest) {
@@ -10,8 +57,8 @@ class Ajax {
             var xhttp = new ActiveXObject("Microsoft.XMLHTTP");
         }
         xhttp.onreadystatechange = () => {
-            if (xhttp.readyState == 4) {
-                if (xhttp.status == 200) {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200) {
                     onSuccess(xhttp);
                     return;
                 }
@@ -46,7 +93,7 @@ class Ajax {
 
     get(target, onSuccess, onError)
     {
-        this.send('POST', target, onSuccess, onError);
+        this.send('GET', target, onSuccess, onError);
     }
 
     postSync(target, data, onSuccess, onError)
@@ -56,40 +103,14 @@ class Ajax {
 
     getSync(target, onSuccess, onError)
     {
-        this.sendSync('POST', target, onSuccess, onError);
+        this.sendSync('GET', target, onSuccess, onError);
     }
 }
 
-class Api {
-    constructor(ajax)
-    {
+class Form {
+    constructor(ajax, tpls) {
         this.ajax = ajax;
-        this.msgtpl = `
-            <div class="alert alert-{{ class }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        `;
-        this.base = document.querySelector('base').getAttribute('href') + '/src/api.php?q=';
-    }
-
-    serialize(obj, prefix)
-    {
-        var str = [], p;
-        for (p in obj) {
-            if (obj.hasOwnProperty(p)) {
-                var k = prefix ? prefix + "[" + p + "]" : p,
-                    v = obj[p];
-                str.push(
-                    (v !== null && typeof v === "object") ?
-                        this.serialize(v, k) :
-                        encodeURIComponent(k) + "=" + encodeURIComponent(v)
-                );
-            }
-        }
-        return str.join("&");
+        this.tpls = tpls;
     }
 
     getFormData(form)
@@ -113,43 +134,170 @@ class Api {
     {
         var form = button.closest('form');
         var data = new FormData(form);
-        this.ajax.post(this.base + route, data, (xhttp) => {
-            var resp = JSON.parse(xhttp.responseText);
-            if (typeof resp.redirect !== 'undefined') {
-                document.location.href = resp.redirect;
-                return;
+        this.api.post(form, route, data);
+    }
+}
+
+class List {
+    constructor(ajax, tpls) {
+        this.ajax = ajax;
+        this.tpls = tpls;
+        
+        this.selector = null;
+        this.csrf = null;
+        this.table = null;
+        this.header = null;
+        this.body = null;
+        this.endPoint = null;
+    }
+    
+    load(selector) {
+        this.selector = selector;
+        this.clearRows();
+        this.addRows([
+            {
+                colspan: this.getHeader().length,
+                content: this.tpls.getSpinner(3)
             }
-            document.querySelectorAll('input[name=csrf]').forEach((elem) => {
-                elem.value = resp.csrf;
-            });
-            console.log(resp);
-            var msgs = form.querySelector('.messages');
-            msgs.innerHTML = '';
-            if (resp.messages) { // TODO: !@# error message type shown and works add the rests (see in Messages.php and bootstrap classes at https://getbootstrap.com/docs/4.5/components/alerts/, also add input helper messages see more at api response and at https://getbootstrap.com/docs/4.5/components/forms/#help-text) 
-                const bsalerts = {
-                    'error': 'danger',
-                };
-                for (var key in resp.messages) {
-                    resp.messages[key].forEach((message) => {
-                        msgs.innerHTML += this.msgtpl
-                            .replace('{{ class }}', bsalerts[key] ? bsalerts[key] : key)
-                            .replace('{{ message }}', message);
-                    });
-                }
-            }
-            form.querySelectorAll('.invalid-feedback').forEach((elem) => {
-                elem.style.display = 'none';
-            });
-            if (resp.errors) {
-                for (var key in resp.errors) {
-                    var msg = resp.errors[key].join(', ');
-                    var feedback = form.querySelector('#' + key + '-feedback.invalid-feedback');
-                    feedback.innerHTML = msg;
-                    feedback.style.display = 'block';
-                }
-            }
+        ]);
+        this.api.get(this.getTable(), this.getEndPoint(), {csrf: this.getCsrf()}, (resp) => {
+            this.clearRows();
+            // TODO show results here...
+            console.log('list response:', resp);
+        });
+    }
+    
+    getCsrf() {
+        return this.getTable().querySelector('input[name=csrf]').value;
+    }
+    
+    getEndPoint() {
+        if (!this.endPoint) {
+            this.endPoint = this.getTable().getAttribute('data-end-point');
+        }
+        return this.endPoint;
+    }
+    
+    getTable() {
+        if (!this.table) {
+            this.table = document.querySelector(this.selector);
+        }
+        return this.table;
+    }
+    
+    getHeader() {
+        if (!this.header) {
+            this.header = document.querySelectorAll(this.selector + ' thead tr th');
+        }
+        return this.header;
+    }
+    
+    getBody() {
+        if (!this.body) {
+            this.body = document.querySelector(this.selector + ' tbody');
+        }
+        return this.body;
+    }
+    
+    clearRows() {
+        this.getBody().innerHTML = '';
+    }
+    
+    addRows(rows) {
+        rows.forEach((row) => {
+            var cells = this.tpls.getTableCell(row.colspan, row.content);
+            this.getBody().innerHTML += this.tpls.getTableRow(cells);
         });
     }
 }
 
-var api = new Api(new Ajax());
+class Api {
+    constructor(ajax, tpls, form, list) {        
+        this.ajax = ajax;       
+        this.tpls = tpls;
+        this.form = form;
+        this.list = list;
+        
+        this.form.api = this;
+        this.list.api = this;
+    }
+    
+    serialize(obj, prefix)
+    {
+        var str = [], p;
+        for (p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                var k = prefix ? prefix + "[" + p + "]" : p,
+                    v = obj[p];
+                str.push(
+                    (v !== null && typeof v === "object") ?
+                        this.serialize(v, k) :
+                        encodeURIComponent(k) + "=" + encodeURIComponent(v)
+                );
+            }
+        }
+        return str.join("&");
+    }
+    
+    get(form, route, data, onResponse, onRedirect, onError) {
+        this.ajax.get(this.ajax.base  + route + '&' + this.serialize(data), (xhttp) => {
+            this.handleAjaxResponse(form, xhttp, onResponse, onRedirect);
+        }, onError);
+    }
+    
+    post(form, route, data, onResponse, onRedirect, onError) {
+        this.ajax.post(this.ajax.base + route, data, (xhttp) => {
+            this.handleAjaxResponse(form, xhttp, onResponse, onRedirect);
+        }, onError);
+    }
+    
+    handleAjaxResponse(form, xhttp, onResponse, onRedirect) {
+        var resp = JSON.parse(xhttp.responseText);
+        if (typeof resp.redirect !== 'undefined') {
+            if (onRedirect) {
+                onRedirect(resp);
+            }
+            document.location.href = resp.redirect;                           
+            return;
+        }
+        document.querySelectorAll('input[name=csrf]').forEach((elem) => {
+            elem.value = resp.csrf;
+        });
+        var msgs = form.querySelector('.messages');
+        msgs.innerHTML = '';
+        if (resp.messages) { // TODO: error message type shown and works add the rests (see in Messages.php and bootstrap classes at https://getbootstrap.com/docs/4.5/components/alerts/, also add input helper messages see more at api response and at https://getbootstrap.com/docs/4.5/components/forms/#help-text) 
+            const bsalerts = {
+                'error': 'danger'
+            };
+            for (var key in resp.messages) {
+                resp.messages[key].forEach((message) => {
+                    msgs.innerHTML += this.tpls.getMessage(
+                        bsalerts[key] ? bsalerts[key] : key,
+                        message
+                    );
+                });
+            }
+        }
+        form.querySelectorAll('.invalid-feedback').forEach((elem) => {
+            elem.style.display = 'none';
+        });
+        if (resp.errors) {
+            for (var key in resp.errors) {
+                var msg = resp.errors[key].join(', ');
+                var feedback = form.querySelector('#' + key + '-feedback.invalid-feedback');
+                feedback.innerHTML = msg;
+                feedback.style.display = 'block';
+            }
+        }
+        if (onResponse) {
+            onResponse(resp);
+        }
+    }
+}
+
+var app = {};
+app.tpls = new Tpls();
+app.ajax = new Ajax();
+app.form = new Form(app.ajax, app.tpls);
+app.list = new List(app.ajax, app.tpls);
+var api = new Api(app.ajax, app.tpls, app.form, app.list);

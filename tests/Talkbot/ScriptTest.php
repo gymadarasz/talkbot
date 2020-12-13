@@ -96,7 +96,7 @@ class ScriptTest extends ContentTest
         
         $results = $this->json->decode(
             $this->post(
-                'q=script/create&csrf=' . $this->getCsrf(),
+                'q=my-script/create&csrf=' . $this->getCsrf(),
                 [
                     'values' => [
                         'content_id' => $cid,

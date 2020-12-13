@@ -15,7 +15,7 @@ namespace Madsoft\Talkbot;
 
 use Madsoft\Library\Layout\Layout;
 use Madsoft\Library\Layout\View\Header;
-use Madsoft\Library\Layout\View\ListForm;
+use Madsoft\Library\Layout\View\TableList;
 use Madsoft\Library\Layout\View\Meta;
 use Madsoft\Library\Layout\View\Navbar;
 
@@ -32,10 +32,17 @@ return $routes = [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
                         'header' => [Header::class, 'getHeader'],
-                        'body' => [ListForm::class, 'getList'],
+                        'body' => [TableList::class, 'getList'],
                     ],
-                    'list-form' => [
-                        'api' => 'script/list',
+                    'list-view' => [
+                        'title' => 'My Scripts',
+                        'list-id' => 'myScriptList',
+                        'api-end-point' => 'my-script/list',
+                        'columns' => [
+                            ['text' => 'Selection'],
+                            ['text' => 'Script'],
+                            ['text' => 'Actions'],
+                        ],
                     ],
                 ],
             ],

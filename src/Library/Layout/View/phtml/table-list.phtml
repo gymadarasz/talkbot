@@ -1,0 +1,38 @@
+<?php $this->restrict(); ?>
+<div id="<?= $listId ?>" data-end-point="<?= $apiEndPoint ?>">
+    <input type="hidden" name="csrf" value="<?= $csrf ?>">
+    <h2><?= $title ?></h2>
+    <hr>
+    <div class="messages"></div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <?php foreach ($columns as $column): ?>
+                    <th scope="col"><?= $column['text'] ?></th>
+                <?php endforeach; ?>      
+            </tr>
+        </thead>
+        <tbody>
+            <!-- TODO when have contents should shown as a following format:
+          <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+          <tr>
+            <th scope="row">2</th>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+          </tr>
+          <tr>
+            <th scope="row">3</th>
+            <td colspan="2">Larry the Bird</td>
+            <td>@twitter</td>
+          </tr>
+            -->
+        </tbody>
+    </table>
+</div>
+<script>api.list.load('#<?= $listId ?>')</script>

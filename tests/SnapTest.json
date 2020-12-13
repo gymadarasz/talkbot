@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "Registration",
+      "name": "Accounts",
       "description": "",
       "actions": [
         {
@@ -807,6 +807,81 @@
           "type": "STRING_VAR"
         }
       ]
+    },
+    {
+      "name": "My Scripts",
+      "description": "",
+      "actions": [
+        {
+          "type": "URL_CHANGE_INDICATOR",
+          "selector": "",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "Hyb7D2gV2w",
+          "value": "/sandbox/talkbot/?q=my-scripts",
+          "index": null
+        },
+        {
+          "type": "FULL_PAGELOAD",
+          "selector": "",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "HymP3g4hP",
+          "value": "${baseUrl}/sandbox/talkbot/?q=my-scripts",
+          "width": 1528,
+          "height": 732,
+          "resize": false,
+          "complete": false
+        },
+        {
+          "type": "TEXT_ASSERT",
+          "selector": "div > h2",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "H13qhlV3w",
+          "value": "My Scripts",
+          "regex": false
+        },
+        {
+          "type": "TEXT_ASSERT",
+          "selector": ".alert",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "rJfj2gEnw",
+          "value": "Empty list",
+          "regex": false
+        }
+      ],
+      "id": "rk843xE2P",
+      "type": "test",
+      "variables": [
+        {
+          "id": "rygmvngEhP",
+          "name": "baseUrl",
+          "defaultValue": "http://localhost",
+          "type": "STRING_VAR"
+        }
+      ]
     }
   ],
   "components": [],
@@ -826,6 +901,20 @@
               "testId": "SyMTYHbnD",
               "leaf": true,
               "id": "BJfTYBWnD",
+              "type": "test"
+            }
+          ]
+        },
+        {
+          "collapsed": false,
+          "module": "Talkbot",
+          "id": "rJ45LeVhP",
+          "children": [
+            {
+              "module": "Unnamed test",
+              "testId": "rk843xE2P",
+              "leaf": true,
+              "id": "H18E3lEnD",
               "type": "test"
             }
           ]

@@ -100,7 +100,18 @@ return $routes = [
     ],
     'protected' => [
         'GET' => [
-            'script_to_script/delete' => [
+            'my-script_to_script/list' => [
+                'class' => Crud::class,
+                'method' => 'getListResponse',
+                'overrides' => $overrides,
+            ],
+            'my-script_to_script/view' => [
+                'class' => Crud::class,
+                'method' => 'getViewResponse',
+                'validations' => $validations,
+                'overrides' => $overrides,
+            ],
+            'my-script_to_script/delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',
                 'validations' => $validations,
@@ -108,13 +119,13 @@ return $routes = [
             ],
         ],
         'POST' => [
-            'script_to_script/edit' => [
+            'my-script_to_script/edit' => [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',
                 'validations' => $editValidations,
                 'overrides' => $overrides,
             ],
-            'script_to_script/create' => [
+            'my-script_to_script/create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
                 'validations' => $createValidation,
