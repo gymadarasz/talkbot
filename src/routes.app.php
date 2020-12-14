@@ -12,6 +12,6 @@
  */
 
 return $routesExt = [
-    __DIR__ . '/Talkbot/talkbot.app.routes.php',
-    __DIR__ . '/Talkbot/talkbot.navbar-extra.app.routes.php',
+//    __DIR__ . '/Talkbot/talkbot.app.routes.php',
+//    __DIR__ . '/Talkbot/talkbot.navbar-extra.app.routes.php',
 ];

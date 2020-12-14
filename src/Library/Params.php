@@ -100,12 +100,15 @@ class Params extends Sanitizer implements Assoc
      */
     public function get(string $key, $default = null)
     {
+        // TODO avoid $default optional value above!!
         $overrides = [];
-        if (isset($this->overrides[$key])) {
+        $overrided = false; // TODO avoid isset use array_key_exists!!
+        if (array_key_exists($key, $this->overrides)) {
             if (is_scalar($this->overrides[$key])) {
                 return $this->overrides[$key];
             }
             $overrides = (array)$this->overrides[$key];
+            $overrided = true;
         }
         $method = $this->server->get('REQUEST_METHOD');
         switch ($method) {
@@ -126,7 +129,7 @@ class Params extends Sanitizer implements Assoc
         if (isset($_REQUEST[$key])) {
             return $this->getOverridedRequest($overrides, $key);
         }
-        if ($overrides) {
+        if ($overrided) {
             return $overrides;
         }
         return $this->getDefaultValue($key, $default);

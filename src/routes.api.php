@@ -12,6 +12,6 @@
  */
 
 return $routesExt = [
-    __DIR__ . '/Talkbot/script.api.routes.php',
-    __DIR__ . '/Talkbot/script_to_script.api.routes.php',
+//    __DIR__ . '/Talkbot/script.api.routes.php',
+//    __DIR__ . '/Talkbot/script_to_script.api.routes.php',
 ];

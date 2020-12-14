@@ -13,6 +13,7 @@
 
 namespace Madsoft\Library\Crud;
 
+use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Validator\Rule\Mandatory;
 
 $defaults = [
@@ -48,6 +49,9 @@ return $routes = [
                 'method' => 'getDeleteResponse',
                 'validations' => $validations,
                 'defaults' => $defaults,
+                'overrides' => [
+                    'onSuccessRedirectTarget' => null,
+                ],
             ],
         ],
         'POST' => [
@@ -56,12 +60,19 @@ return $routes = [
                 'method' => 'getEditResponse',
                 'validations' => $validations,
                 'defaults' => $defaults,
+                'overrides' => [
+                    'onSuccessRedirectTarget' => null,
+                ],
             ],
             'create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
                 'validations' => $validations,
                 'defaults' => $defaults,
+                'overrides' => [
+                    'onSuccessRedirectTarget' => null,
+                    'successMessage' => ArrayResponder::LBL_SUCCESS
+                ],
             ],
         ],
     ],

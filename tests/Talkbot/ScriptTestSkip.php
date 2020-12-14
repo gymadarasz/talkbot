@@ -25,7 +25,7 @@ use Madsoft\Tests\Library\Crud\ContentTest;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class ScriptTest extends ContentTest
+class ScriptTestSkip extends ContentTest
 {
     /**
      * Variable $routes
@@ -96,7 +96,7 @@ class ScriptTest extends ContentTest
         
         $results = $this->json->decode(
             $this->post(
-                'q=my-script/create&csrf=' . $this->getCsrf(),
+                'q=my-contents/create&csrf=' . $this->getCsrf(),
                 [
                     'values' => [
                         'content_id' => $cid,

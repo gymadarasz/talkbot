@@ -1,0 +1,1 @@
+tail -f /var/log/apache2/error.log -f src/Library/log/app.log

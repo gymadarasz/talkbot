@@ -121,7 +121,7 @@ class PasswordChange extends ArrayResponder
         }
         
         return $this->getSuccessRedirectResponse(
-            '?q=login',
+            'login',
             'Password is changed'
         );
     }

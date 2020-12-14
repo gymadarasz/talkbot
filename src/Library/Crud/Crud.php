@@ -161,7 +161,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     {
         $affecteds = $this->database->setRow(...$this->getEditParams());
         if ($affecteds) {
-            return $this->getAffectResponse($affecteds);
+            return $this->getAffectEditDeleteResponse($affecteds);
         }
         return $this->getErrorResponse('Not affected');
     }
@@ -197,7 +197,18 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     {
         $insertId = $this->database->addRow(...$this->getCreateParams());
         if ($insertId) {
-            return $this->getInsertResponse($insertId);
+            $target = $this->params->get('onSuccessRedirectTarget', null);
+            if ($target) {
+                return $this->getInsertRedirectResponse(
+                    $target,
+                    $insertId,
+                    $this->params->get('successMessage')
+                );
+            }
+            return $this->getInsertResponse(
+                $insertId,
+                $this->params->get('successMessage'),
+            );
         }
         return $this->getErrorResponse('Not inserted');
     }
@@ -226,7 +237,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     {
         $affecteds = $this->database->delRow(...$this->getDeleteParams());
         if ($affecteds) {
-            return $this->getAffectResponse($affecteds);
+            return $this->getAffectEditDeleteResponse($affecteds);
         }
         return $this->getErrorResponse('Not affected');
     }
@@ -248,5 +259,25 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
             ),
             (int)$this->params->get('limit', self::DEFAULT_LIMIT)
         ];
+    }
+    
+    /**
+     * Method getAffectEditDeleteResponse
+     *
+     * @param int|string $affecteds affecteds
+     *
+     * @return mixed[]
+     */
+    protected function getAffectEditDeleteResponse($affecteds): array
+    {
+        $target = $this->params->get('onSuccessRedirectTarget', null);
+        if ($target) {
+            return $this->getAffectRedirectResponse(
+                $target,
+                $affecteds,
+                $this->params->get('successMessage')
+            );
+        }
+        return $this->getAffectResponse($affecteds);
     }
 }

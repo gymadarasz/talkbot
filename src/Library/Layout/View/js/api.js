@@ -3,44 +3,53 @@
 class Tpls {
     getMessage(clazz, message) {        
         return `
-                <div class="alert alert-{{ class }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            `
-            .replaceAll('{{ class }}', clazz)
-            .replaceAll('{{ message }}', message);
+            <div class="alert alert-{{ class }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `
+        .replaceAll('{{ class }}', clazz)
+        .replaceAll('{{ message }}', message);
     }
       
+    getSpinnerBorder(size = 1) {
+        return `
+            <div class="spinner-border" style="width: {{ size }}rem; height: {{ size }}rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        `
+        .replaceAll('{{ size }}', size);
+    }
+    
     getSpinner(size = 1) {
         return `
-                <div class="text-center">
-                    <div class="spinner-border" style="width: {{ size }}rem; height: {{ size }}rem;" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-            `
-            .replaceAll('{{ size }}', size);
+            <div class="text-center">
+                {{ spinnerBorder }}
+            </div>
+        `
+        .replaceAll('{{ spinnerBorder }}', this.getSpinnerBorder(size));
     }
     
     getTableCell(colspan, content) {
         return `
-                <td colspan="{{ colspan }}">{{ content }}</td>
-            `
-            .replaceAll('{{ colspan }}', colspan)
-            .replaceAll('{{ content }}', content);
+            <td colspan="{{ colspan }}">{{ content }}</td>
+        `
+        .replaceAll('{{ colspan }}', colspan)
+        .replaceAll('{{ content }}', content);
     }
     
     getTableRow(cells) {
         return `
-                <tr>
-                    {{ cells }}
-                </tr>
-            `
-            .replaceAll('{{ cells }}', cells);
+            <tr>
+                {{ cells }}
+            </tr>
+        `
+        .replaceAll('{{ cells }}', cells);
     }
+    
+    
 }
 
 class Ajax {
@@ -132,9 +141,15 @@ class Form {
 
     submit(button, route)
     {
+        var btnOrigHTML = button.innerHTML;
+        button.setAttribute('disabled', 'disabled');
+        button.innerHTML = this.tpls.getSpinnerBorder() + button.innerHTML;
         var form = button.closest('form');
         var data = new FormData(form);
-        this.api.post(form, route, data);
+        this.api.post(form, route, data, () => {
+            button.innerHTML = btnOrigHTML;
+            button.removeAttribute('disabled');
+        });
     }
 }
 
@@ -160,11 +175,26 @@ class List {
                 content: this.tpls.getSpinner(3)
             }
         ]);
-        this.api.get(this.getTable(), this.getEndPoint(), {csrf: this.getCsrf()}, (resp) => {
+        this.api.get(this.getTable(), this.getEndPoint(), {
+            csrf: this.getCsrf(),
+            fields: this.getFields().join(',')
+        }, (resp) => {
             this.clearRows();
-            // TODO show results here...
             console.log('list response:', resp);
+            var tableRows = [];
+            resp.rows.forEach((row) => {
+                tableRows.push(this.dbToTableRow(row));
+            });
+            this.getBody().innerHTML = tableRows.join('');
         });
+    }
+    
+    dbToTableRow(row) {
+        var cells = '';
+        this.getColumns().forEach((col) => {
+            cells += this.tpls.getTableCell(1, col ? row[col] : '&nbsp;');
+        });
+        return this.tpls.getTableRow(cells);
     }
     
     getCsrf() {
@@ -190,6 +220,25 @@ class List {
             this.header = document.querySelectorAll(this.selector + ' thead tr th');
         }
         return this.header;
+    }
+    
+    getFields() {
+        var fields = [];
+        this.getHeader().forEach((head) => {
+            var field = head.getAttribute('data-field').trim();
+            if (field) {
+                fields.push(field);
+            }
+        });
+        return fields;
+    }
+    
+    getColumns() {
+        var cols = [];
+        this.getHeader().forEach((head) => {
+            cols.push(head.getAttribute('data-field').trim());
+        });
+        return cols;
     }
     
     getBody() {
@@ -257,7 +306,7 @@ class Api {
             if (onRedirect) {
                 onRedirect(resp);
             }
-            document.location.href = resp.redirect;                           
+            document.location.href = this.getWebBase() + resp.redirect;
             return;
         }
         document.querySelectorAll('input[name=csrf]').forEach((elem) => {
@@ -292,6 +341,10 @@ class Api {
         if (onResponse) {
             onResponse(resp);
         }
+    }
+
+    getWebBase() {
+        return document.querySelector('base').getAttribute('href') + '?q=';
     }
 }
 

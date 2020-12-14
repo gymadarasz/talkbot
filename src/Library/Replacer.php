@@ -82,7 +82,7 @@ class Replacer
                                 . implode('", "', array_keys($assocs)) . '"'
                         );
                     }
-                    $field = $assocs[$assocKey]->get($assocValue[0], []);
+                    $field = $assocs[$assocKey]->get($assocValue[0], null);
                     if (!is_array($field)) {
                         throw new RuntimeException(
                             'Incorrect field replacement: "'

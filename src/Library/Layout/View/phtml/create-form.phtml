@@ -1,0 +1,20 @@
+<?php $this->restrict(); ?>
+<div class="d-flex justify-content-center">
+    <div class="row mx-md-n5">
+        <div class="col px-md-5">
+            <div class="p-3 border bg-light shadow">
+                <form id="<?= $formId ?>">
+                    <input type="hidden" name="csrf" value="<?= $csrf ?>">
+                    <h2><?= $title ?></h2>
+                    <hr>
+                    <div class="messages"></div>
+                    <?= $fields ?>
+                    <hr>
+                    <div class="text-center">
+                        <button id="<?= $formId ?>SubmitButton" type="button" class="btn btn-primary" onclick="api.form.submit(this, '<?= $apiEndPoint ?>')"><?= $submitButtonLabel ?></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

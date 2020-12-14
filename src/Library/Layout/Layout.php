@@ -111,7 +111,8 @@ class Layout extends ArrayResponder
         $response['cssFiles'] = $this->fileCollector->getCssFiles();
         $response['jsFilesTop'] = $this->fileCollector->getJsFilesTop();
         $response['jsFiles'] = $this->fileCollector->getJsFiles();
-
+        
+        
         if ($error) {
             $this->params->setOverrides(
                 [
@@ -127,15 +128,16 @@ class Layout extends ArrayResponder
                 ->getHeader();
             $response['body'] = $this->invoker->getInstance(ErrorPage::class)
                 ->getErrorContent();
-
+            $response['favicon'] = $this->params->get('favicon', '');
             return $this->template->setEncoder(null)->process(
                 'index.phtml',
                 $response,
                 $this::TPL_PATH
             );
         }
+        $response['favicon'] = $this->params->get('favicon');
         return $this->template->setEncoder(null)->process(
-            $this->params->get('tplfile', 'index.phtml'),
+            $this->params->get('tplfile'), // 'index.phtml'),
             $response,
             $this::TPL_PATH
         );

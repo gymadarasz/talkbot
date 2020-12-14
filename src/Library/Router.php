@@ -37,7 +37,7 @@ class Router
 {
     const OK = '';
     const ERR_INVALID = 'Invalid parameter(s)';
-    const ERR_EXCEPTION = 'Hoops! Something went wrong..';
+    const ERR_EXCEPTION = 'Whoops! Something went wrong..';
     
             
     const ROUTE_QUERY_KEY = 'q';
@@ -54,6 +54,7 @@ class Router
     protected User $user;
     protected Merger $merger;
     protected Replacer $replacer;
+    protected Config $config;
 
     /**
      * Method __construct
@@ -65,6 +66,7 @@ class Router
      * @param User     $user     user
      * @param Merger   $merger   merger
      * @param Replacer $replacer replacer
+     * @param Config   $config   config
      */
     public function __construct(
         Invoker $invoker,
@@ -73,7 +75,8 @@ class Router
         Session $session,
         User $user,
         Merger $merger,
-        Replacer $replacer
+        Replacer $replacer,
+        Config $config
     ) {
         $this->invoker = $invoker;
         $this->server = $server;
@@ -82,6 +85,7 @@ class Router
         $this->user = $user;
         $this->merger = $merger;
         $this->replacer = $replacer;
+        $this->config = $config;
     }
     
     /**
@@ -487,33 +491,37 @@ class Router
     ): array {
         $routeCacheFile = self::ROUTE_CACHE_FILEPATH . "$routeCacheFilePrefix."
             . self::ROUTE_CACHE_FILENAME;
-        if (!file_exists($routeCacheFile)) {
+        if (!file_exists($routeCacheFile) || $this->config->getEnv() === 'test') {
             $routes = [
                 'public' => [],
                 'protected' => [],
                 'private' => [],
             ];
-            foreach ($includes as $include) {
-                $routes = $this->merger->merge(
-                    $routes,
-                    $this->includeRoutes($include)
+            $export = null;
+            while ($export !== var_export($routes, true)) {
+                $export = var_export($routes, true);
+                foreach ($includes as $include) {
+                    $routes = $this->merger->merge(
+                        $routes,
+                        $this->includeRoutes($include)
+                    );
+                }
+                $routes['protected'] = $this->merger->merge(
+                    $routes['protected'],
+                    $routes['public']
                 );
-            }
-            $routes['protected'] = $this->merger->merge(
-                $routes['protected'],
-                $routes['public']
-            );
-            $routes['private'] = $this->merger->merge(
-                $routes['private'],
-                $routes['protected']
-            );
-            foreach ($includes as $include) {
-                $routes = $this->merger->merge(
-                    $routes,
-                    $this->includeRoutes($include)
+                $routes['private'] = $this->merger->merge(
+                    $routes['private'],
+                    $routes['protected']
                 );
+                foreach ($includes as $include) {
+                    $routes = $this->merger->merge(
+                        $routes,
+                        $this->includeRoutes($include)
+                    );
+                }
             }
-            $exported = '<?php $routes = ' . var_export($routes, true) . ';';
+            $exported = '<?php $routes = ' . $export . ';';
             if (!$exported) {
                 throw new RuntimeException('Unable to export routes');
             }

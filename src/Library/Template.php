@@ -160,8 +160,8 @@ class Template
             }
             $this->vars[$key] = $value;
         }
-        $this->vars['csrf'] = $this->csrfgen->get();
         if ($this->htmlViewTemplate) {
+            $this->vars['csrf'] = $this->csrfgen->get();
             $this->vars['base'] = $this->config->get('Site')->get('base');
         }
         ob_start();

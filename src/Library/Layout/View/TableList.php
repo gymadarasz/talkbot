@@ -54,15 +54,9 @@ class TableList
      */
     public function getList(): string
     {
-        $listViewParams = $this->params->get('list-view');
         return $this->template->setEncoder(null)->process(
             'table-list.phtml',
-            [
-                'title' => $listViewParams['title'],
-                'listId' => $listViewParams['list-id'],
-                'apiEndPoint' => $listViewParams['api-end-point'],
-                'columns' => $listViewParams['columns'],
-            ],
+            $this->params->get('table-list'),
             $this::TPL_PATH
         );
     }

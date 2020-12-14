@@ -87,18 +87,36 @@ class ArrayResponder
     /**
      * Method getAffectResponse
      *
-     * @param int    $affectedRows affectedRows
-     * @param string $message      message
+     * @param int|string $affectedRows affectedRows
+     * @param string     $message      message
      *
      * @return mixed[]
      */
     public function getAffectResponse(
-        int $affectedRows,
+        $affectedRows,
         string $message = self::LBL_SUCCESS
     ): array {
         return $this->getSuccessResponse($message, ['affected' => $affectedRows]);
     }
 
+    /**
+     * Method getAffectRedirectResponse
+     *
+     * @param string     $target       target
+     * @param int|string $affectedRows affectedRows
+     * @param string     $message      message
+     *
+     * @return mixed[]
+     */
+    public function getAffectRedirectResponse(
+        string $target,
+        $affectedRows,
+        string $message = self::LBL_SUCCESS
+    ): array {
+        $data = ['affected' => $affectedRows];
+        return $this->getSuccessRedirectResponse($target, $message, $data);
+    }
+    
     /**
      * Method getInsertResponse
      *
@@ -112,6 +130,24 @@ class ArrayResponder
         string $message = self::LBL_SUCCESS
     ): array {
         return $this->getSuccessResponse($message, ['insertId' => $insertId]);
+    }
+    
+    /**
+     * Method getInsertRedirectResponse
+     *
+     * @param string     $target   target
+     * @param int|string $insertId insertId
+     * @param string     $message  message
+     *
+     * @return mixed[]
+     */
+    public function getInsertRedirectResponse(
+        string $target,
+        $insertId,
+        string $message = self::LBL_SUCCESS
+    ): array {
+        $data = ['insertId' => $insertId];
+        return $this->getSuccessRedirectResponse($target, $message, $data);
     }
     
     /**

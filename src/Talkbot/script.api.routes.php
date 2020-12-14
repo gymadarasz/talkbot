@@ -30,14 +30,14 @@ $validations = [
 ];
 
 $createValidation = [
-    'values.talks' => [
+    'talks' => [
         'value' => '{{ params: values.talks }}',
         'rules' => [
             Mandatory::class => null,
             Enum::class => ['values' => ['robot', 'human']],
         ],
     ],
-    'values.text' => [
+    'text' => [
         'value' => '{{ params: values.text }}',
         'rules' => [Mandatory::class => null, MinLength::class => ['min' => 1]],
     ],
@@ -61,7 +61,9 @@ $publicOverrides = $merger->merge(
 
 $createOverrides = $overrides;
 
-$createOverrides['values'] = [
+$editOverrides = $overrides;
+
+$editOverrides['values'] = [
     'content_id' => <<<SQL
         sql:
             (SELECT id FROM content
@@ -69,7 +71,7 @@ $createOverrides['values'] = [
                 AND owner_user_id = '{{ session: user.id }}')
     SQL,
 ];
-$createOverrides['noQuotes'] = ['content_id'];
+
 
 return $routes = [
     'public' => [
@@ -112,13 +114,32 @@ return $routes = [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',
                 'validations' => $editValidations,
-                'overrides' => $overrides,
+                'overrides' => $editOverrides,
             ],
             'my-script/create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
-                'validations' => $createValidation,
-                'overrides' => $createOverrides,
+                'validations' => [
+                    'talks' => [
+                        'value' => '{{ params: values.talks }}',
+                        'rules' => [
+                            Mandatory::class => null,
+                            Enum::class => ['values' => ['robot', 'human']],
+                        ],
+                    ],
+                    'text' => [
+                        'value' => '{{ params: values.text }}',
+                        'rules' => [
+                            Mandatory::class => null,
+                            MinLength::class => ['min' => 1]],
+                    ],
+                ],
+                'overrides' => [
+                    'table' => 'script',
+                    'values' => [
+                        'owner_user_id' => '{{ session: user.id }}'
+                    ],
+                ],
             ],
         ],
     ],
