@@ -30,6 +30,8 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'favicon' => 'favicon.ico',
                     'title' => 'My Contents',
+                    // TODO 'Content saved' succes message should goes to below
+                    // the Header'My Contents' on my-contents list page
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -76,6 +78,8 @@ return $routes = [
                         ],
                         'formId' => 'myContentsCreateForm',
                         'title' => 'My Contents / Create',
+                        // TODO: this form send a GET request on
+                        // TODO  ENTER pressed in input field
                         'apiEndPoint' => 'my-contents/create',
                         'submitButtonLabel' => 'Create'
                     ],
