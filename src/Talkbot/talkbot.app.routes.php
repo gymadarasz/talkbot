@@ -28,7 +28,7 @@ return $routes = [
                 'method' => 'getOutput',
                 'overrides' => [
                     'tplfile' => 'index.phtml',
-                    'favicon' => 'favicon.ico',
+                    'favicon' => 'favicons/favicon.ico',
                     'title' => 'My Scripts',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
@@ -62,7 +62,7 @@ return $routes = [
                 ],
                 'overrides' => [
                     'tplfile' => 'index.phtml',
-                    'favicon' => 'favicon.ico',
+                    'favicon' => 'favicons/favicon.ico',
                     'title' => 'My Scripts / Create',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],

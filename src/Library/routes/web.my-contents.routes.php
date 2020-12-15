@@ -28,7 +28,7 @@ return $routes = [
                 'method' => 'getOutput',
                 'overrides' => [
                     'tplfile' => 'index.phtml',
-                    'favicon' => 'favicon.ico',
+                    'favicon' => 'favicons/favicon.ico',
                     'title' => 'My Contents',
                     // TODO 'Content saved' succes message should goes to below
                     // the Header'My Contents' on my-contents list page
@@ -59,7 +59,7 @@ return $routes = [
                 'method' => 'getOutput',
                 'overrides' => [
                     'tplfile' => 'index.phtml',
-                    'favicon' => 'favicon.ico',
+                    'favicon' => 'favicons/favicon.ico',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
