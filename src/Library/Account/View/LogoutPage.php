@@ -13,10 +13,8 @@
 
 namespace Madsoft\Library\Account\View;
 
-use Madsoft\Library\Config;
 use Madsoft\Library\Params;
 use Madsoft\Library\Redirector;
-use Madsoft\Library\Session;
 use Madsoft\Library\User;
 
 /**
@@ -31,26 +29,23 @@ use Madsoft\Library\User;
  */
 class LogoutPage
 {
-    protected Config $config;
     protected User $user;
-    protected Session $session;
     protected Redirector $redirector;
     protected Params $params;
 
     /**
-     * 
-     * @param Config $config
-     * @param User $user
-     * @param Session $session
-     * @param Redirector $redirector
-     * @param Params $params
+     * Method __construct
+     *
+     * @param User       $user       user
+     * @param Redirector $redirector redirector
+     * @param Params     $params     params
      */
     public function __construct(
-            Config $config, User $user, Session $session, Redirector $redirector, Params $params)
-    {
-        $this->config = $config;
+        User $user,
+        Redirector $redirector,
+        Params $params
+    ) {
         $this->user = $user;
-        $this->session = $session;
         $this->redirector = $redirector;
         $this->params = $params;
     }
@@ -66,6 +61,7 @@ class LogoutPage
     {
         $this->user->logout();
         return $this->redirector->getRedirectResponse(
-                $this->params->get('redirectTarget'));
+            $this->params->get('redirectTarget')
+        );
     }
 }

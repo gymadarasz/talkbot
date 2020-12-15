@@ -1,27 +1,55 @@
-<?php
+<?php declare(strict_types = 1);
+
+/**
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   Madsoft\Library
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) All rights reserved.
+ * @link      this
+ */
 
 namespace Madsoft\Library;
 
-class Redirector {
+/**
+ * Redirector
+ *
+ * @category  PHP
+ * @package   Madsoft\Library
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) All rights reserved.
+ * @link      this
+ */
+class Redirector
+{
     protected Config $config;
+    protected Session $session;
     
     /**
-     * 
-     * @param Config $config
-     * @param Session $session
+     * Method __construct
+     *
+     * @param Config  $config  config
+     * @param Session $session session
      */
-    public function __construct(Config $config, Session $session) {
+    public function __construct(Config $config, Session $session)
+    {
         $this->config = $config;
         $this->session = $session;
     }
     
     /**
-     * 
-     * @param string $target
-     * @return void
+     * Method getRedirectResponse
+     *
+     * @param string $target target
+     *
+     * @return string
      */
-    public function getRedirectResponse(string $target): string {
-        $redirect = $this->config->get('Site')->get('base') 
+    public function getRedirectResponse(string $target): string
+    {
+        $redirect = $this->config->get('Site')->get('base')
                 . '/?' . Router::ROUTE_QUERY_KEY . '=' . $target;
         $this->session->set(
             'message',
