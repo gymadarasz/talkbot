@@ -33,8 +33,8 @@ class ScriptTestSkip extends ContentTest
      * @var string[]
      */
     protected array $routes = [
-        __DIR__ . '/../../src/Library/Account/account.api.routes.php',
-        __DIR__ . '/../../src/Library/Crud/content.api.routes.php',
+        __DIR__ . '/../../src/Library/routes/api.accounts.routes.php',
+        __DIR__ . '/../../src/Library/routes/api.content.routes.php',
         __DIR__ . '/../../src/Talkbot/script.api.routes.php',
     ];
     

@@ -26,9 +26,9 @@ $invoker = new Invoker();
 $routes = $invoker->getInstance(Router::class)->loadRoutes(
     array_merge(
         [
-            __DIR__ . '/Library/App/web.app.routes.php',
+            __DIR__ . '/Library/routes/web.app.routes.php',
             __DIR__ . '/Library/routes/web.my-contents.routes.php',
-            __DIR__ . '/Library/Testing/testing.app.routes.php',
+            __DIR__ . '/Library/routes/web.testing.routes.php',
         ],
         $routesExt
     ),

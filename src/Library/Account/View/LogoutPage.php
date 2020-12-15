@@ -65,6 +65,7 @@ class LogoutPage
     public function getLogout(): string
     {
         $this->user->logout();
-        return $this->redirector->getRedirectResponse($this->params->get('redirectTarget'));
+        return $this->redirector->getRedirectResponse(
+                $this->params->get('redirectTarget'));
     }
 }
