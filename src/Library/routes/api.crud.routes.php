@@ -16,39 +16,53 @@ namespace Madsoft\Library\Crud;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Validator\Rule\Mandatory;
 
-$defaults = [
-    'table' => '',
-];
-
-$validations = [
-    'table' => [
-        'value' => '{{ params:table }}',
-        'rules' => [
-            Mandatory::class => null,
-        ],
-    ],
-];
-
 return $routes = [
     'private' => [ // for admins
         'GET' => [
             'list' => [
                 'class' => Crud::class,
                 'method' => 'getListResponse',
-                'validations' => $validations,
-                'defaults' => $defaults,
+                'validations' => [
+                    'table' => [
+                        'value' => '{{ params:table }}',
+                        'rules' => [
+                            Mandatory::class => null,
+                        ],
+                    ],
+                ],
+                'defaults' => [
+                    'table' => '',
+                ],
             ],
             'view' => [
                 'class' => Crud::class,
                 'method' => 'getViewResponse',
-                'validations' => $validations,
-                'defaults' => $defaults,
+                'validations' => [
+                    'table' => [
+                        'value' => '{{ params:table }}',
+                        'rules' => [
+                            Mandatory::class => null,
+                        ],
+                    ],
+                ],
+                'defaults' => [
+                    'table' => '',
+                ],
             ],
             'delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',
-                'validations' => $validations,
-                'defaults' => $defaults,
+                'validations' => [
+                    'table' => [
+                        'value' => '{{ params:table }}',
+                        'rules' => [
+                            Mandatory::class => null,
+                        ],
+                    ],
+                ],
+                'defaults' => [
+                    'table' => '',
+                ],
                 'overrides' => [
                     'onSuccessRedirectTarget' => null,
                 ],
@@ -58,8 +72,17 @@ return $routes = [
             'edit' => [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',
-                'validations' => $validations,
-                'defaults' => $defaults,
+                'validations' => [
+                    'table' => [
+                        'value' => '{{ params:table }}',
+                        'rules' => [
+                            Mandatory::class => null,
+                        ],
+                    ],
+                ],
+                'defaults' => [
+                    'table' => '',
+                ],
                 'overrides' => [
                     'onSuccessRedirectTarget' => null,
                 ],
@@ -67,8 +90,17 @@ return $routes = [
             'create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
-                'validations' => $validations,
-                'defaults' => $defaults,
+                'validations' => [
+                    'table' => [
+                        'value' => '{{ params:table }}',
+                        'rules' => [
+                            Mandatory::class => null,
+                        ],
+                    ],
+                ],
+                'defaults' => [
+                    'table' => '',
+                ],
                 'overrides' => [
                     'onSuccessRedirectTarget' => null,
                     'successMessage' => ArrayResponder::LBL_SUCCESS

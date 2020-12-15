@@ -14,50 +14,10 @@
 namespace Madsoft\Library\Crud;
 
 use Madsoft\Library\Crud\Crud;
-use Madsoft\Library\Merger;
 use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Validator\Rule\Mandatory;
 use Madsoft\Library\Validator\Rule\MinLength;
 use Madsoft\Library\Validator\Rule\Number;
-
-$merger = new Merger();
-
-$defaults = [
-    'filter' => ['id' => ''],
-];
-
-$validations = [
-    'filter.id' => [
-        'value' => '{{ params: filter.id }}',
-        'rules' => [Mandatory::class => null, Number::class => null]
-    ],
-];
-
-$createValidations = [
-    'values.name' => [
-        'value' => '{{ params: values.name }}',
-        'rules' => [Mandatory::class => null, MinLength::class => ['min' => 1]]
-    ],
-];
-
-$editValidations = $merger->merge($createValidations, $validations);
-
-$overrides = [
-    'table' => 'content',
-    'filter' => ['owner_user_id' => '{{ session: user.id }}'],
-    'values' => ['owner_user_id' => '{{ session: user.id }}'],
-];
-
-// TODO: avoid all separated variables and merges in routes files
-$publicOverrides = $merger->merge(
-    $overrides,
-    [
-        'where' => 'OR content.published = 1',
-    ]
-);
-
-// TODO add all the routes and templates into a common place
-// (hard to find files if templates and route files are everywhere)
 
 return $routes = [
     'public' => [
@@ -65,14 +25,34 @@ return $routes = [
             'content/list' => [
                 'class' => Crud::class,
                 'method' => 'getListResponse',
-                'overrides' => $publicOverrides,
+                'overrides' => [
+                    'table' => 'content',
+                    'filter' => ['owner_user_id' => '{{ session: user.id }}'],
+                    'values' => ['owner_user_id' => '{{ session: user.id }}'],
+                    'where' => 'OR content.published = 1',
+                ],
             ],
             'content/view' => [
                 'class' => Crud::class,
                 'method' => 'getViewResponse',
-                'defaults' => $defaults,
-                'validations' => $validations,
-                'overrides' => $publicOverrides,
+                'defaults' => [
+                    'filter' => ['id' => ''],
+                ],
+                'validations' => [
+                    'filter.id' => [
+                        'value' => '{{ params: filter.id }}',
+                        'rules' => [
+                            Mandatory::class => null, 
+                            Number::class => null
+                        ]
+                    ],
+                ],
+                'overrides' => [
+                    'table' => 'content',
+                    'filter' => ['owner_user_id' => '{{ session: user.id }}'],
+                    'values' => ['owner_user_id' => '{{ session: user.id }}'],
+                    'where' => 'OR content.published = 1',
+                ],
             ],
         ],
     ],
@@ -81,8 +61,18 @@ return $routes = [
             'content/delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',
-                'defaults' => $defaults,
-                'validations' => $validations,
+                'defaults' => [
+                    'filter' => ['id' => ''],
+                ],
+                'validations' => [
+                    'filter.id' => [
+                        'value' => '{{ params: filter.id }}',
+                        'rules' => [
+                            Mandatory::class => null, 
+                            Number::class => null
+                        ]
+                    ],
+                ],
                 'overrides' => [
                     'table' => 'content',
                     'filter' => ['owner_user_id' => '{{ session: user.id }}'],
@@ -96,8 +86,25 @@ return $routes = [
             'content/edit' => [
                 'class' => Crud::class,
                 'method' => 'getEditResponse',
-                'defaults' => $defaults,
-                'validations' => $editValidations,
+                'defaults' => [
+                    'filter' => ['id' => ''],
+                ],
+                'validations' => [
+                    'values.name' => [
+                        'value' => '{{ params: values.name }}',
+                        'rules' => [
+                            Mandatory::class => null, 
+                            MinLength::class => ['min' => 1]
+                        ]
+                    ],
+                    'filter.id' => [
+                        'value' => '{{ params: filter.id }}',
+                        'rules' => [
+                            Mandatory::class => null, 
+                            Number::class => null
+                        ]
+                    ],
+                ],
                 'overrides' => [
                     'table' => 'content',
                     'filter' => ['owner_user_id' => '{{ session: user.id }}'],
@@ -109,7 +116,15 @@ return $routes = [
             'content/create' => [
                 'class' => Crud::class,
                 'method' => 'getCreateResponse',
-                'validations' => $createValidations,
+                'validations' => [
+                    'values.name' => [
+                        'value' => '{{ params: values.name }}',
+                        'rules' => [
+                            Mandatory::class => null, 
+                            MinLength::class => ['min' => 1]
+                        ]
+                    ],
+                ],
                 'overrides' => [
                     'table' => 'content',
                     'filter' => ['owner_user_id' => '{{ session: user.id }}'],

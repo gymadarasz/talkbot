@@ -24,41 +24,6 @@ use Madsoft\Library\Validator\Rule\Mandatory;
 use Madsoft\Library\Validator\Rule\Match;
 use Madsoft\Library\Validator\Rule\Password;
 
-$registryValidations = [
-    'email' =>
-    [
-        'value' => '{{ params: email }}',
-        'rules' =>
-        [
-            Mandatory::class => null,
-            Email::class => null,
-        ],
-    ],
-    'password' =>
-    [
-        'value' => '{{ params: password }}',
-        'rules' =>
-        [
-            Mandatory::class => null,
-            Password::class => [
-                'minLength' => ['min' => 8,],
-                'checkMinLength' => true,
-                'checkHasLower' => true,
-                'checkHasUpper' => true,
-                'checkHasNumber' => true,
-                'checkHasSpecChar' => true,
-            ],
-        ],
-    ],
-    'email_retype' => [
-        'value' => '{{ params: email_retype }}',
-        'rules' => [
-            Mandatory::class => null,
-            Match::class => ['equalTo' => '{{ params: email }}'],
-        ],
-    ],
-];
-
 return $routes = [
     'public' => [ // for unautorized visitors
         'GET' => [
@@ -85,7 +50,40 @@ return $routes = [
                     'email_retype' => '',
                     'password' => ''
                 ],
-                'validations' => $registryValidations
+                'validations' => [
+                    'email' =>
+                    [
+                        'value' => '{{ params: email }}',
+                        'rules' =>
+                        [
+                            Mandatory::class => null,
+                            Email::class => null,
+                        ],
+                    ],
+                    'password' =>
+                    [
+                        'value' => '{{ params: password }}',
+                        'rules' =>
+                        [
+                            Mandatory::class => null,
+                            Password::class => [
+                                'minLength' => ['min' => 8,],
+                                'checkMinLength' => true,
+                                'checkHasLower' => true,
+                                'checkHasUpper' => true,
+                                'checkHasNumber' => true,
+                                'checkHasSpecChar' => true,
+                            ],
+                        ],
+                    ],
+                    'email_retype' => [
+                        'value' => '{{ params: email_retype }}',
+                        'rules' => [
+                            Mandatory::class => null,
+                            Match::class => ['equalTo' => '{{ params: email }}'],
+                        ],
+                    ],
+                ]
             ],
             'password-reset-request' => [
                 'class' => PasswordReset::class,
