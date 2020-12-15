@@ -17,7 +17,7 @@ use Madsoft\Library\Layout\View\Header;
 use Madsoft\Library\Layout\View\Meta;
 use Madsoft\Library\Layout\View\Navbar;
 use Madsoft\Library\Testing\Testing;
-
+// TODO empty list throws javascript error because nor rows for "foreach"
 return $routes = [
     'public' => [
         'GET' => [
@@ -28,6 +28,7 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Mails testing',
+                    'header' => 'Mails testing',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -46,6 +47,7 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Mails testing',
+                    'header' => 'Mails testing',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -64,6 +66,7 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Mails testing',
+                    'header' => 'Mails testing',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],

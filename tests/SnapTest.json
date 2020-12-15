@@ -140,15 +140,15 @@
           "variables": [
             {
               "id": "ryPHfrr3w",
-              "value": "${baseUrl}"
+              "value": "http://localhost/sandbox/talkbot"
             },
             {
               "id": "SyrIMHH2v",
-              "value": "tester${random1}@testing.com"
+              "value": "tester6391730@testing.com"
             },
             {
               "id": "BJ1OGrS2P",
-              "value": "tester${random2}@testing.com"
+              "value": "tester2799443@testing.com"
             }
           ]
         }
@@ -1574,6 +1574,20 @@
         },
         {
           "type": "TEXT_ASSERT",
+          "selector": "div > h1",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "BJfWD3U2v",
+          "value": "My Contents",
+          "regex": false
+        },
+        {
+          "type": "TEXT_ASSERT",
           "selector": "div > h2",
           "selectorType": "CSS",
           "nodeName": null,
@@ -1583,7 +1597,7 @@
           "suggestions": [],
           "continueOnFail": false,
           "id": "H11aJSHhw",
-          "value": "My Contents",
+          "value": "Content list",
           "regex": false
         },
         {
@@ -1695,6 +1709,20 @@
         },
         {
           "type": "TEXT_ASSERT",
+          "selector": "div > h1",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "BkL8d2I3v",
+          "value": "My Contents",
+          "regex": false
+        },
+        {
+          "type": "TEXT_ASSERT",
           "selector": "div:nth-of-type(2) > h2",
           "selectorType": "CSS",
           "nodeName": null,
@@ -1704,7 +1732,7 @@
           "suggestions": [],
           "continueOnFail": false,
           "id": "S1RCJSrnD",
-          "value": "My Contents",
+          "value": "Content list",
           "regex": false
         },
         {
@@ -2021,6 +2049,20 @@
         },
         {
           "type": "TEXT_ASSERT",
+          "selector": "div > h1",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "H1O9KnInD",
+          "value": "My Contents",
+          "regex": false
+        },
+        {
+          "type": "TEXT_ASSERT",
           "selector": "div > h2",
           "selectorType": "CSS",
           "nodeName": null,
@@ -2030,7 +2072,7 @@
           "suggestions": [],
           "continueOnFail": false,
           "id": "H11aJSHhw",
-          "value": "My Contents",
+          "value": "Content list",
           "regex": false
         },
         {

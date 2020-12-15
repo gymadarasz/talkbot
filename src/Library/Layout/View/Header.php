@@ -54,7 +54,7 @@ class Header
     {
         return $this->template->setEncoder(null)->process(
             'header.phtml',
-            ['header' => $this->params->get('header', '')],
+            ['header' => $this->params->get('header')],
             $this::TPL_PATH
         );
     }

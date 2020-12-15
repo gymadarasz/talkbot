@@ -30,8 +30,7 @@ return $routes = [
                     'tplfile' => 'index.phtml',
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'My Contents',
-                    // TODO 'Content saved' succes message should goes to below
-                    // the Header'My Contents' on my-contents list page
+                    'header' => 'My Contents',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -39,7 +38,7 @@ return $routes = [
                         'body' => [TableList::class, 'getList'],
                     ],
                     'table-list' => [
-                        'title' => 'My Contents',
+                        'title' => 'Content list',
                         'listId' => 'myContentList',
                         'apiEndPoint' => 'my-contents/list',
                         'columns' => [
@@ -60,6 +59,8 @@ return $routes = [
                 'overrides' => [
                     'tplfile' => 'index.phtml',
                     'favicon' => 'favicons/favicon.ico',
+                    'title' => 'My Contents',
+                    'header' => 'My Contents',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],

@@ -491,7 +491,8 @@ class Router
     ): array {
         $routeCacheFile = self::ROUTE_CACHE_FILEPATH . "$routeCacheFilePrefix."
             . self::ROUTE_CACHE_FILENAME;
-        if (!file_exists($routeCacheFile) || $this->config->getEnv() === 'test') {
+        if (!file_exists($routeCacheFile) || 
+                ($this->config->getEnv() === 'test' && $this->isRoutesChanged())) {
             $routes = [
                 'public' => [],
                 'protected' => [],
@@ -533,6 +534,15 @@ class Router
             clearstatcache(true, $routeCacheFile);
         }
         return $this->includeRoutes($routeCacheFile);
+    }
+    
+    /**
+     * 
+     * @return bool
+     */
+    protected function isRoutesChanged(): bool {
+        // TODO
+        return false;
     }
     
     /**
