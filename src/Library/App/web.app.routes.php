@@ -139,6 +139,7 @@ return $routes = [
                         'header' => [Header::class, 'getHeader'],
                         'body' => [LogoutPage::class, 'getLogout'],
                     ],
+                    'redirectTarget' => 'login',
                 ],
             ],
         ],
