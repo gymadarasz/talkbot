@@ -54,13 +54,15 @@ class Merger
                 continue;
             }
             
-            if (isset($merg[$key]) && is_array($merg[$key]) && is_array($value)) {
+            if (array_key_exists($key, $merg)
+                && is_array($merg[$key]) && is_array($value)
+            ) {
                 $merg[$key] = $this->merge($merg[$key], $value, $joker);
                 continue;
             }
 
             if (is_string($key)
-                && (!isset($merg[$key])
+                && (!array_key_exists($key, $merg)
                 || !(is_array($merg[$key]) && is_array($value)))
             ) {
                 $merg[$key] = $value;

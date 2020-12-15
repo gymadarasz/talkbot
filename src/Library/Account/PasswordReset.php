@@ -33,9 +33,6 @@ use Madsoft\Library\Token;
  */
 class PasswordReset extends ArrayResponder
 {
-    // TODO email should not contains api links
-    // TODO add index.php instead (see in configs) - dependency (needs front-end)
-    
     protected Token $token;
     protected Database $database;
     protected AccountValidator $validator;

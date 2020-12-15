@@ -47,7 +47,7 @@ class Messages
     public function add(string $type, string $message): self
     {
         $this->validateMessageType($type);
-        if (!isset($this->messages[$type])) {
+        if (!array_key_exists($type, $this->messages)) {
             $this->messages[$type] = [];
         }
         if (!in_array($message, $this->messages[$type], true)) {

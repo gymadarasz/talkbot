@@ -96,7 +96,7 @@ class Server implements Assoc
      */
     public function has(string $key): bool
     {
-        return isset($_SERVER[$key]);
+        return array_key_exists($key, $_SERVER);
     }
 
     /**

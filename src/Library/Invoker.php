@@ -71,13 +71,13 @@ class Invoker
         array $constructorArgs = [],
         array $methodArgs = []
     ) {
-        if (!isset($route['class'])) {
+        if (!array_key_exists('class', $route)) {
             throw new RuntimeException(
                 'index "class" is not set in route: '. print_r($route, true)
             );
         }
         $ctrlr = $this->instance($route['class'], $constructorArgs);
-        if (!isset($route['method'])) {
+        if (!array_key_exists('method', $route)) {
             throw new RuntimeException(
                 'Missing route controller: ' . $route['class'] . '::???'
             );
@@ -157,7 +157,7 @@ class Invoker
         string $class,
         array $constructorArgs = []
     ): array {
-        if (isset($this->instances[$class])) {
+        if (array_key_exists($class, $this->instances)) {
             return $this->instances[$class];
         }
         if (!class_exists($class)) {

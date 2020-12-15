@@ -155,7 +155,7 @@ class Router
             $target = $routes[$area][$method][$route];
             $this->validateTarget($target, $area, $method, $route, $routeCacheFile);
 
-            if (isset($target['defaults'])) {
+            if (array_key_exists('defaults', $target)) {
                 $this->params->setDefaults(
                     $this->replacer->replaceAll(
                         $target['defaults'],
@@ -173,7 +173,7 @@ class Router
             );
             unset($target['overrides']);
                 
-            if (isset($target['validations'])) {
+            if (array_key_exists('validations', $target)) {
                 $errors = $this->getValidationErrors(
                     $this->replacer->replaceAll(
                         $target['validations'],
@@ -222,16 +222,16 @@ class Router
      */
     protected function addTargetOverrides(array $target): array
     {
-        if (!isset($target['overrides'])) {
+        if (!array_key_exists('overrides', $target)) {
             $target['overrides'] = [
                     'join' => '',
                     'where' => '',
                 ];
         }
-        if (!isset($target['overrides']['join'])) {
+        if (!array_key_exists('join', $target['overrides'])) {
             $target['overrides']['join'] = '';
         }
-        if (!isset($target['overrides']['where'])) {
+        if (!array_key_exists('where', $target['overrides'])) {
             $target['overrides']['where'] = '';
         }
         return $target;
@@ -255,7 +255,7 @@ class Router
         string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
         . self::ROUTE_CACHE_FILENAME
     ): void {
-        if (!isset($routes[$area])) {
+        if (!array_key_exists($area, $routes)) {
             throw new RuntimeException(
                 'Requested area has not any routing point: ' . $area . ' ?'
                     . self::ROUTE_QUERY_KEY . '=' . $route .
@@ -284,7 +284,7 @@ class Router
         string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
         . self::ROUTE_CACHE_FILENAME
     ): void {
-        if (!isset($routes[$area][$method])) {
+        if (!array_key_exists($method, $routes[$area])) {
             throw new RuntimeException(
                 'Route is not defined for method on area: '
                     . 'routes[' . $area . '][' . $method . '] ?'
@@ -314,7 +314,7 @@ class Router
         string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
         . self::ROUTE_CACHE_FILENAME
     ): void {
-        if (!isset($routes[$area][$method][$route])) {
+        if (!array_key_exists($route, $routes[$area][$method])) {
             throw new RuntimeException(
                 'Route is not defined on area for query: '
                     . 'routes[' . $area . '][' . $method . '] ?'
@@ -344,7 +344,7 @@ class Router
         string $routeCacheFile = self::ROUTE_CACHE_FILEPATH
         . self::ROUTE_CACHE_FILENAME
     ): void {
-        if (!isset($target['class'])) {
+        if (!array_key_exists('class', $target)) {
             throw new RuntimeException(
                 'Class is not defined at routing point: '
                     . "routes[$area][$method][$route][class] => ??? ?"
@@ -352,7 +352,7 @@ class Router
                     ' (did you try to delete "' . $routeCacheFile . '"?)'
             );
         }
-        if (!isset($target['method'])) {
+        if (!array_key_exists('method', $target)) {
             $class = $target['class'];
             throw new RuntimeException(
                 "Method is not defined at routing point for class $class::???() "
@@ -430,7 +430,7 @@ class Router
                         . implode('", "', array_keys($validations)) . '"'
                 );
             }
-            if (!isset($validation['value'])) {
+            if (!array_key_exists('value', $validation)) {
                 throw new RuntimeException(
                     'Key "value" is missing from validation, '
                         . 'current keys: "'

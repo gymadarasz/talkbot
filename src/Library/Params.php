@@ -102,7 +102,7 @@ class Params extends Sanitizer implements Assoc
     {
         // TODO avoid $default optional value above!!
         $overrides = [];
-        $overrided = false; // TODO avoid isset use array_key_exists!!
+        $overrided = false;
         if (array_key_exists($key, $this->overrides)) {
             if (is_scalar($this->overrides[$key])) {
                 return $this->overrides[$key];
@@ -113,20 +113,20 @@ class Params extends Sanitizer implements Assoc
         $method = $this->server->get('REQUEST_METHOD');
         switch ($method) {
         case 'GET':
-            if (isset($_GET[$key])) {
+            if (array_key_exists($key, $_GET)) {
                 return $this->getOverridedGet($overrides, $key);
             }
             break;
 
         case 'POST':
-            if (isset($_POST[$key])) {
+            if (array_key_exists($key, $_POST)) {
                 return $this->getOverridedPost($overrides, $key);
             }
             break;
         default:
             throw new RuntimeException('Incorrect method: "' . $method . '"');
         }
-        if (isset($_REQUEST[$key])) {
+        if (array_key_exists($key, $_REQUEST)) {
             return $this->getOverridedRequest($overrides, $key);
         }
         if ($overrided) {
@@ -215,7 +215,9 @@ class Params extends Sanitizer implements Assoc
         if (null !== $default) {
             return $default;
         }
-        if (isset($this->defaults[$key]) && null !== $this->defaults[$key]) {
+        if (array_key_exists($key, $this->defaults)
+            && null !== $this->defaults[$key]
+        ) {
             return $this->defaults[$key];
         }
         throw new RuntimeException('Parameter not found: "' . $key . '"');
@@ -231,26 +233,26 @@ class Params extends Sanitizer implements Assoc
      */
     public function has(string $key): bool
     {
-        if (isset($this->overrides[$key])) {
+        if (array_key_exists($key, $this->overrides)) {
             return true;
         }
         $method = $this->server->get('REQUEST_METHOD');
         switch ($method) {
         case 'GET':
-            if (isset($_GET[$key])) {
+            if (array_key_exists($key, $_GET)) {
                 return true;
             }
             break;
 
         case 'POST':
-            if (isset($_POST[$key])) {
+            if (array_key_exists($key, $_POST)) {
                 return true;
             }
             break;
         default:
             throw new RuntimeException('Incorrect method: "' . $method . '"');
         }
-        if (isset($_REQUEST[$key])) {
+        if (array_key_exists($key, $_REQUEST)) {
             return true;
         }
         return $this->hasDefaultValue($key);
@@ -265,7 +267,9 @@ class Params extends Sanitizer implements Assoc
      */
     protected function hasDefaultValue(string $key): bool
     {
-        if (isset($this->defaults[$key]) && null !== $this->defaults[$key]) {
+        if (array_key_exists($key, $this->defaults)
+            && null !== $this->defaults[$key]
+        ) {
             return true;
         }
         return false;

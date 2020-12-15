@@ -58,7 +58,7 @@ class Validator
     ): array {
         $errs = $this->getValueErrors($value, $rules);
         if ($errs) {
-            $errors[$fname] = isset($errors[$fname]) ?
+            $errors[$fname] = array_key_exists($fname, $errors) ?
                 array_merge($errors[$fname], $errs) :
                 $errs;
         }
@@ -82,10 +82,10 @@ class Validator
                         . "descriptor array should be associative"
                 );
             }
-            if (!isset($field['value'])) {
+            if (!array_key_exists('value', $field)) {
                 throw new RuntimeException("Field 'value' is missing: '$fname'");
             }
-            if (!isset($field['rules'])) {
+            if (!array_key_exists('rules', $field)) {
                 throw new RuntimeException("Field 'rules' are missing: '$fname'");
             }
             $errors = $this->addErrors(

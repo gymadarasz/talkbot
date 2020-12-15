@@ -56,7 +56,7 @@ class CreateForm
     public function getCreateForm(): string
     {
         $createFormParams = $this->params->get('create-form');
-        if (!isset($createFormParams['fields'])) {
+        if (!array_key_exists('fields', $createFormParams)) {
             throw new RuntimeException(
                 'Create form "fields" are not defined in '
                     . '"create-form" parameter array. '
@@ -84,7 +84,7 @@ class CreateForm
     {
         $results = '';
         foreach ($fields as $field) {
-            if (!isset($field['type']) || !$field['type']) {
+            if (!array_key_exists('type', $field) || !$field['type']) {
                 throw new RuntimeException('Field "type" is missing.');
             }
             $results .= $this->template->process(

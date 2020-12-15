@@ -6,7 +6,7 @@ $bsalerts = [
 ];
 ?>
 
-<?php if (isset($messages)): ?>
+<?php if ($messages): ?>
     <?php foreach (array_keys($messages) as $class): ?>
         <?php foreach ($messages[$class] as $message): ?>
             <div class="alert alert-<?= $bsalerts[$class] ?? $class ?>" role="alert">

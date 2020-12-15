@@ -208,10 +208,7 @@ class ArrayResponder
             $this->messages->add($message['type'], $message['text']);
         }
         $data['csrf'] = $this->csrf->get();
-        $messages = $this->messages->get();
-        if ($messages) {
-            $data['messages'] = $messages;
-        }
+        $data['messages'] = $this->messages->get();
         if ($errors) {
             $data['errors'] = $errors;
         }

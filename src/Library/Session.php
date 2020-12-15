@@ -118,7 +118,7 @@ class Session implements Assoc
      */
     public function has(string $key): bool
     {
-        return isset($_SESSION[$key]);
+        return array_key_exists($key, $_SESSION);
     }
     
     /**

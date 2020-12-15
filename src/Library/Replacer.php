@@ -75,7 +75,7 @@ class Replacer
                     continue;
                 }
                 if ($count === 2) {
-                    if (!isset($assocs[$assocKey])) {
+                    if (!array_key_exists($assocKey, $assocs)) {
                         throw new RuntimeException(
                             'Associative content missing at key: "' . $assocKey . '"'
                                 . ', possible keys: "'
@@ -91,7 +91,7 @@ class Replacer
                                 . (is_scalar($field) ? ' (' . $field . ')' : '')
                         );
                     }
-                    if (!isset($field[$assocValue[1]])) {
+                    if (!array_key_exists($assocValue[1], $field)) {
                         throw new RuntimeException(
                             'Missing field replacement: "' . $match . '"'
                         );

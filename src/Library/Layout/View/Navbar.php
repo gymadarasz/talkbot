@@ -286,7 +286,7 @@ class Navbar
         $results = null;
         $key = Router::ROUTE_QUERY_KEY;
         parse_str($href, $results);
-        if (!isset($results[$key])) {
+        if (!array_key_exists($key, $results)) {
             $results[$key] = '';
         }
         $item['active'] = $item['active'] || $results[$key] === $query;
