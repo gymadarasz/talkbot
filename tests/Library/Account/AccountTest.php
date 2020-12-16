@@ -95,18 +95,18 @@ class AccountTest extends ApiTest
     public function testAccount(): void
     {
         $this->canSeeLoginFails();
+        $this->canSeeRegistryUserSentEmailAgain();
         $this->canSeeRegistryFails();
         $this->canSeeRegistryWorks();
         $this->canSeeActivationMail();
         $this->canSeeResendWorks();
         $this->canSeeActivationMail();
-        $this->canSeeRegistryUserAlreadyRegisteredFail();
         $this->canSeeActivationFails();
         $this->canSeeActivationWorks();
+        $this->canSeeRegistryUserAlreadyRegisteredFail();
         $this->canSeeActivationUserAlreadyActiveFail();
         $this->canSeeLoginWorks(self::EMAIL, self::PASSWORD_FIRST);
         $this->canSeeLogoutWorks();
-        //        $this->canSeeResetPasswordTokenFails();
         $this->canSeeResetPasswordRequestFails();
         $this->canSeeResetPasswordWorks();
         $this->canSeeNewPasswordFails();
@@ -325,6 +325,45 @@ class AccountTest extends ApiTest
         $this->assertStringContains('We re-sent an activation email', $contents);
     }
     
+    
+    /**
+     * Method canSeeRegistryUserSentEmailAgain
+     *
+     * @return void
+     */
+    protected function canSeeRegistryUserSentEmailAgain(): void
+    {
+        $contents = $this->post(
+            'q=registry',
+            [
+                'csrf' => $this->getCsrf(),
+                'email' => 'a' . self::EMAIL,
+                'email_retype' => 'a' . self::EMAIL,
+                'password' => self::PASSWORD_FIRST,
+            ]
+        );
+        $this->assertStringContains(
+            'We sent an activation email to your email account, '
+                . 'please follow the instructions.',
+            $contents
+        );
+        
+        
+        $contents = $this->post(
+            'q=registry',
+            [
+                'csrf' => $this->getCsrf(),
+                'email' => 'a' . self::EMAIL,
+                'email_retype' => 'a' . self::EMAIL,
+                'password' => self::PASSWORD_FIRST,
+            ]
+        );
+        $this->assertStringContains(
+            'We sent an activation email to your email account, '
+                . 'please follow the instructions.',
+            $contents
+        );
+    }
     
     /**
      * Method canSeeRegistryUserAlreadyRegisteredFail

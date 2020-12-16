@@ -182,7 +182,6 @@ class List {
             this.clearRows();
             console.log('list response:', resp);
             var tableRows = [];
-            // TODO add each phtml and js file into a centralized place
             if (resp.rows) {
                 resp.rows.forEach((row) => {
                     tableRows.push(this.dbToTableRow(row));

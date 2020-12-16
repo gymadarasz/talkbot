@@ -83,16 +83,21 @@ class Registry extends ArrayResponder
         
         $user = $this->database->getRow(
             'user',
-            ['email'],
+            ['email', 'active', 'token'],
             '',
             '',
             ['email' => $email]
         );
         
         if (!empty($user)) {
-            // TODO if a user already registered but not active,
-            // we should resend the activation email
-            // instead just giving an error message only
+            if (!$user['active']) {
+                return $this->getResendResponse(
+                    $session,
+                    $user,
+                    $email,
+                    $user['token']
+                );
+            }
             return $this->getErrorResponse('Email address already registered');
         }
         
@@ -109,6 +114,30 @@ class Registry extends ArrayResponder
             return $this->getErrorResponse('User is not saved');
         }
         
+        return $this->getResendResponse(
+            $session,
+            $user,
+            $email,
+            $token
+        );
+    }
+    
+    /**
+     * Method getResendResponse
+     *
+     * @param Session  $session session
+     * @param string[] $user    user
+     * @param string   $email   email
+     * @param string   $token   token
+     *
+     * @return mixed[]
+     */
+    protected function getResendResponse(
+        Session $session,
+        array $user,
+        string $email,
+        string $token
+    ): array {
         $session->set('resend', ['email' => $email, 'token' => $token]);
         
         if (!$this->mailer->sendActivationEmail($email, $token)) {
