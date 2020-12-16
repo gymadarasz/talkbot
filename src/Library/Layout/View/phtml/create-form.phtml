@@ -3,7 +3,7 @@
     <div class="row mx-md-n5">
         <div class="col px-md-5">
             <div class="p-3 border bg-light shadow">
-                <form id="<?= $formId ?>">
+                <form id="<?= $formId ?>" onsubmit="return false;">
                     <input type="hidden" name="csrf" value="<?= $csrf ?>">
                     <h2><?= $title ?></h2>
                     <hr>

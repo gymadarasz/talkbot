@@ -79,8 +79,6 @@ return $routes = [
                         ],
                         'formId' => 'myContentsCreateForm',
                         'title' => 'My Contents / Create',
-                        // TODO: this form send a GET request on
-                        // TODO  ENTER pressed in input field
                         'apiEndPoint' => 'my-contents/create',
                         'submitButtonLabel' => 'Create'
                     ],
