@@ -100,7 +100,6 @@ class Params extends Sanitizer implements Assoc
      */
     public function get(string $key, $default = null)
     {
-        // TODO avoid $default optional value above!!
         $overrides = [];
         $overrided = false;
         if (array_key_exists($key, $this->overrides)) {
