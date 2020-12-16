@@ -232,11 +232,10 @@ class Navbar
      */
     protected function setActiveLink(array $navbar): array
     {
-        // TODO: fix navbar highlights active menu
-        $query = $this->router->getRoute();
+        $first = explode('/', $this->router->getRoute())[0];
         foreach ($navbar as &$items) {
             foreach ($items as &$item) {
-                $item = $this->isActiveItem($item, $query);
+                $item = $this->isActiveItem($item, $first);
             }
         }
         return $navbar;
