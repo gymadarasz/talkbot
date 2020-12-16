@@ -15,7 +15,7 @@ namespace Madsoft\Talkbot;
 
 use Madsoft\Library\App\WebApp;
 use Madsoft\Library\Invoker;
-use Madsoft\Library\Router;
+use Madsoft\Library\RouteCache;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -23,7 +23,8 @@ $routesExt = [];
 require 'routes.app.php';
  
 $invoker = new Invoker();
-$routes = $invoker->getInstance(Router::class)->loadRoutes(
+$routeCache = $invoker->getInstance(RouteCache::class);
+$routes = $routeCache->loadRoutes(
     array_merge(
         [
             __DIR__ . '/Library/routes/web.app.routes.php',
@@ -35,6 +36,6 @@ $routes = $invoker->getInstance(Router::class)->loadRoutes(
     'web'
 );
 
-$app = new WebApp($invoker);
+$app = new WebApp($invoker, $routeCache);
 $app->setRoutes($routes);
 $app->run();

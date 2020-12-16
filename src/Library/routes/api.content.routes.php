@@ -42,7 +42,7 @@ return $routes = [
                     'filter.id' => [
                         'value' => '{{ params: filter.id }}',
                         'rules' => [
-                            Mandatory::class => null, 
+                            Mandatory::class => null,
                             Number::class => null
                         ]
                     ],
@@ -68,7 +68,7 @@ return $routes = [
                     'filter.id' => [
                         'value' => '{{ params: filter.id }}',
                         'rules' => [
-                            Mandatory::class => null, 
+                            Mandatory::class => null,
                             Number::class => null
                         ]
                     ],
@@ -93,14 +93,14 @@ return $routes = [
                     'values.name' => [
                         'value' => '{{ params: values.name }}',
                         'rules' => [
-                            Mandatory::class => null, 
+                            Mandatory::class => null,
                             MinLength::class => ['min' => 1]
                         ]
                     ],
                     'filter.id' => [
                         'value' => '{{ params: filter.id }}',
                         'rules' => [
-                            Mandatory::class => null, 
+                            Mandatory::class => null,
                             Number::class => null
                         ]
                     ],
@@ -120,7 +120,7 @@ return $routes = [
                     'values.name' => [
                         'value' => '{{ params: values.name }}',
                         'rules' => [
-                            Mandatory::class => null, 
+                            Mandatory::class => null,
                             MinLength::class => ['min' => 1]
                         ]
                     ],

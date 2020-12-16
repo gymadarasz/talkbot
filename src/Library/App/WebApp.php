@@ -13,6 +13,8 @@
 
 namespace Madsoft\Library\App;
 
+use Madsoft\Library\Invoker;
+use Madsoft\Library\RouteCache;
 use Madsoft\Library\Router;
 use Madsoft\Library\Server;
 
@@ -34,6 +36,22 @@ class WebApp extends App
      * @var mixed[]
      */
     protected array $routes;
+    
+    protected RouteCache $routeCache;
+    
+    /**
+     * Method __construct
+     *
+     * @param Invoker    $invoker    invoker
+     * @param RouteCache $routeCache routeCache
+     */
+    public function __construct(
+        Invoker $invoker,
+        RouteCache $routeCache
+    ) {
+        parent::__construct($invoker);
+        $this->routeCache = $routeCache;
+    }
     
     /**
      * Method setRoutes
@@ -60,7 +78,7 @@ class WebApp extends App
         if ('GET' === $server->getMethod()) {
             $router->setCsrfCheck(false);
         }
-        return $router->getStringResponse($this->routes, $this->getRouteCacheFile());
+        return $router->getStringResponse($this->routes, 'web');
     }
     
     /**
@@ -70,7 +88,7 @@ class WebApp extends App
      */
     public function getRouteCacheFile(): string
     {
-        return Router::ROUTE_CACHE_FILEPATH . 'web.' . Router::ROUTE_CACHE_FILENAME;
+        return $this->routeCache->getRouteCacheFile('web');
     }
 
     /**

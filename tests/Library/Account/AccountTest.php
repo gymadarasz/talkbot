@@ -21,7 +21,7 @@ use Madsoft\Library\Folders;
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Json;
 use Madsoft\Library\Mailer;
-use Madsoft\Library\Router;
+use Madsoft\Library\RouteCache;
 use Madsoft\Library\Tester\ApiTest;
 use Madsoft\Library\Tester\TestCleaner;
 use RuntimeException;
@@ -64,22 +64,22 @@ class AccountTest extends ApiTest
     /**
      * Method __construct
      *
-     * @param Router   $router   router
-     * @param Invoker  $invoker  invoker
-     * @param Json     $json     json
-     * @param Folders  $folders  folders
-     * @param Database $database database
-     * @param Config   $config   config
+     * @param Invoker    $invoker    invoker
+     * @param Json       $json       json
+     * @param RouteCache $routeCache routeCache
+     * @param Folders    $folders    folders
+     * @param Database   $database   database
+     * @param Config     $config     config
      */
     public function __construct(
-        Router $router,
         Invoker $invoker,
         Json $json,
+        RouteCache $routeCache,
         Folders $folders,
         Database $database,
         Config $config
     ) {
-        parent::__construct($router, $invoker, $json);
+        parent::__construct($invoker, $json, $routeCache);
         $this->folders = $folders;
         $this->database = $database;
         $this->config = $config;

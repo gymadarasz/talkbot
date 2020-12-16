@@ -13,11 +13,12 @@
 
 namespace Madsoft\Library\Tester;
 
+use Madsoft\Library\App\ApiApp;
+use Madsoft\Library\App\WebApp;
 use Madsoft\Library\Config;
 use Madsoft\Library\Database;
 use Madsoft\Library\Folders;
 use Madsoft\Library\Mailer;
-use Madsoft\Library\Router;
 use RuntimeException;
 
 /**
@@ -32,14 +33,11 @@ use RuntimeException;
  */
 class TestCleaner
 {
-    const ROUTE_CACHE_FILES = [
-        Router::ROUTE_CACHE_FILEPATH . 'api.' . Router::ROUTE_CACHE_FILENAME,
-        Router::ROUTE_CACHE_FILEPATH . 'web.' . Router::ROUTE_CACHE_FILENAME,
-    ];
-    
     protected Database $database;
     protected Folders $folders;
     protected Config $config;
+    protected ApiApp $apiApp;
+    protected WebApp $webApp;
 
     /**
      * Method __construct
@@ -47,15 +45,21 @@ class TestCleaner
      * @param Database $database database
      * @param Folders  $folders  folders
      * @param Config   $config   config
+     * @param ApiApp   $apiApp   apiApp
+     * @param WebApp   $webApp   webApp
      */
     public function __construct(
         Database $database,
         Folders $folders,
-        Config $config
+        Config $config,
+        ApiApp $apiApp,
+        WebApp $webApp
     ) {
         $this->database = $database;
         $this->folders = $folders;
         $this->config = $config;
+        $this->apiApp = $apiApp;
+        $this->webApp = $webApp;
     }
     /**
      * Method cleanUp
@@ -75,7 +79,10 @@ class TestCleaner
         
         $this->deleteMails();
         
-        foreach (self::ROUTE_CACHE_FILES as $routeCacheFile) {
+        foreach ([
+            $this->apiApp->getRouteCacheFile(),
+            $this->webApp->getRouteCacheFile(),
+        ] as $routeCacheFile) {
             $this->deleteRouteCache($routeCacheFile);
         }
     }

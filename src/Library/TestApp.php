@@ -13,8 +13,10 @@
 
 namespace Madsoft\Library;
 
+use Madsoft\Library\App\ApiApp;
 use Madsoft\Library\App\App;
 use Madsoft\Library\App\CliApp;
+use Madsoft\Library\App\WebApp;
 use Madsoft\Library\Tester\Tester;
 use RuntimeException;
 
@@ -32,6 +34,23 @@ use RuntimeException;
  */
 class TestApp extends CliApp
 {
+    protected ApiApp $apiApp;
+    protected WebApp $webApp;
+    
+    /**
+     * Method __construct
+     *
+     * @param Invoker $invoker invoker
+     * @param ApiApp  $apiApp  apiApp
+     * @param WebApp  $webApp  webApp
+     */
+    public function __construct(Invoker $invoker, ApiApp $apiApp, WebApp $webApp)
+    {
+        parent::__construct($invoker);
+        $this->apiApp = $apiApp;
+        $this->webApp = $webApp;
+    }
+    
     /**
      * Method run
      *
@@ -49,8 +68,8 @@ class TestApp extends CliApp
                 __DIR__ . "/../../src/Library/Tester/Test.php",
                 __DIR__ . "/../../src/Library/Tester/Tester.php",
                 __DIR__ . "/../../tests/",
-                Router::ROUTE_CACHE_FILEPATH . 'api.' . Router::ROUTE_CACHE_FILENAME,
-                Router::ROUTE_CACHE_FILEPATH . 'web.' . Router::ROUTE_CACHE_FILENAME,
+                $this->apiApp->getRouteCacheFile(),
+                $this->webApp->getRouteCacheFile(),
             ]
         );
 

@@ -14,7 +14,6 @@
 namespace Madsoft\Library\Tester;
 
 use Madsoft\Library\Invoker;
-use Madsoft\Library\Router;
 use Madsoft\Library\Session;
 use RuntimeException;
 
@@ -37,18 +36,15 @@ abstract class CleanTest extends Test
      */
     protected static array $globalsStack = [];
     
-    protected Router $router;
     protected Invoker $invoker;
 
     /**
      * Method __construct
      *
-     * @param Router  $router  router
      * @param Invoker $invoker invoker
      */
-    public function __construct(Router $router, Invoker $invoker)
+    public function __construct(Invoker $invoker)
     {
-        $this->router = $router;
         $this->invoker = $invoker;
     }
     

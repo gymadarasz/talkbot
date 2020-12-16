@@ -42,7 +42,7 @@ class Invoker
             . 'non-class typed parameters.';
 
     /**
-     * Variable instances
+     * Variable $instances
      *
      * @var mixed[] $instances
      */

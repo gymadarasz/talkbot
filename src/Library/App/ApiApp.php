@@ -17,7 +17,7 @@ use Madsoft\Library\Json;
 use Madsoft\Library\Router;
 
 /**
- * Api
+ * ApiApp
  *
  * @category  PHP
  * @package   Madsoft\Library\App
@@ -37,7 +37,7 @@ class ApiApp extends WebApp
     {
         return $this->invoker->getInstance(Json::class)->encode(
             ($this->invoker->getInstance(Router::class))
-                ->getArrayResponse($this->routes, $this->getRouteCacheFile())
+                ->getArrayResponse($this->routes, 'api')
         );
     }
     
@@ -48,7 +48,7 @@ class ApiApp extends WebApp
      */
     public function getRouteCacheFile(): string
     {
-        return Router::ROUTE_CACHE_FILEPATH . 'api.' . Router::ROUTE_CACHE_FILENAME;
+        return $this->routeCache->getRouteCacheFile('api');
     }
     
     /**

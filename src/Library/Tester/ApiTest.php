@@ -16,7 +16,7 @@ namespace Madsoft\Library\Tester;
 use Madsoft\Library\App\ApiApp;
 use Madsoft\Library\Invoker;
 use Madsoft\Library\Json;
-use Madsoft\Library\Router;
+use Madsoft\Library\RouteCache;
 use RuntimeException;
 
 /**
@@ -41,21 +41,23 @@ abstract class ApiTest extends CleanTest
     protected array $routes = [];
     
     protected Json $json;
+    protected RouteCache $routeCache;
 
     /**
      * Method __construct
      *
-     * @param Router  $router  router
-     * @param Invoker $invoker invoker
-     * @param Json    $json    json
+     * @param Invoker    $invoker    invoker
+     * @param Json       $json       json
+     * @param RouteCache $routeCache routeCache
      */
     public function __construct(
-        Router $router,
         Invoker $invoker,
-        Json $json
+        Json $json,
+        RouteCache $routeCache
     ) {
-        parent::__construct($router, $invoker);
+        parent::__construct($invoker);
         $this->json = $json;
+        $this->routeCache = $routeCache;
     }
     
     /**
@@ -68,7 +70,7 @@ abstract class ApiTest extends CleanTest
     protected function getRoutes(
         string $routeCacheFilePrefix = 'api'
     ): array {
-        return $this->router->loadRoutes($this->routes, $routeCacheFilePrefix);
+        return $this->routeCache->loadRoutes($this->routes, $routeCacheFilePrefix);
     }
     
     /**
@@ -162,6 +164,8 @@ abstract class ApiTest extends CleanTest
      */
     public function callApi(array $routes): string
     {
-        return (new ApiApp(new Invoker()))->setRoutes($routes)->getOutput();
+        return (new ApiApp(new Invoker(), $this->routeCache))
+            ->setRoutes($routes)
+            ->getOutput();
     }
 }
