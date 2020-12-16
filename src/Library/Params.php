@@ -77,6 +77,19 @@ class Params extends Sanitizer implements Assoc
     }
     
     /**
+     * Method addOverrides
+     *
+     * @param mixed[] $overrides overrides
+     *
+     * @return self
+     */
+    public function addOverrides(array $overrides): self
+    {
+        $this->overrides = $this->merger->merge($this->overrides, $overrides);
+        return $this;
+    }
+    
+    /**
      * Method setDefaults
      *
      * @param mixed[] $defaults defaults

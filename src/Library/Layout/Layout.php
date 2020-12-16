@@ -114,7 +114,7 @@ class Layout extends ArrayResponder
         
         
         if ($error) {
-            $this->params->setOverrides(
+            $this->params->addOverrides(
                 [
                         'title' => 'Error happened',
                         'header' => 'Error happened',

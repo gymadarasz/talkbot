@@ -23,12 +23,38 @@ use Madsoft\Library\Layout\Layout;
 use Madsoft\Library\Layout\View\Header;
 use Madsoft\Library\Layout\View\Meta;
 use Madsoft\Library\Layout\View\Navbar;
+use Madsoft\Library\Layout\View\TableList;
 use Madsoft\Library\Layout\View\WelcomePage;
 
 return $routes = [
     'public' => [
         'GET' => [
             '' => [
+                'class' => Layout::class,
+                'method' => 'getOutput',
+                'overrides' => [
+                    'tplfile' => 'index.phtml',
+                    'favicon' => 'favicons/favicon.ico',
+                    'title' => 'Welcome',
+                    'header' => 'Welcome',
+                    'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
+                        'header' => [Header::class, 'getHeader'],
+                        'body' => [TableList::class, 'getList'],
+                    ],
+                    'table-list' => [
+                        'title' => 'Content list',
+                        'listId' => 'contentList',
+                        'apiEndPoint' => 'content/list',
+                        'columns' => [
+                            ['text' => 'Content', 'field' => 'name'],
+                        ],
+                        'actions' => []
+                    ],
+                ],
+            ],
+            'welcome' => [
                 'class' => Layout::class,
                 'method' => 'getOutput',
                 'overrides' => [

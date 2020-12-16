@@ -4,7 +4,7 @@
     <h2><?= $title ?></h2>
     <hr>
     <div class="messages"></div>
-    <div class="btn-group" role="group" aria-label="Basic example">
+    <div class="btn-group" role="group" aria-label="action buttons">
         <?php foreach ($actions as $action): ?>
             <button type="button" class="btn btn-secondary" onclick="document.location.href = '?q=<?= $action['link'] ?>'"><?= $action['text'] ?></button>
         <?php endforeach; ?>
