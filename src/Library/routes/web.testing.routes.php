@@ -18,6 +18,7 @@ use Madsoft\Library\Layout\View\Meta;
 use Madsoft\Library\Layout\View\Navbar;
 use Madsoft\Library\Testing\Testing;
 
+// TODO catch js errors
 // TODO empty list throws javascript error because nor rows for "foreach"
 return $routes = [
     'public' => [

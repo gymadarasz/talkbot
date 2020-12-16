@@ -182,9 +182,12 @@ class List {
             this.clearRows();
             console.log('list response:', resp);
             var tableRows = [];
-            resp.rows.forEach((row) => {
-                tableRows.push(this.dbToTableRow(row));
-            });
+            // TODO add each phtml and js file into a centralized place
+            if (resp.rows) {
+                resp.rows.forEach((row) => {
+                    tableRows.push(this.dbToTableRow(row));
+                });
+            }
             this.getBody().innerHTML = tableRows.join('');
         });
     }
