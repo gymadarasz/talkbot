@@ -28,7 +28,7 @@ use Madsoft\Library\Template;
  */
 class TableList
 {
-    const TPL_PATH = __DIR__ . '/phtml/';
+    const TPL_PATH = __DIR__ . '/../../phtml/';
     
     protected Params $params;
     protected Template $template;

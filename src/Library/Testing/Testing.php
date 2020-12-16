@@ -38,7 +38,7 @@ use SplFileInfo;
  */
 class Testing
 {
-    const TPL_PATH = __DIR__ . '/phtml/';
+    const TPL_PATH = __DIR__ . '/../phtml/testing/';
     
     protected Template $template;
     protected Config $config;

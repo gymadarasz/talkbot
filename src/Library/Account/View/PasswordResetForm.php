@@ -27,7 +27,7 @@ use Madsoft\Library\Template;
  */
 class PasswordResetForm
 {
-    const TPL_PATH = __DIR__ . '/phtml/';
+    const TPL_PATH = __DIR__ . '/../../phtml/account/';
     
     protected Template $template;
     

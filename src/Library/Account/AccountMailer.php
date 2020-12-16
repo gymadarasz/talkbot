@@ -30,7 +30,7 @@ use Madsoft\Library\Template;
  */
 class AccountMailer extends Mailer
 {
-    const EMAIL_TPL_PATH = __DIR__ . '/';
+    const EMAIL_TPL_PATH = __DIR__ . '/../phtml/account/';
     
     protected Template $template;
     

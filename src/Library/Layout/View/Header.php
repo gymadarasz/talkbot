@@ -28,7 +28,7 @@ use Madsoft\Library\Template;
  */
 class Header
 {
-    const TPL_PATH = __DIR__ . '/phtml/';
+    const TPL_PATH = __DIR__ . '/../../phtml/';
     
     protected Template $template;
     protected Params $params;

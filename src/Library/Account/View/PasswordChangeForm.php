@@ -28,7 +28,7 @@ use Madsoft\Library\Template;
  */
 class PasswordChangeForm
 {
-    const TPL_PATH = __DIR__ . '/phtml/';
+    const TPL_PATH = __DIR__ . '/../../phtml/account/';
     
     protected Template $template;
     protected Params $params;

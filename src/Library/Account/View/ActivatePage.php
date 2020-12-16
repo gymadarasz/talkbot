@@ -30,7 +30,7 @@ use Madsoft\Library\Template;
  */
 class ActivatePage
 {
-    const TPL_PATH = __DIR__ . '/phtml/';
+    const TPL_PATH = __DIR__ . '/../../phtml/account/';
     
     protected Template $template;
     protected Activate $activate;

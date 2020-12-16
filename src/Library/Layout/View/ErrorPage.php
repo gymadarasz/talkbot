@@ -27,7 +27,7 @@ use Madsoft\Library\Template;
  */
 class ErrorPage
 {
-    const TPL_PATH = __DIR__ . '/phtml/';
+    const TPL_PATH = __DIR__ . '/../../phtml/';
     
     protected Template $template;
     
