@@ -28,7 +28,7 @@ use SplFileInfo;
  */
 class RouteCache
 {
-    const ROUTE_CACHE_FILEPATH = __DIR__ . '/../../../';
+    const ROUTE_CACHE_FILEPATH = __DIR__ . '/../../';
     const ROUTE_CACHE_FILENAME = 'routes.cache.php';
     const SOURCE_FOLDER = __DIR__ . '/../';
     
@@ -113,7 +113,9 @@ class RouteCache
                 );
             }
             clearstatcache(true, $routeCacheFile);
-            $this->logger->info('Route cache is rebuilded.');
+            $this->logger->info(
+                "Route cache is rebuilded: " . realpath($routeCacheFile)
+            );
         }
         return $this->includeRoutes($routeCacheFile);
     }

@@ -96,6 +96,7 @@ class Navbar
     {
         switch ($area) {
         case 'public':
+            // TODO: some Navbar stuff could goes to routes
             $right = $this->getLinksRightPublic();
             break;
         case 'protected':

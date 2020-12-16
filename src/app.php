@@ -29,8 +29,8 @@ $routes = $routeCache->loadRoutes(
         [
             __DIR__ . '/Library/routes/web.app.routes.php',
             __DIR__ . '/Library/routes/web.my-contents.routes.php',
-            __DIR__ . '/Library/routes/web.navbar.routes.php',
             __DIR__ . '/Library/routes/web.testing.routes.php',
+            __DIR__ . '/Library/routes/web.navbar.routes.php',
         ],
         $routesExt
     ),

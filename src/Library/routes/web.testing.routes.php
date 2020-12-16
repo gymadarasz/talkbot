@@ -13,18 +13,18 @@
 
 namespace Madsoft\Library\Testing;
 
+use Madsoft\Library\Layout\Layout;
 use Madsoft\Library\Layout\View\Header;
 use Madsoft\Library\Layout\View\Meta;
 use Madsoft\Library\Layout\View\Navbar;
 use Madsoft\Library\Testing\Testing;
 
 // TODO catch js errors
-// TODO empty list throws javascript error because nor rows for "foreach"
 return $routes = [
     'public' => [
         'GET' => [
             'testing/mails/list' => [
-                'class' => 'Madsoft\\Library\\Layout\\Layout',
+                'class' => Layout::class,
                 'method' => 'getOutput',
                 'overrides' => [
                     'tplfile' => 'index.phtml',
@@ -43,7 +43,7 @@ return $routes = [
                 ],
             ],
             'testing/mails/delete-all' => [
-                'class' => 'Madsoft\\Library\\Layout\\Layout',
+                'class' => Layout::class,
                 'method' => 'getOutput',
                 'overrides' => [
                     'tplfile' => 'index.phtml',
@@ -62,7 +62,7 @@ return $routes = [
                 ],
             ],
             'testing/mails/view' => [
-                'class' => 'Madsoft\\Library\\Layout\\Layout',
+                'class' => Layout::class,
                 'method' => 'getOutput',
                 'overrides' => [
                     'tplfile' => 'index.phtml',
@@ -80,6 +80,27 @@ return $routes = [
                     ],
                 ],
             ],
+        ],
+        'POST' => [
+            'testing/mails/list' => [
+                'class' => Layout::class,
+                'method' => 'getOutput',
+                'overrides' => [
+                    'tplfile' => 'index.phtml',
+                    'favicon' => 'favicons/favicon.ico',
+                    'title' => 'Mails testing',
+                    'header' => 'Mails testing',
+                    'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
+                        'header' => [Header::class, 'getHeader'],
+                        'body' => [
+                            Testing::class,
+                            'deleteUser',
+                        ],
+                    ],
+                ],
+            ]
         ],
     ],
 ];

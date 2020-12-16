@@ -32,6 +32,8 @@ use Madsoft\Library\Validator\Validator;
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) All rights reserved.
  * @link      this
+ *
+ * @todo most of this class could be in routes
  */
 class AccountValidator extends Validator
 {

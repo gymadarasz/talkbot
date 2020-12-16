@@ -61,7 +61,9 @@ class LogoutPage
     {
         $this->user->logout();
         return $this->redirector->getRedirectResponse(
-            $this->params->get('redirectTarget')
+            $this->params->get('redirectTarget'),
+            'success',
+            'Logout sucess'
         );
     }
 }

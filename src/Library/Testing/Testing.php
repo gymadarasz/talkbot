@@ -15,10 +15,13 @@ namespace Madsoft\Library\Testing;
 
 // TODO: install Nightwatch for SnapTest
 
+
 use Madsoft\Library\Config;
+use Madsoft\Library\Database;
 use Madsoft\Library\Folders;
 use Madsoft\Library\Mailer;
 use Madsoft\Library\Params;
+use Madsoft\Library\Responder\ArrayResponder;
 use Madsoft\Library\Template;
 use RuntimeException;
 use SplFileInfo;
@@ -41,14 +44,18 @@ class Testing
     protected Config $config;
     protected Folders $folders;
     protected Params $params;
+    protected Database $database;
+    protected ArrayResponder $arrayResponder;
 
     /**
      * Method __construct
      *
-     * @param Template $template template
-     * @param Config   $config   config
-     * @param Folders  $folders  folders
-     * @param Params   $params   params
+     * @param Template       $template       template
+     * @param Config         $config         config
+     * @param Folders        $folders        folders
+     * @param Params         $params         params
+     * @param Database       $database       database
+     * @param ArrayResponder $arrayResponder arrayResponder
      *
      * @throws RuntimeException
      */
@@ -56,18 +63,22 @@ class Testing
         Template $template,
         Config $config,
         Folders $folders,
-        Params $params
+        Params $params,
+        Database $database,
+        ArrayResponder $arrayResponder
     ) {
-        $this->template = $template;
-        $this->config = $config;
-        $this->folders = $folders;
-        $this->params = $params;
-        
         if ($config->getEnv() !== 'test') {
             throw new RuntimeException(
                 'This functionality available only in test environment'
             );
         }
+        
+        $this->template = $template;
+        $this->config = $config;
+        $this->folders = $folders;
+        $this->params = $params;
+        $this->database = $database;
+        $this->arrayResponder = $arrayResponder;
     }
     
     /**
@@ -192,5 +203,42 @@ class Testing
             $mailcontents = '<p>Mail file is empty</p>';
         }
         return ['mail' => $mailcontents];
+    }
+    
+    /**
+     * Method deleteUser
+     *
+     * @return string
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    public function deleteUser(): string
+    {
+        if ($this->database->delRows(
+            'user',
+            '',
+            [
+            'email' => $this->params->get('email')
+            ]
+        )
+        ) {
+            return $this->template->setEncoder(null)->process(
+                'testing-mails.phtml',
+                $this->arrayResponder->getSuccessResponse(
+                    'deleted',
+                    $this->getMails()
+                ),
+                $this::TPL_PATH
+            );
+        }
+        return $this->template->setEncoder(null)->process(
+            'testing-mails.phtml',
+            $this->arrayResponder->getErrorResponse(
+                'not deleted',
+                [],
+                $this->getMails()
+            ),
+            $this::TPL_PATH
+        );
     }
 }

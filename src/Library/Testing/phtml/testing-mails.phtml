@@ -5,3 +5,8 @@
 <li><a href="?q=testing/mails/view&mail=<?=$mail?>"><?=$key?></a>: <?=$mail?></li>
 <?php endforeach; ?>
 </ul>
+<form method="POST">
+    <input type="hidden" name="csrf" value="<?=$csrf?>">
+    Delete a user by email address: <input type="email" name="email">
+    <input type="submit" value="delete">
+</form>

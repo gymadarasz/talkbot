@@ -43,19 +43,24 @@ class Redirector
     /**
      * Method getRedirectResponse
      *
-     * @param string $target target
+     * @param string $target      target
+     * @param string $messageType messageType
+     * @param string $messageText messageText
      *
      * @return string
      */
-    public function getRedirectResponse(string $target): string
-    {
+    public function getRedirectResponse(
+        string $target,
+        string $messageType,
+        string $messageText
+    ): string {
         $redirect = $this->config->get('Site')->get('base')
                 . '/?' . Router::ROUTE_QUERY_KEY . '=' . $target;
         $this->session->set(
             'message',
             [
-                'type' => 'success',
-                'text' => 'Logout sucess',
+                'type' => $messageType,
+                'text' => $messageText,
             ]
         );
         header("Location: $redirect");
