@@ -78,7 +78,7 @@ class Login extends ArrayResponder
      */
     public function getLoginResponse(Params $params): array
     {
-        $email = $params->get('email', '');
+        $email = $params->get('email');
         
         $errors = $this->validator->validateLogin($params);
         if ($errors) {
@@ -98,7 +98,7 @@ class Login extends ArrayResponder
         
         $errors = $this->validator->validateUser(
             $user,
-            $params->get('password', '')
+            $params->get('password')
         );
         if ($errors) {
             return $this->loginError($errors, $email, 'Invalid data');

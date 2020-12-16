@@ -128,7 +128,7 @@ class Layout extends ArrayResponder
                 ->getHeader();
             $response['body'] = $this->invoker->getInstance(ErrorPage::class)
                 ->getErrorContent();
-            $response['favicon'] = $this->params->get('favicon', '');
+            $response['favicon'] = $this->params->get('favicon');
             return $this->template->setEncoder(null)->process(
                 'index.phtml',
                 $response,

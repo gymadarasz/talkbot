@@ -109,16 +109,10 @@ class Navbar
                 "Invalid routing area for navigation: '$area'"
             );
         }
-        
-        $extraLeft = $this->params->get(
-            'navbar',
-            ['extra' => ['links' => ['left' => []]]]
-        )['extra']['links']['left'];
-        
-        $extraRight = $this->params->get(
-            'navbar',
-            ['extra' => ['links' => ['right' => []]]]
-        )['extra']['links']['right'];
+
+        $navbar = $this->params->get('navbar');
+        $extraLeft = $navbar['extra']['links']['left'];
+        $extraRight = $navbar['extra']['links']['right'];
         
         return $this->setActiveLink(
             [
@@ -237,7 +231,8 @@ class Navbar
      */
     protected function setActiveLink(array $navbar): array
     {
-        $query = $this->params->get('q', '');
+        // TODO: fix navbar highlights active menu
+        $query = $this->router->getRoute();
         foreach ($navbar as &$items) {
             foreach ($items as &$item) {
                 $item = $this->isActiveItem($item, $query);

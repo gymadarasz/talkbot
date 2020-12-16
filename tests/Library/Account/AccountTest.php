@@ -486,25 +486,6 @@ class AccountTest extends ApiTest
     }
     
     /**
-     * Method canSeeResetPasswordTokenFails
-     *
-     * @return void
-     */
-    //    protected function canSeeResetPasswordTokenFails(): void
-    //    {
-    //        $contents = $this->get(
-    //            'q=password-reset'
-    //        );
-    //        $this->assertStringContains('Missing token', $contents);
-    //
-    //        $contents = $this->get(
-    //            'q=password-reset&token=wrong'
-    //        );
-    //        $this->assertStringContains('Invalid token', $contents);
-    //        // TODO removing or fixing csrf token handling
-    //    }
-    
-    /**
      * Method canSeeResetPasswordRequestFails
      *
      * @return void

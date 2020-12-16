@@ -75,14 +75,14 @@ class AccountValidator extends Validator
         $errors = $this->getFirstError(
             [
                 'email' => [
-                    'value' => $params->get('email', ''),
+                    'value' => $params->get('email'),
                     'rules' => [
                         Mandatory::class => null,
                         Email::class => null,
                     ],
                 ],
                 'password' => [
-                    'value' => $params->get('password', ''),
+                    'value' => $params->get('password'),
                     'rules' => [
                         Mandatory::class => null,
                         Password::class => self::PASSWORD_VALIDATION
@@ -150,7 +150,7 @@ class AccountValidator extends Validator
         $errors = $this->getErrors(
             [
                 'token' => [
-                    'value' => $params->get('token', ''),
+                    'value' => $params->get('token'),
                     'rules' => [
                         Mandatory::class => null
                     ],
@@ -172,7 +172,7 @@ class AccountValidator extends Validator
         $errors = $this->getErrors(
             [
                 'email' => [
-                    'value' => $params->get('email', ''),
+                    'value' => $params->get('email'),
                     'rules' => [
                         Mandatory::class => null,
                         Email::class => null
@@ -192,11 +192,11 @@ class AccountValidator extends Validator
      */
     public function validatePasswordChange(Params $params): array
     {
-        $password = $params->get('password', '');
+        $password = $params->get('password');
         $errors = $this->getErrors(
             [
                 'token' => [
-                    'value' => $params->get('token', ''),
+                    'value' => $params->get('token'),
                     'rules' => [
                         Mandatory::class => null,
                     ]
@@ -209,7 +209,7 @@ class AccountValidator extends Validator
                     ],
                 ],
                 'password_retype' => [
-                    'value' => $params->get('password_retype', ''),
+                    'value' => $params->get('password_retype'),
                     'rules' => [
                         Match::class => ['equalTo' => $password]
                     ]

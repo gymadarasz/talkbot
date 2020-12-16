@@ -44,6 +44,7 @@ class Router
 
     protected bool $csrfCheck = true;
     protected string $error = self::OK;
+    protected ?string $route = null;
     
     protected Invoker $invoker;
     protected Server $server;
@@ -129,7 +130,7 @@ class Router
         try {
             $this->params->sanitizeSql();
             
-            $route = $this->params->get(self::ROUTE_QUERY_KEY, '');
+            $route = $this->getRoute();
 
             if ($this->csrfCheck) {
                 $csrf = $this->invoker->getInstance(Csrf::class);
@@ -205,6 +206,26 @@ class Router
         return $this->invoker
             ->getInstance(ArrayResponder::class)
             ->getErrorResponse($this->error);
+    }
+
+    /**
+     * Method getRoute
+     *
+     * @return string
+     */
+    public function getRoute(): string
+    {
+        if (null === $this->route) {
+            $route = '';
+            if ($this->params->has(self::ROUTE_QUERY_KEY)) {
+                $route = $this->params->get(self::ROUTE_QUERY_KEY);
+            }
+            if ($route === '/') {
+                $route = '';
+            }
+            $this->route = $route;
+        }
+        return $this->route;
     }
     
     /**

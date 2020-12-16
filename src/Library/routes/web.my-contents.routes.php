@@ -87,26 +87,5 @@ return $routes = [
                 ],
             ]
         ],
-        '*' => [
-            '*' => [
-                'overrides' => [
-                    'navbar' => [
-                        'extra' => [
-                            'links' => [
-                                'left' => [
-                                    [
-                                        'dropdown' => [],
-                                        'disabled' => false,
-                                        'href' => 'q=my-contents',
-                                        'text' => 'My Contents',
-                                    ]
-                                ],
-                                'right' => []
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ],
     ],
 ];

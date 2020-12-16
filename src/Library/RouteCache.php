@@ -30,11 +30,12 @@ class RouteCache
 {
     const ROUTE_CACHE_FILEPATH = __DIR__ . '/../../../';
     const ROUTE_CACHE_FILENAME = 'routes.cache.php';
-    const ROUTES_FOLDER = __DIR__ . '/routes/';
+    const SOURCE_FOLDER = __DIR__ . '/../';
     
     protected Config $config;
     protected Merger $merger;
     protected Folders $folders;
+    protected Logger $logger;
     
     /**
      * Method __construct
@@ -42,15 +43,18 @@ class RouteCache
      * @param Config  $config  config
      * @param Merger  $merger  merger
      * @param Folders $folders folders
+     * @param Logger  $logger  logger
      */
     public function __construct(
         Config $config,
         Merger $merger,
-        Folders $folders
+        Folders $folders,
+        Logger $logger
     ) {
         $this->config = $config;
         $this->merger = $merger;
         $this->folders = $folders;
+        $this->logger = $logger;
     }
     
     /**
@@ -68,7 +72,7 @@ class RouteCache
         $routeCacheFile = $this->getRouteCacheFile($routeCacheFilePrefix);
         if (!file_exists($routeCacheFile)
             || ($this->config->getEnv() === 'test'
-            && $this->isRoutesChanged($routeCacheFile))
+            && $this->isSourceCodeChanged($routeCacheFile))
         ) {
             $routes = [
                 'public' => [],
@@ -109,6 +113,7 @@ class RouteCache
                 );
             }
             clearstatcache(true, $routeCacheFile);
+            $this->logger->info('Route cache is rebuilded.');
         }
         return $this->includeRoutes($routeCacheFile);
     }
@@ -144,18 +149,20 @@ class RouteCache
     }
     
     /**
-     * Method isRoutesChanged
+     * Method isSourceCodeChanged
      *
      * @param string $routeCacheFile routeCacheFile
      *
      * @return bool
      */
-    protected function isRoutesChanged(string $routeCacheFile): bool
+    protected function isSourceCodeChanged(string $routeCacheFile): bool
     {
         $cacheTime = (new SplFileInfo($routeCacheFile))->getMTime();
-        $files = ($this->folders)->getFilesRecursive(self::ROUTES_FOLDER);
+        $files = ($this->folders)->getFilesRecursive(self::SOURCE_FOLDER);
         foreach ($files as $file) {
-            if ($file->getMTime() > $cacheTime) {
+            if (preg_match('/\.php$/', $file->getFilename())
+                && $file->getMTime() > $cacheTime
+            ) {
                 return true;
             }
         }

@@ -30,8 +30,6 @@ class Meta
 {
     const TPL_PATH = __DIR__ . '/phtml/';
     
-    const DEFAULT_TITLE = 'Library page';
-    
     protected Template $template;
     protected Params $params;
     
@@ -56,7 +54,7 @@ class Meta
     {
         return $this->template->setEncoder(null)->process(
             'meta.phtml',
-            ['title' => $this->params->get('title', self::DEFAULT_TITLE)],
+            ['title' => $this->params->get('title')],
             $this::TPL_PATH
         );
     }

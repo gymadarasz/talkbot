@@ -90,8 +90,8 @@ class Registry extends ArrayResponder
         );
         
         if (!empty($user)) {
-            // TODO if a user already registered but not active, 
-            // we should resend the activation email 
+            // TODO if a user already registered but not active,
+            // we should resend the activation email
             // instead just giving an error message only
             return $this->getErrorResponse('Email address already registered');
         }

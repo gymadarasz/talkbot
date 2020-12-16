@@ -34,12 +34,18 @@ return $routes = [
             'activate' => [
                 'class' => Activate::class,
                 'method' => 'getActivateResponse',
+                'defaults' => ['token' => ''],
             ],
         ],
         'POST' => [
             'login' => [
                 'class' => Login::class,
                 'method' => 'getLoginResponse',
+                'defaults' =>
+                [
+                    'email' => '',
+                    'password' => ''
+                ],
             ],
             'registry' => [
                 'class' => Registry::class,
@@ -87,11 +93,18 @@ return $routes = [
             ],
             'password-reset-request' => [
                 'class' => PasswordReset::class,
-                'method' => 'getPasswordResetRequestResponse'
+                'method' => 'getPasswordResetRequestResponse',
+                'defaults' => [
+                    'email' => '',
+                ],
             ],
             'password-change' => [
                 'class' => PasswordChange::class,
                 'method' => 'getPasswordChangeResponse',
+                'defaults' => [
+                    'password' => '',
+                    'password_retype' => '',
+                ],
             ],
         ],
     ],
