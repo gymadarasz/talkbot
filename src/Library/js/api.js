@@ -49,7 +49,36 @@ class Tpls {
         .replaceAll('{{ cells }}', cells);
     }
     
+    getActionLink(action, row) {
+        return this.replace(`
+            <a href="{{ href }}" title="{{ title }}">{{ text }}</a>
+        `, this.replaceKeys(action, row));
+    }
     
+    getActionTick(action, row) {
+        var result = this.replaceKeys(action, row);
+        return `
+            {{ text }}
+        `.replaceAll('{{ text }}', result.text[result.value]);
+    }
+    
+    replaceKeys(keysData, valuesData) {
+        var result = {...keysData};
+        for (var key in result) {
+            if (typeof result[key] === 'string') {
+                result[key] = this.replace(result[key], valuesData);
+            }
+        }
+        return result;
+    }
+    
+    replace(tpl, data) {
+        var ret = tpl;
+        for (var key in data) {
+            ret = ret.replaceAll('{{ ' + key + ' }}', data[key]);
+        }
+        return ret;
+    }
 }
 
 class Ajax {
@@ -175,28 +204,49 @@ class List {
                 content: this.tpls.getSpinner(3)
             }
         ]);
+        var columsData = this.getColumsData();
         this.api.get(this.getTable(), this.getEndPoint(), {
             csrf: this.getCsrf(),
-            fields: this.getFields().join(',')
+            fields: columsData.fields.join(',')
         }, (resp) => {
             this.clearRows();
             console.log('list response:', resp);
             var tableRows = [];
             if (resp.rows) {
                 resp.rows.forEach((row) => {
-                    tableRows.push(this.dbToTableRow(row));
+                    tableRows.push(this.dbToTableRow(row, columsData.actions));
                 });
             }
             this.getBody().innerHTML = tableRows.join('');
         });
     }
     
-    dbToTableRow(row) {
+    dbToTableRow(row, actions) {
         var cells = '';
-        this.getColumns().forEach((col) => {
-            cells += this.tpls.getTableCell(1, col ? row[col] : '&nbsp;');
+        this.getColumns().forEach((col, i) => {
+            cells += this.tpls.getTableCell(1, col ? 
+                row[col] : (actions[i] ? 
+                    this.getActions(row, actions[i]) : '&nbsp;'));
         });
         return this.tpls.getTableRow(cells);
+    }
+    
+    getActions(row, actions) {
+        console.log(row, actions);
+        var actionsHtml = '';
+        actions.forEach((action) => {
+            switch (action.type) {
+                case 'link':
+                    actionsHtml += this.tpls.getActionLink(action, row);
+                    break;
+                case 'tick':
+                    actionsHtml += this.tpls.getActionTick(action, row);
+                    break;
+                default:
+                    throw ['Invalid action type', action];
+            }
+        });
+        return actionsHtml;
     }
     
     getCsrf() {
@@ -224,15 +274,30 @@ class List {
         return this.header;
     }
     
-    getFields() {
+    getColumsData() {
         var fields = [];
+        var actions = [];
         this.getHeader().forEach((head) => {
             var field = head.getAttribute('data-field').trim();
+            var dataActions = head.getAttribute('data-actions').trim();
+            var rowActions = dataActions ? JSON.parse(dataActions) : null;
             if (field) {
-                fields.push(field);
+                if (!fields.includes(field)) {
+                    fields.push(field);
+                }
             }
+            if (rowActions) {
+                rowActions.forEach((rowAction) => {
+                    rowAction.fields.forEach((field) => {
+                        if (!fields.includes(field)) {
+                            fields.push(field);
+                        }
+                    });
+                });
+            }
+            actions.push(rowActions);
         });
-        return fields;
+        return {fields, actions};
     }
     
     getColumns() {

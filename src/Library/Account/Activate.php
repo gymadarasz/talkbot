@@ -89,12 +89,12 @@ class Activate extends ArrayResponder
             return $this->getErrorResponse('Invalid token');
         }
                 
-        if (!$this->database->setRow(
+        if ($this->database->setRow(
             'user',
             ['active' => 1],
             '',
             ['token' => $token]
-        )
+        ) <= 0
         ) {
             return $this->getErrorResponse('User activation failed');
         }

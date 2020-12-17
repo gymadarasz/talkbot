@@ -82,6 +82,8 @@ return $routes = [
                 ],
                 'defaults' => [
                     'table' => '',
+                    'filterLogic' => 'AND',
+                    'limit' => 1,
                 ],
                 'overrides' => [
                     'onSuccessRedirectTarget' => null,

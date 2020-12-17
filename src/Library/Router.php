@@ -36,6 +36,7 @@ use RuntimeException;
 class Router
 {
     const OK = '';
+    const ERR_NOT_FOUND = 'Requested page is not found..';
     const ERR_INVALID = 'Invalid parameter(s)';
     const ERR_EXCEPTION = 'Whoops! Something went wrong..';
     
@@ -187,9 +188,6 @@ class Router
                 $routeCacheFilePrefix
             );
             
-            if (!isset($target['class'])) {
-                throw new RuntimeException('ohjaj');
-            }
             return $this->invoker->invoke(
                 [
                     'class' => $target['class'],
@@ -202,7 +200,9 @@ class Router
                 $this->invoker->getInstance(Throwier::class)->forward($exception);
             }
         }
-        $this->error = self::ERR_EXCEPTION;
+        if (!$this->error) {
+            $this->error = self::ERR_EXCEPTION;
+        }
         return $this->invoker
             ->getInstance(ArrayResponder::class)
             ->getErrorResponse($this->error);
@@ -386,6 +386,7 @@ class Router
         string $routeCacheFilePrefix
     ): void {
         if (!array_key_exists($route, $routes[$area][$method])) {
+            $this->error = self::ERR_NOT_FOUND;
             throw new RuntimeException(
                 'Route is not defined on area for query: '
                     . 'routes[' . $area . '][' . $method . '] ?'

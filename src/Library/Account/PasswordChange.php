@@ -104,7 +104,7 @@ class PasswordChange extends ArrayResponder
                 'Same password already taken and not changed.'
             );
         }
-        if (!$this->database->setRow(
+        if ($this->database->setRow(
             'user',
             [
                     'hash' => $hash,
@@ -115,7 +115,7 @@ class PasswordChange extends ArrayResponder
                     'token' => $params->get('token'),
                     'active' => 1,
                 ]
-        )
+        ) <= 0
         ) {
             return $this->getErrorResponse('Password is not saved');
         }

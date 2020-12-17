@@ -15,7 +15,7 @@ namespace Madsoft\Library;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-echo (new Invoker)
+return (new Invoker)
     ->getInstance(TestApp::class)
     ->setArgv($argv)
     ->run()

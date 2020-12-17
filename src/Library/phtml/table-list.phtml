@@ -5,15 +5,17 @@
     <hr>
     <div class="messages"></div>
     <div class="btn-group" role="group" aria-label="action buttons">
-        <?php foreach ($actions as $action): ?>
-            <button type="button" class="btn btn-secondary" onclick="document.location.href = '?q=<?= $action['link'] ?>'"><?= $action['text'] ?></button>
+        <?php foreach ($tools as $tool): ?>
+            <button type="button" class="btn btn-secondary" 
+                onclick="document.location.href = '?q=<?= $tool['link'] ?>'"><?= $tool['text'] ?></button>
         <?php endforeach; ?>
     </div>
     <table class="table table-hover">
         <thead>
             <tr>
                 <?php foreach ($columns as $column): ?>
-                    <th scope="col" data-field="<?= $column['field'] ?>"><?= $column['text'] ?></th>
+                    <th scope="col" data-field="<?= $column['field'] ?>" 
+                        data-actions="<?= $column['actions'] ?>"><?= $column['text'] ?></th>
                 <?php endforeach; ?>      
             </tr>
         </thead>

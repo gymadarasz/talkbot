@@ -38,15 +38,17 @@ class Mysql
 
     protected Config $config;
     protected Transaction $transaction;
-    
+
     /**
      * Method __construct
      *
      * @param Config      $config      config
      * @param Transaction $transaction transaction
      */
-    public function __construct(Config $config, Transaction $transaction)
-    {
+    public function __construct(
+        Config $config,
+        Transaction $transaction
+    ) {
         $this->config = $config;
         $this->transaction = $transaction;
     }
@@ -264,6 +266,9 @@ class Mysql
     public function query(string $query)
     {
         $this->connect();
+        //                if ($this->config->getEnv() === 'test') {
+        //                    (new Logger())->debug($query);
+        //                }
         $ret = $this->mysqli->query($query);
         if (false !== $ret) {
             return $ret;
@@ -283,7 +288,7 @@ class Mysql
      */
     public function update(string $query): int
     {
-        if (false !== $this->query($query) && $this->mysqli->affected_rows) {
+        if (false !== $this->query($query)) {
             return $this->mysqli->affected_rows;
         }
         throw new MysqlNoAffectException(

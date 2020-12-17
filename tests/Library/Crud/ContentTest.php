@@ -40,6 +40,7 @@ class ContentTest extends AccountTest
     protected array $routes = [
         __DIR__ . '/../../../src/Library/routes/api.accounts.routes.php',
         __DIR__ . '/../../../src/Library/routes/api.content.routes.php',
+        __DIR__ . '/../../../src/Library/routes/api.my-contents.routes.php',
     ];
     
     /**
@@ -99,10 +100,11 @@ class ContentTest extends AccountTest
         );
         
         // then I am going to add some content
-        $this->getContentCreateResults('Test content1 of user1');
-        $this->getContentCreateResults('Test content2 of user1');
-        $this->getContentCreateResults('Test content3 of user1');
+        $this->getContentCreateResults('Test content1 of user1', true);
+        $this->getContentCreateResults('Test content2 of user1', true);
+        $this->getContentCreateResults('Test content3 of user1', true);
         
+        $results = $this->getContentListResults('name')['rows'];
         // Then I have to see my contents in the content list
         $this->assertEquals(
             [
@@ -110,7 +112,7 @@ class ContentTest extends AccountTest
                 ['name' => 'Test content2 of user1'],
                 ['name' => 'Test content3 of user1'],
             ],
-            $this->getContentListResults('name')['rows']
+            $results
         );
         
         
@@ -129,22 +131,25 @@ class ContentTest extends AccountTest
         // check that I can edit my sctipt
         $results = $this->json->decode(
             $this->post(
-                'q=content/edit&filter[id]=' . $user1contents[0]['id']
+                'q=my-contents/edit&filter[id]=' . $user1contents[0]['id']
                     . '&csrf=' . $this->getCsrf(),
                 [
-                    'values' => ['name' => 'Modified name 1']
+                    'values' => [
+                        'id' => $user1contents[0]['id'],
+                        'name' => 'Modified name 1',
+                    ]
                 ]
             )
         );
         $this->assertEquals(1, $results['affected']);
         $this->assertTrue(
-            in_array('Operation success', $results['messages']['success'], true)
+            in_array('Content saved', $results['messages']['success'], true)
         );
         
         // check that I can delete my sctipt
         $results = $this->json->decode(
             $this->get(
-                'q=content/delete&filter[id]=' . $user1contents[0]['id']
+                'q=my-contents/delete&filter[id]=' . $user1contents[0]['id']
                     . '&csrf=' . $this->getCsrf()
             )
         );
@@ -156,27 +161,27 @@ class ContentTest extends AccountTest
         // I am going to login with other user
         $this->canSeeLogoutWorks();
         $this->canSeeLoginWorks(self::USER2_EMAIL, self::USER2_PASSWORD);
-        
-        // I see content list is empty because non of those contents are mine
-        $results = $this->getContentListResults('name');
-        $this->assertTrue(
-            in_array(
-                'Empty list',
-                $results['messages']['error'],
-                true
-            )
+  
+        // Then I have to see the ret of published contents in the content list
+        $results = $this->getContentListResults(['name', 'published']);
+        $this->assertEquals(
+            [
+                ['name' => 'Test content2 of user1', 'published' => '1'],
+                ['name' => 'Test content3 of user1', 'published' => '1'],
+            ],
+            $results['rows']
         );
         
         // then I am going to add some content
-        $this->getContentCreateResults('Test content1 of user2');
-        $this->getContentCreateResults('Test content2 of user2');
-        $this->getContentCreateResults('Test content3 of user2');
+        $this->getContentCreateResults('Test content1 of user2', false);
+        $this->getContentCreateResults('Test content2 of user2', false);
+        $this->getContentCreateResults('Test content3 of user2', true);
         
-        // Then I have to see my contents in the content list
+        // Then still, I have to see only the published contents in the content list
         $this->assertEquals(
             [
-                ['name' => 'Test content1 of user2'],
-                ['name' => 'Test content2 of user2'],
+                ['name' => 'Test content2 of user1'],
+                ['name' => 'Test content3 of user1'],
                 ['name' => 'Test content3 of user2'],
             ],
             $this->getContentListResults('name')['rows']
@@ -188,26 +193,39 @@ class ContentTest extends AccountTest
         $this->canSeeLogoutWorks();
         $this->canSeeLoginWorks(self::USER1_EMAIL, self::USER1_PASSWORD);
         
-        // Then I have to see my contents in the content list
-        $results = $this->getContentListResults('name');
+        // Then I have to see the published contents in the content list
+        $results = $this->getContentListResults(['name', 'published']);
         $this->assertEquals(
             [
-                // deleted: ['name' => 'Test content1 of user1'],
-                ['name' => 'Test content2 of user1'],
-                ['name' => 'Test content3 of user1'],
+                ['name' => 'Test content2 of user1', 'published' => '1'],
+                ['name' => 'Test content3 of user1', 'published' => '1'],
+                ['name' => 'Test content3 of user2', 'published' => '1'],
             ],
             $results['rows']
         );
         
-        // check that I can not view the other users contents
+        // check that I can not view the other users unpublished contents, but
+        // list still shows the published contents and only those becase the
+        // parameter overrides in route definitions
         $results = $this->json->decode(
             $this->get(
-                'q=content/view&filter[id]=' . $user2contents[0]['id']
+                'q=content/view&fields=name,published'
+                    . '&filter[published]=0'
+                    . '&filter[id]=' . $user2contents[0]['id']
                     . '&csrf=' . $this->getCsrf()
             )
         );
-        $this->assertTrue(
-            in_array('Not found', $results['messages']['error'], true)
+        $this->assertEquals(
+            ['name' => 'Test content2 of user1', 'published' => '1'],
+            $results['row']
+        );
+        $this->assertEquals(
+            [
+                ['name' => 'Test content2 of user1', 'published' => '1'],
+                ['name' => 'Test content3 of user1', 'published' => '1'],
+                ['name' => 'Test content3 of user2', 'published' => '1'],
+            ],
+            $this->getContentListResults('name,published')['rows']
         );
         
         // check that I can not view the other users contents by name
@@ -231,42 +249,42 @@ class ContentTest extends AccountTest
         // check that I can not edit the other users contents
         $results = $this->json->decode(
             $this->post(
-                'q=content/edit&filter[id]=' . $user2contents[0]['id']
+                'q=my-contents/edit&filter[id]=' . $user1contents[0]['id']
                     . '&csrf=' . $this->getCsrf(),
                 [
-                    'values' => ['name' => 'Modified name 1']
+                    'values' => [
+                        'id' => $user1contents[0]['id'],
+                        'name' => 'Modified name 1'
+                    ]
                 ]
             )
         );
         $this->assertTrue(
-            in_array('Not affected', $results['messages']['error'], true)
+            in_array('Not found', $results['messages']['error'], true)
         );
         
         // check that I can not edit the other users contents by name
         $results = $this->json->decode(
             $this->post(
-                'q=content/edit&filter[name]=' . $user2contents[0]['name']
+                'q=my-contents/edit&filter[name]=' . $user1contents[0]['name']
                     . '&csrf=' . $this->getCsrf(),
                 [
-                    'values' => ['name' => 'Modified name 1']
+                    'values' => [
+                        'id' => $user1contents[0]['id'],
+                        'name' => 'Modified name 1',
+                    ]
                 ]
             )
         );
         $this->assertTrue(
-            in_array('Invalid parameter(s)', $results['messages']['error'], true)
-        );
-        $this->assertTrue(
-            in_array('Mandatory', $results['errors']['filter.id'], true)
-        );
-        $this->assertTrue(
-            in_array('Not a number', $results['errors']['filter.id'], true)
+            in_array('Not found', $results['messages']['error'], true)
         );
         
     
         // check that I can not delete the other users contents
         $results = $this->json->decode(
             $this->get(
-                'q=content/delete&filter[id]=' . $user2contents[0]['id']
+                'q=my-contents/delete&filter[id]=' . $user1contents[0]['id']
                     . '&csrf=' . $this->getCsrf()
             )
         );
@@ -277,7 +295,7 @@ class ContentTest extends AccountTest
         // check that I can not delete other users contents by name
         $results = $this->json->decode(
             $this->get(
-                'q=content/delete&filter[name]=' . $user2contents[0]['name']
+                'q=my-contents/delete&filter[name]=' . $user2contents[0]['name']
                     . '&csrf=' . $this->getCsrf()
             )
         );
@@ -315,23 +333,24 @@ class ContentTest extends AccountTest
     /**
      * Method getContentCreateResults
      *
-     * @param string $name name
+     * @param string $name      name
+     * @param bool   $published published
      *
      * @return mixed[]
      */
-    protected function getContentCreateResults(string $name): array
+    protected function getContentCreateResults(string $name, bool $published): array
     {
         $results = $this->json->decode(
             $this->post(
-                'q=content/create'
+                'q=my-contents/create'
                     . '&csrf=' . $this->getCsrf(),
                 [
-                    'values' => ['name' => $name],
+                    'values' => ['name' => $name, 'published' => $published],
                 ]
             )
         );
         $this->assertTrue(
-            in_array('Operation success', $results['messages']['success'], true)
+            in_array('Content saved', $results['messages']['success'], true)
         );
         
         return $results;

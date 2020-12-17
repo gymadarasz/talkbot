@@ -111,9 +111,13 @@ class Navbar
             );
         }
 
-        $navbar = $this->params->get('navbar');
-        $extraLeft = $navbar['extra']['links']['left'];
-        $extraRight = $navbar['extra']['links']['right'];
+        $extraLeft = [];
+        $extraRight = [];
+        if ($this->params->has('navbar')) {
+            $navbar = $this->params->get('navbar');
+            $extraLeft = $navbar['extra']['links']['left'];
+            $extraRight = $navbar['extra']['links']['right'];
+        }
         
         return $this->setActiveLink(
             [

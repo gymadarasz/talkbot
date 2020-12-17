@@ -13,8 +13,10 @@
 
 namespace Madsoft\Library\Layout\View;
 
+use Madsoft\Library\Json;
 use Madsoft\Library\Params;
 use Madsoft\Library\Template;
+use RuntimeException;
 
 /**
  * TableList
@@ -32,17 +34,21 @@ class TableList
     
     protected Params $params;
     protected Template $template;
-    
+    protected Json $json;
+
+
     /**
      * Method __construct
      *
      * @param Params   $params   params
      * @param Template $template template
+     * @param Json     $json     json
      */
-    public function __construct(Params $params, Template $template)
+    public function __construct(Params $params, Template $template, Json $json)
     {
         $this->params = $params;
         $this->template = $template;
+        $this->json = $json;
     }
     
     /**
@@ -54,9 +60,17 @@ class TableList
      */
     public function getList(): string
     {
+        $params = $this->params->get('table-list');
+        foreach ($params['columns'] as &$column) {
+            if (!array_key_exists('actions', $column)) {
+                throw new RuntimeException('Column action is not defined for list');
+            }
+            $column['actions'] = $column['actions'] ?
+                    htmlentities($this->json->encode($column['actions'])) : '';
+        }
         return $this->template->setEncoder(null)->process(
             'table-list.phtml',
-            $this->params->get('table-list'),
+            $params,
             $this::TPL_PATH
         );
     }

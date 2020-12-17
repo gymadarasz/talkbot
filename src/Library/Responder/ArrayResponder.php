@@ -32,6 +32,7 @@ class ArrayResponder
     const LBL_SUCCESS = 'Operation success';
     const LBL_ERROR = 'Operation failed';
     const LBL_WARNING = 'Operation success but some errors occurred';
+    const LBL_NOAFFECT = 'Operation is not affect';
     
     protected Messages $messages;
     protected Csrf $csrf;
@@ -100,6 +101,19 @@ class ArrayResponder
     }
 
     /**
+     * Method getNoAffectResponse
+     *
+     * @param string $message message
+     *
+     * @return mixed[]
+     */
+    public function getNoAffectResponse(
+        string $message = self::LBL_NOAFFECT
+    ): array {
+        return $this->getInfoResponse($message, ['affected' => 0]);
+    }
+
+    /**
      * Method getAffectRedirectResponse
      *
      * @param string     $target       target
@@ -115,6 +129,22 @@ class ArrayResponder
     ): array {
         $data = ['affected' => $affectedRows];
         return $this->getSuccessRedirectResponse($target, $message, $data);
+    }
+
+    /**
+     * Method getNoAffectRedirectResponse
+     *
+     * @param string $target  target
+     * @param string $message message
+     *
+     * @return mixed[]
+     */
+    public function getNoAffectRedirectResponse(
+        string $target,
+        string $message = self::LBL_NOAFFECT
+    ): array {
+        $data = ['affected' => 0];
+        return $this->getInfoRedirectResponse($target, $message, $data);
     }
     
     /**
@@ -185,6 +215,48 @@ class ArrayResponder
             'message',
             [
                 'type' => 'success',
+                'text' => $message,
+            ]
+        );
+        $ret['redirect'] = $target;
+        return $ret;
+    }
+    
+    /**
+     * Method getInfoResponse
+     *
+     * @param string  $message message
+     * @param mixed[] $data    data
+     *
+     * @return mixed[]
+     */
+    public function getInfoResponse(
+        string $message = self::LBL_SUCCESS,
+        array $data = []
+    ): array {
+        $this->messages->add('info', $message);
+        return $this->getResponse($data);
+    }
+    
+    /**
+     * Method getInfoRedirectResponse
+     *
+     * @param string  $target  target
+     * @param string  $message message
+     * @param mixed[] $data    data
+     *
+     * @return mixed[]
+     */
+    public function getInfoRedirectResponse(
+        string $target,
+        string $message = self::LBL_SUCCESS,
+        array $data = []
+    ): array {
+        $ret = $this->getSuccessResponse($message, $data);
+        $this->session->set(
+            'message',
+            [
+                'type' => 'info',
                 'text' => $message,
             ]
         );

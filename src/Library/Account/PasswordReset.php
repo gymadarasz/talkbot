@@ -99,12 +99,12 @@ class PasswordReset extends ArrayResponder
         }
         
         $token = $this->token->generate();
-        if (!$this->database->setRow(
+        if ($this->database->setRow(
             'user',
             ['token' => $token],
             '',
             ['email' => $email, 'active' => 1]
-        )
+        ) <= 0
         ) {
             return $this->getErrorResponse('Token is not updated');
         }

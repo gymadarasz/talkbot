@@ -160,10 +160,13 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     public function getEditResponse(): array
     {
         $affecteds = $this->database->setRow(...$this->getEditParams());
-        if ($affecteds) {
+        if ($affecteds > 0) {
             return $this->getAffectEditDeleteResponse($affecteds);
         }
-        return $this->getErrorResponse('Not affected');
+        if ($affecteds == 0) {
+            return $this->getNoAffectEditDeleteResponse();
+        }
+        return $this->getErrorResponse('Not found');
     }
     
     /**
@@ -178,11 +181,8 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
             $this->params->get('values', []),
             $this->params->get('where', ''),
             $this->params->get('filter', []),
-            $this->params->get(
-                'filterLogic',
-                self::DEFAULT_FILTER_LOGIC
-            ),
-            (int)$this->params->get('limit', self::DEFAULT_LIMIT)
+            $this->params->get('filterLogic'), //self::DEFAULT_FILTER_LOGIC),
+            (int)$this->params->get('limit') //, self::DEFAULT_LIMIT)
         ];
     }
     
@@ -279,5 +279,22 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
             );
         }
         return $this->getAffectResponse($affecteds);
+    }
+    
+    /**
+     * Method getNoAffectEditDeleteResponse
+     *
+     * @return mixed[]
+     */
+    protected function getNoAffectEditDeleteResponse(): array
+    {
+        $target = $this->params->get('onSuccessRedirectTarget', null);
+        if ($target) {
+            return $this->getNoAffectRedirectResponse(
+                $target,
+                $this->params->get('noAffectMessage')
+            );
+        }
+        return $this->getNoAffectResponse();
     }
 }

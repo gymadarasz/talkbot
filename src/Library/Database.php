@@ -532,7 +532,7 @@ class Database
         int $limit = 1
     ): int {
         if (!$this->count($tableUnsafe, '', $where, $filterUnsafe, $filterLogic)) {
-            return 0;
+            return -1;
         }
         return $this->set(
             $tableUnsafe,

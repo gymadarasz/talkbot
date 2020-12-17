@@ -25,6 +25,7 @@ use Madsoft\Library\Layout\View\Meta;
 use Madsoft\Library\Layout\View\Navbar;
 use Madsoft\Library\Layout\View\TableList;
 use Madsoft\Library\Layout\View\WelcomePage;
+use Madsoft\Library\Router;
 
 return $routes = [
     'public' => [
@@ -48,9 +49,25 @@ return $routes = [
                         'listId' => 'contentList',
                         'apiEndPoint' => 'content/list',
                         'columns' => [
-                            ['text' => 'Content', 'field' => 'name'],
+                            [
+                                'text' => 'Name',
+                                'field' => null,// 'name',
+                                'actions' => [
+                                    [
+                                        // TODO: view content page
+                                        'type' => 'link',
+                                        'title' => 'View {{ name }}',
+                                        'text' => '{{ name }}',
+                                        'href' => '?' . Router::ROUTE_QUERY_KEY .
+                                            '=contents/view&id={{ id }}',
+                                        'fields' => ['id', 'name'],
+                                    ],
+                                ],
+                            ],
                         ],
-                        'actions' => []
+                        'tools' => [
+                            // TODO share like rate claps.. etc
+                        ]
                     ],
                 ],
             ],
