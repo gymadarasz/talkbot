@@ -4,26 +4,32 @@
         <div class="col px-md-5">
             <div class="p-3 border bg-light shadow">
                 <form id="loginForm">
-                    <input type="hidden" name="csrf" value="<?=$csrf?>">
+                    <input type="hidden" name="csrf" value="<?= $csrf ?>">
                     <h2>Login</h2>
                     <hr>
                     <div class="messages"></div>
                     <div class="form-group">
                         <label for="email">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp"
+                        <input type="email" class="form-control" id="email" 
+                               name="email" aria-describedby="emailHelp"
                                placeholder="Enter email..">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Password..">
+                        <input type="password" class="form-control" id="password" 
+                               name="password" placeholder="Password..">
                     </div>
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="check_me_out" name="check_me_out">
-                        <label class="form-check-label" for="check_me_out">Check me out</label>
+                        <input type="checkbox" class="form-check-input" 
+                               id="check_me_out" name="check_me_out">
+                        <label class="form-check-label" for="check_me_out"
+                               >Check me out</label>
                     </div>
                     <hr>
                     <div class="text-center">
-                        <button type="button" class="btn btn-primary" onclick="api.form.submit(this, 'login')">Login</button>
+                        <button type="button" class="btn btn-primary" 
+                                onclick="app.submitForm(this, 'login')"
+                                >Login</button>
                     </div>
                 </form>
             </div>

@@ -11,7 +11,11 @@
                     <?= $fields ?>
                     <hr>
                     <div class="text-center">
-                        <button id="<?= $formId ?>SubmitButton" type="button" class="btn btn-primary" onclick="api.form.submit(this, '<?= $apiEndPoint ?>')"><?= $submitButtonLabel ?></button>
+                        <button id="<?= $formId ?>SubmitButton" 
+                                type="button"
+                                class="btn btn-primary" 
+                                onclick="app.submitForm(this, '<?= $apiEndPoint ?>')"
+                                ><?= $submitButtonLabel ?></button>
                     </div>
                 </form>
             </div>

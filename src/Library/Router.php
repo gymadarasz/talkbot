@@ -54,17 +54,18 @@ class Router
     protected User $user;
     protected Replacer $replacer;
     protected RouteCache $routeCache;
+    protected Logger $logger;
     
     /**
-     * Method __construct
-     *
-     * @param Invoker    $invoker    invoker
-     * @param Server     $server     server
-     * @param Params     $params     params
-     * @param Session    $session    session
-     * @param User       $user       user
-     * @param Replacer   $replacer   replacer
-     * @param RouteCache $routeCache routeCache
+     * 
+     * @param Invoker $invoker
+     * @param Server $server
+     * @param Params $params
+     * @param Session $session
+     * @param User $user
+     * @param Replacer $replacer
+     * @param RouteCache $routeCache
+     * @param Logger $logger
      */
     public function __construct(
         Invoker $invoker,
@@ -73,7 +74,8 @@ class Router
         Session $session,
         User $user,
         Replacer $replacer,
-        RouteCache $routeCache
+        RouteCache $routeCache,
+            Logger $logger
     ) {
         $this->invoker = $invoker;
         $this->server = $server;
@@ -82,6 +84,7 @@ class Router
         $this->user = $user;
         $this->replacer = $replacer;
         $this->routeCache = $routeCache;
+        $this->logger = $logger;
     }
     
     /**
@@ -132,6 +135,18 @@ class Router
             $this->params->sanitizeSql();
             
             $route = $this->getRoute();
+            
+            if ($route === 'error') {
+                $this->logger->error(
+                    'Error: ' . print_r(
+                        $this->params->get('error'), 
+                        true
+                    ) 
+                    . ' trace: ' . $this->params->get('trace')
+                );
+                $csrf = $this->invoker->getInstance(Csrf::class);
+                return $csrf->getAsArray();
+            }
 
             if ($this->csrfCheck) {
                 $csrf = $this->invoker->getInstance(Csrf::class);

@@ -4,31 +4,51 @@
         <div class="col px-md-5">
             <div class="p-3 border bg-light shadow">
                 <form id="registryForm">
-                    <input type="hidden" name="csrf" value="<?=$csrf?>">
+                    <input type="hidden" name="csrf" value="<?= $csrf ?>">
                     <h2>Registration</h2>
                     <hr>
                     <div class="messages"></div>
                     <div class="form-group">
                         <label for="email">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp"
+                        <input type="email" 
+                               class="form-control" 
+                               id="email" 
+                               name="email" 
+                               aria-describedby="emailHelp"
                                placeholder="Enter email..">
                         <div id="email-feedback" class="invalid-feedback"></div>
-                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                            else.</small>
+                        <small id="emailHelp" 
+                               class="form-text text-muted"
+                               >We'll never share your email with anyone else.</small>
                     </div>
                     <div class="form-group">
                         <label for="email_retype">Email retype</label>
-                        <input type="email" class="form-control" id="email_retype" name="email_retype" placeholder="Email retype..">
-                        <div id="email_retype-feedback" class="invalid-feedback"></div>
+                        <input type="email" 
+                               class="form-control" 
+                               id="email_retype" 
+                               name="email_retype" 
+                               placeholder="Email retype..">
+                        <div id="email_retype-feedback" 
+                             class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Password..">
+                        <input type="password" 
+                               class="form-control" 
+                               id="password" 
+                               name="password" 
+                               placeholder="Password..">
                         <div id="password-feedback" class="invalid-feedback"></div>
                     </div>
                     <hr>
                     <div class="text-center">
-                        <button id="registryButton" type="button" class="btn btn-primary" onclick="api.form.submit(this, 'registry')">Register</button>
+                        <button id="registryButton" 
+                                type="button" 
+                                class="btn btn-primary" 
+                                onclick="app.submitForm(
+                                                this,
+                                                'registry'
+                                                )">Register</button>
                     </div>
                 </form>
             </div>

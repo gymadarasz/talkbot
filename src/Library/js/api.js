@@ -3,9 +3,11 @@
 class Tpls {
     getMessage(clazz, message) {        
         return `
-            <div class="alert alert-{{ class }} alert-dismissible fade show" role="alert">
+            <div class="alert alert-{{ class }} alert-dismissible fade show" 
+                role="alert">
                 {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <button type="button" class="close" data-dismiss="alert" 
+                    aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -16,7 +18,9 @@ class Tpls {
       
     getSpinnerBorder(size = 1) {
         return `
-            <div class="spinner-border" style="width: {{ size }}rem; height: {{ size }}rem;" role="status">
+            <div class="spinner-border" 
+                style="width: {{ size }}rem; height: {{ size }}rem;" 
+                role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         `
@@ -83,7 +87,8 @@ class Tpls {
 
 class Ajax {
     constructor() {
-        this.base = document.querySelector('base').getAttribute('href') + '/src/api.php?q=';
+        this.base = document.querySelector('base').getAttribute('href') + 
+                '/src/api.php?q=';
     }
     
     getXMlHttpRequest(onSuccess, onError)
@@ -174,6 +179,8 @@ class Form {
         button.setAttribute('disabled', 'disabled');
         button.innerHTML = this.tpls.getSpinnerBorder() + button.innerHTML;
         var form = button.closest('form');
+        var msgs = form.querySelector('.messages');
+        msgs.innerHTML = '';
         var data = new FormData(form);
         this.api.post(form, route, data, () => {
             button.innerHTML = btnOrigHTML;
@@ -269,7 +276,8 @@ class List {
     
     getHeader() {
         if (!this.header) {
-            this.header = document.querySelectorAll(this.selector + ' thead tr th');
+            this.header = document.querySelectorAll(
+                    this.selector + ' thead tr th');
         }
         return this.header;
     }
@@ -356,7 +364,9 @@ class Api {
     }
     
     get(form, route, data, onResponse, onRedirect, onError) {
-        this.ajax.get(this.ajax.base  + route + '&' + this.serialize(data), (xhttp) => {
+        this.ajax.get(
+                this.ajax.base  + route + '&' + this.serialize(data), 
+                (xhttp) => {
             this.handleAjaxResponse(form, xhttp, onResponse, onRedirect);
         }, onError);
     }
@@ -380,7 +390,6 @@ class Api {
             elem.value = resp.csrf;
         });
         var msgs = form.querySelector('.messages');
-        msgs.innerHTML = '';
         if (resp.messages) { // TODO: error message type shown and works add the rests (see in Messages.php and bootstrap classes at https://getbootstrap.com/docs/4.5/components/alerts/, also add input helper messages see more at api response and at https://getbootstrap.com/docs/4.5/components/forms/#help-text) 
             const bsalerts = {
                 'error': 'danger'
@@ -400,7 +409,8 @@ class Api {
         if (resp.errors) {
             for (var key in resp.errors) {
                 var msg = resp.errors[key].join(', ');
-                var feedback = form.querySelector('#' + key + '-feedback.invalid-feedback');
+                var feedback = form.querySelector(
+                        '#' + key + '-feedback.invalid-feedback');
                 feedback.innerHTML = msg;
                 feedback.style.display = 'block';
             }
@@ -415,9 +425,52 @@ class Api {
     }
 }
 
-var app = {};
-app.tpls = new Tpls();
-app.ajax = new Ajax();
-app.form = new Form(app.ajax, app.tpls);
-app.list = new List(app.ajax, app.tpls);
-var api = new Api(app.ajax, app.tpls, app.form, app.list);
+class App {
+    constructor() {
+        try {
+            var tpls = new Tpls();
+            var ajax = new Ajax();
+            var form = new Form(ajax, tpls);
+            var list = new List(ajax, tpls);
+            this.api = new Api(ajax, tpls, form, list);
+        } catch (e) {
+            this.handleError(e);
+        }
+    }
+    
+    loadList(selector) {
+        try {
+            return this.api.list.load(selector);
+        } catch (e) {
+            this.handleError(e);
+        }
+    }
+    
+    submitForm(button, route) {
+        try {
+            return this.api.form.submit(button, route);
+        } catch (e) {
+            this.handleError(e);
+        }
+    }
+    
+    handleError(e) {
+        console.error('Javascript error:' , e);
+        // TODO ... show error to user and send it to back-end if it possible
+        if (this.api.tpls) {
+            var messages = document.querySelector('.messages');
+            if (messages) {
+                messages.innerHTML += this.api.tpls.getMessage(
+                        'danger', 'An application error happened');
+            }
+        }
+        if (this.api) {
+            this.api.get(document, 'error', {
+                error: e, 
+                trace: (new Error()).stack
+            });
+        }
+    }
+}
+
+var app = new App();
