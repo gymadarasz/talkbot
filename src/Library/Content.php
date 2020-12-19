@@ -70,7 +70,7 @@ class Content extends RowView implements Assoc
     {
         if (null === $this->contentId) {
             if ($this->params->has('content')) {
-                $this->contentId = $this->params->get('content')['id'];
+                $this->contentId = (int)$this->params->get('content')['id'];
             }
         }
         return $this->contentId;
