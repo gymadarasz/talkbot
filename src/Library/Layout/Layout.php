@@ -118,6 +118,7 @@ class Layout extends ArrayResponder
                 [
                         'title' => 'Error happened',
                         'header' => 'Error happened',
+                        'description' => 'It is the error page',
                     ]
             );
             $response['meta'] = $this->invoker->getInstance(Meta::class)

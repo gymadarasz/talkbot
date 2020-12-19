@@ -26,12 +26,7 @@ $invoker = new Invoker();
 $routeCache = $invoker->getInstance(RouteCache::class);
 $routes = $routeCache->loadRoutes(
     array_merge(
-        [
-            __DIR__ . '/Library/routes/api.accounts.routes.php',
-            __DIR__ . '/Library/routes/api.crud.routes.php',
-            __DIR__ . '/Library/routes/api.my-contents.routes.php',
-            __DIR__ . '/Library/routes/api.content.routes.php',
-        ],
+        [__DIR__ . '/Library/routes/api'],
         $routesExt
     ),
     'api'

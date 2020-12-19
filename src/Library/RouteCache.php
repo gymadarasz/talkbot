@@ -60,13 +60,13 @@ class RouteCache
     /**
      * Method loadRoutes
      *
-     * @param string[] $includes             includes
+     * @param string[] $includeFolders
      * @param string   $routeCacheFilePrefix routeCacheFilePrefix
      *
      * @return mixed[]
      */
     public function loadRoutes(
-        array $includes,
+        array $includeFolders,
         string $routeCacheFilePrefix
     ): array {
         $routeCacheFile = $this->getRouteCacheFile($routeCacheFilePrefix);
@@ -80,6 +80,7 @@ class RouteCache
                 'private' => [],
             ];
             $export = null;
+            $includes = $this->getIncludes($includeFolders);
             while ($export !== var_export($routes, true)) {
                 $export = var_export($routes, true);
                 foreach ($includes as $include) {
@@ -118,6 +119,25 @@ class RouteCache
             );
         }
         return $this->includeRoutes($routeCacheFile);
+    }
+
+    /**
+     * 
+     * @param string[] $includeFolders
+     * 
+     * @return string[]
+     */
+    protected function getIncludes(array $includeFolders): array {
+        $includes = [];
+        foreach ($includeFolders as $includeFolder) {
+            $splFileInfos = $this->folders->getFilesRecursive($includeFolder);
+            foreach ($splFileInfos as $splFileInfo) {
+                if (!$splFileInfo->isDir()) {
+                    $includes[] = $splFileInfo->getPathname();
+                }
+            }
+        } 
+        return $includes;
     }
     
     /**
