@@ -266,9 +266,10 @@ class Mysql
     public function query(string $query)
     {
         $this->connect();
-        //                if ($this->config->getEnv() === 'test') {
-        //                    (new Logger())->debug($query);
-        //                }
+        //if ($this->config->getEnv() === 'test') {
+        //    (new Logger())->debug($query);
+        //}
+        // var_dump($query);
         $ret = $this->mysqli->query($query);
         if (false !== $ret) {
             return $ret;

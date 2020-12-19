@@ -55,17 +55,20 @@ class Router
     protected Replacer $replacer;
     protected RouteCache $routeCache;
     protected Logger $logger;
+    protected Config $config;
     
     /**
-     * 
-     * @param Invoker $invoker
-     * @param Server $server
-     * @param Params $params
-     * @param Session $session
-     * @param User $user
-     * @param Replacer $replacer
-     * @param RouteCache $routeCache
-     * @param Logger $logger
+     * Method __construct
+     *
+     * @param Invoker    $invoker    invoker
+     * @param Server     $server     server
+     * @param Params     $params     params
+     * @param Session    $session    session
+     * @param User       $user       user
+     * @param Replacer   $replacer   replacer
+     * @param RouteCache $routeCache routeCache
+     * @param Logger     $logger     logger
+     * @param Config     $config     config
      */
     public function __construct(
         Invoker $invoker,
@@ -75,7 +78,8 @@ class Router
         User $user,
         Replacer $replacer,
         RouteCache $routeCache,
-            Logger $logger
+        Logger $logger,
+        Config $config
     ) {
         $this->invoker = $invoker;
         $this->server = $server;
@@ -85,6 +89,7 @@ class Router
         $this->replacer = $replacer;
         $this->routeCache = $routeCache;
         $this->logger = $logger;
+        $this->config = $config;
     }
     
     /**
@@ -139,9 +144,9 @@ class Router
             if ($route === 'error') {
                 $this->logger->error(
                     'Error: ' . print_r(
-                        $this->params->get('error'), 
+                        $this->params->get('error'),
                         true
-                    ) 
+                    )
                     . ' trace: ' . $this->params->get('trace')
                 );
                 $csrf = $this->invoker->getInstance(Csrf::class);
@@ -567,6 +572,7 @@ class Router
         return [
             'params' => $this->params,
             'session' => $this->session,
+            'config.site' => $this->config->get('Site'),
         ];
     }
 }

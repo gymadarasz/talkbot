@@ -109,6 +109,9 @@ class CrudTest extends ApiTest
                     . 'table=user&'
                     . 'fields=email,group&'
                     . 'filter[group]=admin&'
+                    . 'filterLogic=AND&'
+                    . 'limit=25&'
+                    . 'offset=0&'
                     . 'csrf=' . $this->getCsrf()
             )
         );
@@ -138,6 +141,9 @@ class CrudTest extends ApiTest
                     . 'table=user&'
                     . 'fields=email,group&'
                     . 'filter[group]=user&'
+                    . 'filterLogic=AND&'
+                    . 'limit=25&'
+                    . 'offset=0&'
                     . 'csrf=' . $this->getCsrf()
             )
         );
@@ -174,6 +180,9 @@ class CrudTest extends ApiTest
                     . 'fields=email,group&'
                     . 'filter[email]=admin1@testing.com&'
                     . 'filter[group]=user&'
+                    . 'filterLogic=AND&'
+                    . 'limit=25&'
+                    . 'offset=0&'
                     . 'csrf=' . $this->getCsrf()
             )
         );
@@ -203,6 +212,8 @@ class CrudTest extends ApiTest
                     . 'filter[email]=admin1@testing.com&'
                     . 'filter[group]=user&'
                     . 'filterLogic=OR&'
+                    . 'limit=25&'
+                    . 'offset=0&'
                     . 'csrf=' . $this->getCsrf()
             )
         );
@@ -250,6 +261,7 @@ class CrudTest extends ApiTest
                     . 'table=user&'
                     . 'fields=email,group&'
                     . 'filter[group]=user&'
+                    . 'filterLogic=AND&'
                     . 'limit=3&offset=5&'
                     . 'csrf=' . $this->getCsrf()
             )
@@ -286,6 +298,7 @@ class CrudTest extends ApiTest
                     . 'table=user&'
                     . 'fields=email,group&'
                     . 'filter[email]=user3@testing.com&'
+                    . 'filterLogic=AND&'
                     . 'csrf=' . $this->getCsrf()
             )
         );
@@ -311,6 +324,7 @@ class CrudTest extends ApiTest
                     . 'table=user&'
                     . 'fields=email,group&'
                     . 'filter[email]=not-exist-email&'
+                    . 'filterLogic=AND&'
                     . 'csrf=' . $this->getCsrf()
             )
         );
@@ -334,8 +348,11 @@ class CrudTest extends ApiTest
     {
         $tmpUser = $json->decode(
             $this->get(
-                'q=list&table=user&fields=id,email'
-                    . '&csrf=' . $this->getCsrf()
+                'q=list&table=user&fields=id,email&'
+                    . 'filterLogic=AND&'
+                    . 'limit=25&'
+                    . 'offset=0&'
+                    . 'csrf=' . $this->getCsrf()
             )
         )['rows'][0];
         
@@ -377,6 +394,7 @@ class CrudTest extends ApiTest
         $user = $json->decode(
             $this->get(
                 'q=view&table=user&fields=id,email&filter[id]=' . $uid
+                    . '&filterLogic=AND&'
                     . '&csrf=' . $this->getCsrf()
             )
         )['row'];
@@ -386,6 +404,7 @@ class CrudTest extends ApiTest
         $result = $json->decode(
             $this->get(
                 'q=delete&table=user&filter[id]=' . $uid
+                    . '&filterLogic=AND&'
                     . '&csrf=' . $this->getCsrf()
             )
         );
@@ -408,7 +427,14 @@ class CrudTest extends ApiTest
      */
     public function testValidatons(Json $json): void
     {
-        $results = $json->decode($this->get('q=list&csrf=' . $this->getCsrf()));
+        $results = $json->decode(
+            $this->get(
+                'q=list&'
+                . 'limit=25&'
+                . 'offset=0&'
+                . 'csrf=' . $this->getCsrf()
+            )
+        );
         $this->assertTrue(
             in_array('Invalid parameter(s)', $results['messages']['error'], true)
         );
@@ -445,7 +471,10 @@ class CrudTest extends ApiTest
     {
         $tmpUsers = $json->decode(
             $this->get(
-                'q=list&table=user&fields=id,email'
+                'q=list&table=user&fields=id,email&'
+                    . 'filterLogic=AND&'
+                    . 'limit=25&'
+                    . 'offset=0&'
                     . '&csrf=' . $this->getCsrf()
             )
         )['rows'];
@@ -469,6 +498,7 @@ class CrudTest extends ApiTest
         $result = $json->decode(
             $this->post(
                 'q=edit&table=user&filter[id]=' . $uid
+                    . '&filterLogic=AND&'
                     . '&csrf=' . $this->getCsrf(),
                 [
                     'values' =>
@@ -486,6 +516,7 @@ class CrudTest extends ApiTest
         $user = $json->decode(
             $this->get(
                 'q=view&table=user&fields=id,email&filter[id]=' . $uid
+                . 'filterLogic=AND&'
                     . '&csrf=' . $this->getCsrf()
             )
         )['row'];

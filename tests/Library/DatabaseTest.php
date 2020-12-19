@@ -53,10 +53,12 @@ class DatabaseTest extends Test
      */
     public function testCrudInvalidLogicFails(Invoker $invoker): void
     {
-        $exc = null;
         $database = $invoker->getInstance(DatabaseMock::class);
+        $database->getWherePublic('atable', '', [], 'NOT VALID LOGIC');
+
+        $exc = null;
         try {
-            $database->getWherePublic('atable', '', [], 'NOT VALID LOGIC');
+            $database->getWherePublic('atable', '', ['a' => 'b'], 'NOT VALID LOGIC');
             $this->assertTrue(false);
         } catch (RuntimeException $exc) {
         }

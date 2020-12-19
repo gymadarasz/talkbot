@@ -27,7 +27,7 @@ use RuntimeException;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-abstract class ViewForm
+abstract class ViewForm extends RowView
 {
     const TPL_PATH = __DIR__ . '/../../phtml/';
     

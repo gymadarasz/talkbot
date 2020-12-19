@@ -13,6 +13,7 @@
 
 namespace Madsoft\Library\Layout\View;
 
+use Madsoft\Library\Content;
 use Madsoft\Library\Params;
 use Madsoft\Library\Template;
 
@@ -32,17 +33,23 @@ class Header
     
     protected Template $template;
     protected Params $params;
+    protected Content $content;
     
     /**
      * Method __construct
      *
      * @param Template $template template
      * @param Params   $params   params
+     * @param Content  $content  content
      */
-    public function __construct(Template $template, Params $params)
-    {
+    public function __construct(
+        Template $template,
+        Params $params,
+        Content $content
+    ) {
         $this->template = $template;
         $this->params = $params;
+        $this->content = $content;
     }
     
     /**
@@ -54,8 +61,21 @@ class Header
     {
         return $this->template->setEncoder(null)->process(
             'header.phtml',
-            ['header' => $this->params->get('header')],
+            ['header' => $this->getHeaderContent()],
             $this::TPL_PATH
         );
+    }
+    
+    /**
+     * Method getHeaderContent
+     *
+     * @return string
+     */
+    protected function getHeaderContent(): string
+    {
+        if (null !== $this->content->getContentId()) {
+            return $this->content->get('header');
+        }
+        return $this->params->get('header');
     }
 }

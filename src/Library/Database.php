@@ -304,11 +304,11 @@ class Database
     ): string {
         $this->mysql->setEscapeSql(true);
         $filter = $this->safer->freez([$this->mysql, 'escape'], $filterUnsafe);
-        if (!in_array($logic, self::LOGICS, true)) {
+        if ($filter && !in_array($logic, self::LOGICS, true)) {
             throw new RuntimeException("Invalid logic: '$logic'");
         }
         $query = '';
-        if ($filter) {
+        if ($filter || $where) {
             $query .= " WHERE " . $this->getConditions(
                 $table,
                 $where,
@@ -337,11 +337,45 @@ class Database
         string $logic = 'AND'
     ): string {
         $this->mysql->setEscapeSql(true);
+        $ret = '';
+        if ($filter) {
+            $ret = $this->getConditionsFromFilter($table, $filter, $logic);
+        }
+        $ret = trim($where) ?
+            ($filter ?
+                "($ret) $where" :
+                $where) :
+            ($filter ?
+                $ret :
+                '');
+        if (!$ret) {
+            // todo  revert escaping when exceptions or extra returns!!
+            throw new RuntimeException('No where nor filter');
+        }
+        $this->mysql->setEscapeSql(false);
+        return $ret;
+    }
+
+    /**
+     * Method getConditionsFromFilter
+     *
+     * @param string  $table  table
+     * @param mixed[] $filter filter
+     * @param string  $logic  logic
+     *
+     * @return string
+     */
+    protected function getConditionsFromFilter(
+        string $table,
+        array $filter,
+        string $logic
+    ): string {
         $conds = [];
         foreach ($filter as $key => $value) {
             if (is_int($key)) {
                 throw new RuntimeException(
-                    'Invalid filter array. Filter should be an associative array: '
+                    'Invalid filter array. '
+                        . 'Filter should be an associative array: '
                         . 'filter[field] => value'
                 );
             }
@@ -361,15 +395,10 @@ class Database
                     . 'filter keys should describe a [table.]field name.'
             );
         }
-        
-        $ret = $conds ?
+
+        return $conds ?
             implode(" $logic ", $conds) :
             $this::NO_CONDITION_FILTERS[$logic];
-        if (trim($where)) {
-            $ret = "($ret) $where";
-        }
-        $this->mysql->setEscapeSql(false);
-        return $ret;
     }
     
     /**

@@ -35,7 +35,7 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     const DEFAULT_FIELDS = 'id';
     const DEFAULT_FILTER_LOGIC = 'AND';
     const DEFAULT_LIMIT = 25;
-    const DEFAULT_OFFSET = 0;
+    //    const DEFAULT_OFFSET = 0;
     
     protected Database $database;
     protected Params $params;
@@ -91,19 +91,13 @@ class Crud extends ArrayResponder // TODO: test for this class + owned crud also
     {
         return [
             $this->params->get('table'),
-            explode(
-                ',',
-                $this->params->get('fields', self::DEFAULT_FIELDS)
-            ),
-            $this->params->get('join', ''),
-            $this->params->get('where', ''),
+            explode(',', $this->params->get('fields')),
+            $this->params->get('join'),
+            $this->params->get('where'),
             $this->params->get('filter', []),
-            $this->params->get(
-                'filterLogic',
-                self::DEFAULT_FILTER_LOGIC
-            ),
-            (int)$this->params->get('limit', self::DEFAULT_LIMIT),
-            (int)$this->params->get('offset', self::DEFAULT_OFFSET)
+            $this->params->get('filterLogic'),
+            (int)$this->params->get('limit'),
+            (int)$this->params->get('offset'),
         ];
     }
     

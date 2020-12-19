@@ -456,7 +456,6 @@ class App {
     
     handleError(e) {
         console.error('Javascript error:' , e);
-        // TODO ... show error to user and send it to back-end if it possible
         if (this.api.tpls) {
             var messages = document.querySelector('.messages');
             if (messages) {

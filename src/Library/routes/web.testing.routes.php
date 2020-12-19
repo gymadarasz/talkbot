@@ -19,7 +19,6 @@ use Madsoft\Library\Layout\View\Meta;
 use Madsoft\Library\Layout\View\Navbar;
 use Madsoft\Library\Testing\Testing;
 
-// TODO catch js errors
 return $routes = [
     'public' => [
         'GET' => [
@@ -31,6 +30,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Mails testing',
                     'header' => 'Mails testing',
+                    'description' => 'Mail testing',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -50,6 +50,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Mails testing',
                     'header' => 'Mails testing',
+                    'description' => 'Mail testing',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -69,6 +70,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Mails testing',
                     'header' => 'Mails testing',
+                    'description' => 'Mail testing',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -90,6 +92,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Mails testing',
                     'header' => 'Mails testing',
+                    'description' => 'Mail testing',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],

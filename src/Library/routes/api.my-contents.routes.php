@@ -24,20 +24,23 @@ return $routes = [
             'my-contents/list' => [
                 'class' => Crud::class,
                 'method' => 'getListResponse',
+                'defaults' => ['offset' => 0],
                 'overrides' => [
                     'table' => 'content',
                     'filter' => [
                         'owner_user_id' => '{{ session: user.id }}'
                     ],
-                ]
+                    'filterLogic' => 'AND',
+                    'limit' => 25,
+                ],
             ],
             // My delete should be only an update on deleted column
             'my-contents/delete' => [
                 'class' => Crud::class,
                 'method' => 'getDeleteResponse',
-                'defaults' => [
-                    'filter' => ['id' => ''],
-                ],
+            //                'defaults' => [
+            //                    'filter' => ['id' => ''],
+            //                ],
                 'validations' => [
                     'filter.id' => [
                         'value' => '{{ params: filter.id }}',
@@ -50,6 +53,9 @@ return $routes = [
                 'overrides' => [
                     'table' => 'content',
                     'filter' => ['owner_user_id' => '{{ session: user.id }}'],
+                    'filterLogic' => 'AND',
+                    'limit' => 1,
+                    'offset' => 0,
                     'values' => ['owner_user_id' => '{{ session: user.id }}'],
                     'successMessage' => ArrayResponder::LBL_SUCCESS,
                     'onSuccessRedirectTarget' => null,
@@ -69,12 +75,30 @@ return $routes = [
                     'onSuccessRedirectTarget' => 'my-contents',
                 ],
                 'validations' => [
-                    'name' => [
-                        'value' => '{{ params: values.name }}',
+                    'title' => [
+                        'value' => '{{ params: values.title }}',
                         'rules' => [
                             Mandatory::class => null
                         ]
-                    ]
+                    ],
+                    'description' => [
+                        'value' => '{{ params: values.description }}',
+                        'rules' => [
+                            Mandatory::class => null
+                        ]
+                    ],
+                    'header' => [
+                        'value' => '{{ params: values.header }}',
+                        'rules' => [
+                            Mandatory::class => null
+                        ]
+                    ],
+                    'body' => [
+                        'value' => '{{ params: values.body }}',
+                        'rules' => [
+                            Mandatory::class => null
+                        ]
+                    ],
                 ]
             ],
             'my-contents/edit' => [
@@ -91,6 +115,7 @@ return $routes = [
                     ],
                     'filterLogic' => 'AND',
                     'limit' => 1,
+                    'offset' => 0,
                     'successMessage' => 'Content saved',
                     'noAffectMessage' => 'Content is not changed',
                     'onSuccessRedirectTarget' => 'my-contents',
@@ -103,8 +128,26 @@ return $routes = [
                             Number::class => null
                         ]
                     ],
-                    'name' => [
-                        'value' => '{{ params: values.name }}',
+                    'title' => [
+                        'value' => '{{ params: values.title }}',
+                        'rules' => [
+                            Mandatory::class => null
+                        ]
+                    ],
+                    'description' => [
+                        'value' => '{{ params: values.description }}',
+                        'rules' => [
+                            Mandatory::class => null
+                        ]
+                    ],
+                    'header' => [
+                        'value' => '{{ params: values.header }}',
+                        'rules' => [
+                            Mandatory::class => null
+                        ]
+                    ],
+                    'body' => [
+                        'value' => '{{ params: values.body }}',
                         'rules' => [
                             Mandatory::class => null
                         ]

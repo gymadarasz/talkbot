@@ -20,6 +20,7 @@ use Madsoft\Library\Account\View\PasswordChangeForm;
 use Madsoft\Library\Account\View\PasswordResetForm;
 use Madsoft\Library\Account\View\RegistryForm;
 use Madsoft\Library\Layout\Layout;
+use Madsoft\Library\Layout\View\ContentPage;
 use Madsoft\Library\Layout\View\Header;
 use Madsoft\Library\Layout\View\Meta;
 use Madsoft\Library\Layout\View\Navbar;
@@ -36,8 +37,9 @@ return $routes = [
                 'overrides' => [
                     'tplfile' => 'index.phtml',
                     'favicon' => 'favicons/favicon.ico',
-                    'title' => 'Welcome',
-                    'header' => 'Welcome',
+                    'title' => 'Content list',
+                    'header' => 'Content list',
+                    'description' => 'Content list of {{ config.site: brand }} page',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -50,19 +52,23 @@ return $routes = [
                         'apiEndPoint' => 'content/list',
                         'columns' => [
                             [
-                                'text' => 'Name',
-                                'field' => null,// 'name',
+                                'text' => 'Header',
+                                'field' => null,
                                 'actions' => [
                                     [
-                                        // TODO: view content page
                                         'type' => 'link',
-                                        'title' => 'View {{ name }}',
-                                        'text' => '{{ name }}',
+                                        'title' => 'View {{ title }}',
+                                        'text' => '{{ header }}',
                                         'href' => '?' . Router::ROUTE_QUERY_KEY .
-                                            '=contents/view&id={{ id }}',
-                                        'fields' => ['id', 'name'],
+                                            '=content&content[id]={{ id }}',
+                                        'fields' => ['id', 'title', 'header'],
                                     ],
                                 ],
+                            ],
+                            [
+                                'text' => 'Description',
+                                'field' => 'description',
+                                'actions' => null,
                             ],
                         ],
                         'tools' => [
@@ -79,6 +85,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Welcome',
                     'header' => 'Welcome',
+                    'description' => 'Welcome on {{ config.site: brand }} page',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -95,6 +102,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Login',
                     'header' => 'Login',
+                    'description' => 'Login to {{ config.site: brand }} page',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -111,6 +119,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Registration',
                     'header' => 'Registration',
+                    'description' => 'Registration to {{ config.site: brand }} page',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -127,6 +136,8 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Account activation',
                     'header' => 'Account activation',
+                    'description' => 'Account activation'
+                    . ' to {{ config.site: brand }} page',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -143,6 +154,8 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Password reset',
                     'header' => 'Password reset',
+                    'description' => 'Password reset'
+                    . ' for {{ config.site: brand }} page',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -159,6 +172,8 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Change password',
                     'header' => 'Change password',
+                    'description' => 'Change password'
+                    . ' for {{ config.site: brand }} page',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -167,6 +182,42 @@ return $routes = [
                             PasswordChangeForm::class,
                             'getPasswordChangeForm'
                         ],
+                    ],
+                ],
+            ],
+            'content' => [
+                'class' => Layout::class,
+                'method' => 'getOutput',
+                'overrides' => [
+                    'tplfile' => 'index.phtml',
+                    'favicon' => 'favicons/favicon.ico',
+                    'views' => [
+                        'meta' => [Meta::class, 'getMeta'],
+                        'navbar' => [Navbar::class, 'getNavbar'],
+                        'header' => [Header::class, 'getHeader'],
+                        'body' => [
+                            ContentPage::class,
+                            'getContent'
+                        ],
+                    ],
+                    'content-dataset' => [
+                        'table' => 'content',
+                        'fields' => [
+                            'id',
+                            'title',
+                            'description',
+                            'header',
+                            'body',
+                            'published'
+                        ],
+                        'join' => 'JOIN user ON user.id = content.owner_user_id',
+                        'where' => ''
+                        . 'content.id = {{ params: content.id }} AND '
+                        . 'content.published = 1',
+                        'filter' => [],
+                        'filterLogic' => '',
+                        'limit' => 1,
+                        'offset' => 0,
                     ],
                 ],
             ],
@@ -182,6 +233,8 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'Logging out...',
                     'header' => 'Logging out...',
+                    'description' => 'Logging out'
+                    . ' from {{ config.site: brand }} page',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -189,6 +242,16 @@ return $routes = [
                         'body' => [LogoutPage::class, 'getLogout'],
                     ],
                     'redirectTarget' => 'login',
+                ],
+            ],
+            'content' => [
+                'overrides' => [
+                    'content-dataset' => [
+                        'where' => '('
+                        . 'content.id = {{ params: content.id }} AND '
+                        . 'content.published = 1'
+                        . ') OR content.owner_user_id = {{ session: user.id }}',
+                    ],
                 ],
             ],
         ],

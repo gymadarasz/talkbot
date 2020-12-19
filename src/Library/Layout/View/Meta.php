@@ -13,6 +13,7 @@
 
 namespace Madsoft\Library\Layout\View;
 
+use Madsoft\Library\Content;
 use Madsoft\Library\Params;
 use Madsoft\Library\Template;
 
@@ -32,17 +33,23 @@ class Meta
     
     protected Template $template;
     protected Params $params;
+    protected Content $content;
     
     /**
      * Method __construct
      *
      * @param Template $template template
      * @param Params   $params   params
+     * @param Content  $content  content
      */
-    public function __construct(Template $template, Params $params)
-    {
+    public function __construct(
+        Template $template,
+        Params $params,
+        Content $content
+    ) {
         $this->template = $template;
         $this->params = $params;
+        $this->content = $content;
     }
     
     /**
@@ -54,8 +61,37 @@ class Meta
     {
         return $this->template->setEncoder(null)->process(
             'meta.phtml',
-            ['title' => $this->params->get('title')],
+            [
+                'title' => $this->getTitleContent(),
+                'description' => $this->getDescriptionContent(),
+            ],
             $this::TPL_PATH
         );
+    }
+    
+    /**
+     * Method getTitleContent
+     *
+     * @return string
+     */
+    protected function getTitleContent(): string
+    {
+        if (null !== $this->content->getContentId()) {
+            return $this->content->get('title');
+        }
+        return $this->params->get('title');
+    }
+    
+    /**
+     * Method getDescriptionContent
+     *
+     * @return string
+     */
+    protected function getDescriptionContent(): string
+    {
+        if (null !== $this->content->getContentId()) {
+            return $this->content->get('description');
+        }
+        return $this->params->get('description');
     }
 }

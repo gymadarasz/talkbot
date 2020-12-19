@@ -86,23 +86,4 @@ class EditForm extends ViewForm
         }
         return $dataset;
     }
-    
-    /**
-     * Method getDatasetParams
-     *
-     * @param string[] $dataset dataset
-     *
-     * @return mixed[]
-     */
-    protected function getDatasetParams(array $dataset): array
-    {
-        return [
-            $dataset['table'],
-            $dataset['fields'],
-            $dataset['join'],
-            $dataset['where'],
-            $dataset['filter'],
-            $dataset['filterLogic']
-        ];
-    }
 }

@@ -114,7 +114,7 @@
           "variables": [
             {
               "id": "H1WDF4HnD",
-              "value": "${baseUrl}"
+              "value": "http://localhost/sandbox/talkbot"
             },
             {
               "id": "B11YFErnP",
@@ -137,15 +137,15 @@
           "variables": [
             {
               "id": "ryPHfrr3w",
-              "value": "${baseUrl}"
+              "value": "http://localhost/sandbox/talkbot"
             },
             {
               "id": "SyrIMHH2v",
-              "value": "tester${random1}@testing.com"
+              "value": "tester5161060@testing.com"
             },
             {
               "id": "BJ1OGrS2P",
-              "value": "tester${random2}@testing.com"
+              "value": "tester6764250@testing.com"
             }
           ],
           "warnings": []
@@ -1934,7 +1934,7 @@
           "description": null,
           "id": "rkbCJHH2P",
           "nodeName": null,
-          "selector": "#name",
+          "selector": "#title",
           "selectorType": "CSS",
           "suggestions": [],
           "textAsserted": false,
@@ -1952,13 +1952,100 @@
           "inputType": "text",
           "isContentEditable": false,
           "nodeName": null,
-          "selector": "#name",
+          "selector": "#title",
           "selectorType": "CSS",
           "suggestions": [],
           "timeout": null,
           "type": "INPUT",
-          "value": "${contentName}",
+          "value": "${title}",
           "warnings": []
+        },
+        {
+          "type": "MOUSEDOWN",
+          "selector": "#description",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "rygqMJinD",
+          "textContent": null,
+          "textAsserted": false,
+          "x": null,
+          "y": null
+        },
+        {
+          "type": "INPUT",
+          "selector": "#description",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "HymnGks2D",
+          "value": "${description}"
+        },
+        {
+          "type": "MOUSEDOWN",
+          "selector": "#header",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "HJ1Cz1jnD",
+          "textContent": null,
+          "textAsserted": false,
+          "x": null,
+          "y": null
+        },
+        {
+          "type": "INPUT",
+          "selector": "#header",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "Hk3CMJi2D",
+          "value": "${header}"
+        },
+        {
+          "type": "MOUSEDOWN",
+          "selector": "#body",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "BJeeXyj2w",
+          "textContent": null,
+          "textAsserted": false,
+          "x": null,
+          "y": null
+        },
+        {
+          "type": "INPUT",
+          "selector": "#body",
+          "selectorType": "CSS",
+          "nodeName": null,
+          "description": null,
+          "timeout": null,
+          "warnings": [],
+          "suggestions": [],
+          "continueOnFail": false,
+          "id": "Hy0gmksnD",
+          "value": "${body}"
         },
         {
           "continueOnFail": false,
@@ -2029,7 +2116,7 @@
           "suggestions": [],
           "timeout": null,
           "type": "TEXT_ASSERT",
-          "value": "${contentName}",
+          "value": "${header}",
           "warnings": []
         }
       ],
@@ -2039,9 +2126,27 @@
       "type": "component",
       "variables": [
         {
-          "defaultValue": "Test content",
+          "defaultValue": "Test title",
           "id": "SkHe-rBnP",
-          "name": "contentName",
+          "name": "title",
+          "type": "STRING_VAR"
+        },
+        {
+          "id": "BJeBf1j2D",
+          "name": "header",
+          "defaultValue": "Test header",
+          "type": "STRING_VAR"
+        },
+        {
+          "id": "HJ0IzJj2D",
+          "name": "description",
+          "defaultValue": "Test description",
+          "type": "STRING_VAR"
+        },
+        {
+          "id": "SygdMyonw",
+          "name": "body",
+          "defaultValue": "Test body",
           "type": "STRING_VAR"
         }
       ]
@@ -2086,6 +2191,10 @@
             {
               "id": "SkHe-rBnP",
               "value": "Test content 1"
+            },
+            {
+              "id": "BJeBf1j2D",
+              "value": "Test header 1"
             }
           ],
           "warnings": []
@@ -2142,6 +2251,10 @@
             {
               "id": "SkHe-rBnP",
               "value": "Test content 2"
+            },
+            {
+              "id": "BJeBf1j2D",
+              "value": "Test header 2"
             }
           ],
           "warnings": []
@@ -2197,7 +2310,7 @@
           "variables": [
             {
               "id": "SkHe-rBnP",
-              "value": "Test content 1"
+              "value": "Test header 1"
             }
           ],
           "warnings": []
@@ -2253,7 +2366,7 @@
           "variables": [
             {
               "id": "SkHe-rBnP",
-              "value": "Test content 2"
+              "value": "Test header 2"
             }
           ],
           "warnings": []
@@ -2369,7 +2482,7 @@
           "suggestions": [],
           "timeout": null,
           "type": "TEXT_ASSERT",
-          "value": "${contentName}",
+          "value": "${header}",
           "warnings": []
         }
       ],
@@ -2379,9 +2492,9 @@
       "type": "component",
       "variables": [
         {
-          "defaultValue": "Test content",
+          "defaultValue": "Test header",
           "id": "SkHe-rBnP",
-          "name": "contentName",
+          "name": "header",
           "type": "STRING_VAR"
         }
       ]

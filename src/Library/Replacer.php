@@ -55,7 +55,8 @@ class Replacer
     {
         $matches = null;
         if (preg_match_all(
-            '/\{\{\s*([a-zA-Z0-9_]+)\s*\:\s*([a-zA-Z0-9_][a-zA-Z0-9_\-\.]*)\s*\}\}/',
+            '/\{\{\s*([a-zA-Z0-9_\-\.]+)\s*\:'
+                . '\s*([a-zA-Z0-9_][a-zA-Z0-9_\-\.]*)\s*\}\}/',
             $value,
             $matches
         )

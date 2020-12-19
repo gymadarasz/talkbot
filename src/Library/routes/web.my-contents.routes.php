@@ -33,6 +33,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'My Contents',
                     'header' => 'My Contents',
+                    'description' => 'My Contents',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -50,18 +51,27 @@ return $routes = [
                                 'actions' => null,
                             ],
                             [
-                                'text' => 'Name',
-                                'field' => null,// 'name',
+                                'text' => 'Head',
+                                'field' => null,
                                 'actions' => [
                                     [
                                         'type' => 'link',
-                                        'title' => 'View {{ name }}',
-                                        'text' => '{{ name }}',
+                                        'title' => 'View {{ title }}',
+                                        'text' => '{{ header }}',
                                         'href' => '?' . Router::ROUTE_QUERY_KEY .
-                                            '=my-contents/view&id={{ id }}',
-                                        'fields' => ['id', 'name'],
+                                            '=content&content[id]={{ id }}',
+                                        'fields' => [
+                                            'id',
+                                            'title',
+                                            'header'
+                                        ],
                                     ],
                                 ],
+                            ],
+                            [
+                                'text' => 'Description',
+                                'field' => 'description',
+                                'actions' => null,
                             ],
                             [
                                 'text' => 'Published',
@@ -85,27 +95,20 @@ return $routes = [
                                 'actions' => [
                                     [
                                         'type' => 'link',
-                                        'title' => 'Edit {{ name }}',
+                                        'title' => 'Edit {{ title }}',
                                         'text' => 'Edit',
                                         'href' => '?' . Router::ROUTE_QUERY_KEY .
                                             '=my-contents/edit&id={{ id }}',
-                                        'fields' => ['id', 'name'],
+                                        'fields' => ['id', 'title'],
                                     ],
                                     [
                                         'type' => 'link',
-                                        'title' => 'Delete {{ name }}',
+                                        'title' => 'Delete {{ title }}',
                                         'text' => 'Delete',
                                         'href' => '?' . Router::ROUTE_QUERY_KEY .
                                             '=my-contents/delete&id={{ id }}',
-                                        'fields' => ['id', 'name'],
+                                        'fields' => ['id', 'title'],
                                     ],
-                                    //[
-                                    //    'type' => 'form',
-                                    //    'header' => 'Publish',
-                                    //    'apiEndPoint' => 'my-contents/publish/' .
-                                    //          '?id={{ id }}',
-                                    //    'fields' => ['id'],
-                                    //],
                                 ],
                             ],
                         ],
@@ -130,6 +133,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'My Contents',
                     'header' => 'My Contents',
+                    'description' => 'My Contents / create',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -140,10 +144,31 @@ return $routes = [
                         'fields' => [
                             [
                                 'type' => 'input',
-                                'id' => 'name',
-                                'label' => 'Name',
-                                'name' => 'values[name]',
-                                'placeholder' => 'Type content name here..',
+                                'id' => 'title',
+                                'label' => 'Title',
+                                'name' => 'values[title]',
+                                'placeholder' => 'Type content title here..',
+                            ],
+                            [
+                                'type' => 'input',
+                                'id' => 'description',
+                                'label' => 'Description',
+                                'name' => 'values[description]',
+                                'placeholder' => 'Type content description here..',
+                            ],
+                            [
+                                'type' => 'input',
+                                'id' => 'header',
+                                'label' => 'Header',
+                                'name' => 'values[header]',
+                                'placeholder' => 'Type content header here..',
+                            ],
+                            [
+                                'type' => 'input',
+                                'id' => 'body',
+                                'label' => 'Body',
+                                'name' => 'values[body]',
+                                'placeholder' => 'Type content body here..',
                             ],
                         ],
                         'formId' => 'myContentCreateForm',
@@ -161,6 +186,7 @@ return $routes = [
                     'favicon' => 'favicons/favicon.ico',
                     'title' => 'My Contents',
                     'header' => 'My Contents',
+                    'description' => 'My Contents / Edit',
                     'views' => [
                         'meta' => [Meta::class, 'getMeta'],
                         'navbar' => [Navbar::class, 'getNavbar'],
@@ -177,10 +203,31 @@ return $routes = [
                             ],
                             [
                                 'type' => 'input',
-                                'id' => 'name',
-                                'label' => 'Name',
-                                'name' => 'values[name]',
-                                'placeholder' => 'Type content name here..',
+                                'id' => 'title',
+                                'label' => 'Title',
+                                'name' => 'values[title]',
+                                'placeholder' => 'Type content title here..',
+                            ],
+                            [
+                                'type' => 'input',
+                                'id' => 'description',
+                                'label' => 'Description',
+                                'name' => 'values[description]',
+                                'placeholder' => 'Type content description here..',
+                            ],
+                            [
+                                'type' => 'input',
+                                'id' => 'header',
+                                'label' => 'Header',
+                                'name' => 'values[header]',
+                                'placeholder' => 'Type content header here..',
+                            ],
+                            [
+                                'type' => 'input',
+                                'id' => 'body',
+                                'label' => 'Body',
+                                'name' => 'values[body]',
+                                'placeholder' => 'Type content body here..',
                             ],
                             [
                                 'type' => 'checkbox',
@@ -196,7 +243,14 @@ return $routes = [
                         'formBindKey' => 'values',
                         'dataset' => [
                             'table' => 'content',
-                            'fields' => ['id', 'name', 'published'],
+                            'fields' => [
+                                'id',
+                                'title',
+                                'description',
+                                'header',
+                                'body',
+                                'published'
+                            ],
                             'join' => 'JOIN user ON user.id = content.owner_user_id',
                             'where' => 'AND content.id = {{ params: id }}',
                             'filter' => [
@@ -204,6 +258,8 @@ return $routes = [
                                 'owner_user_id' => '{{ session: user.id }}',
                             ],
                             'filterLogic' => 'AND',
+                            'limit' => 1,
+                            'offset' => 0,
                         ],
                     ],
                 ],

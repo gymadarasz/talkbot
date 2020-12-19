@@ -115,6 +115,16 @@ class Validator
                         . "descriptor array should be associative"
                 );
             }
+            if (!array_key_exists('value', $field)) {
+                throw new RuntimeException(
+                    '"value" is not set for field validation'
+                );
+            }
+            if (!array_key_exists('rules', $field)) {
+                throw new RuntimeException(
+                    '"rules" is not set for field validation'
+                );
+            }
             $errors = $this->addErrors(
                 $errors,
                 $fname,

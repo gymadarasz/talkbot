@@ -13,13 +13,11 @@
 
 namespace Madsoft\Library\Layout\View;
 
-use Madsoft\Library\Json;
-use Madsoft\Library\Params;
+use Madsoft\Library\Content;
 use Madsoft\Library\Template;
-use RuntimeException;
 
 /**
- * TableList
+ * ContentPage
  *
  * @category  PHP
  * @package   Madsoft\Library\Layout\View
@@ -28,51 +26,39 @@ use RuntimeException;
  * @license   Copyright (c) All rights reserved.
  * @link      this
  */
-class TableList
+class ContentPage
 {
     const TPL_PATH = __DIR__ . '/../../phtml/';
     
-    protected Params $params;
     protected Template $template;
-    protected Json $json;
-
-
+    protected Content $content;
+    
     /**
      * Method __construct
      *
-     * @param Params   $params   params
      * @param Template $template template
-     * @param Json     $json     json
+     * @param Content  $content  content
      */
-    public function __construct(Params $params, Template $template, Json $json)
-    {
-        $this->params = $params;
+    public function __construct(
+        Template $template,
+        Content $content
+    ) {
         $this->template = $template;
-        $this->json = $json;
+        $this->content = $content;
     }
     
     /**
-     * Method getList
+     * Method getContent
      *
      * @return string
      *
      * @suppress PhanUnreferencedPublicMethod
      */
-    public function getList(): string
+    public function getContent(): string
     {
-        $params = $this->params->get('table-list');
-        foreach ($params['columns'] as &$column) {
-            if (!array_key_exists('actions', $column)) {
-                throw new RuntimeException(
-                    'Column "actions" is not defined for list'
-                );
-            }
-            $column['actions'] = $column['actions'] ?
-                    htmlentities($this->json->encode($column['actions'])) : '';
-        }
         return $this->template->setEncoder(null)->process(
-            'table-list.phtml',
-            $params,
+            'content.phtml',
+            $this->content->getRow(),
             $this::TPL_PATH
         );
     }
